@@ -27,7 +27,7 @@ public class LauncherEngine
 	public static Color hoveredButtonColor = new Color(164, 164, 164);
 	public static Color tooltipTextColor = new Color(168, 168, 168, 200);
 	
-	private static String VERSION = "1.0.4";
+	private static String VERSION = "1.0.5";
 	public static GameFolder gameFolder;
 	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
@@ -47,7 +47,7 @@ public class LauncherEngine
 		}
     	
 		try {
-			PhotonEngine.loadClient("92.222.217.233");
+			PhotonEngine.loadClient("62.210.168.207");
 			Thread.sleep(1000);
 		} catch (IOException | InterruptedException e) {
     		JOptionPane.showMessageDialog(null, "For some connections reason we can't start the launcher", "Error", JOptionPane.ERROR_MESSAGE);

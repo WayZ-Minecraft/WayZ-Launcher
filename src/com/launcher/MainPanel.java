@@ -31,7 +31,6 @@ import com.photon.util.TranslationManager;
 import com.photon.util.os.ApplicationUtils;
 import com.photon.util.os.FileLocation;
 
-@SuppressWarnings("serial")
 public class MainPanel extends Panel implements EventListener {
 			
 	private SemiTexturedButton frenchButton;
@@ -199,7 +198,7 @@ public class MainPanel extends Panel implements EventListener {
 			cancelBtn.setVisible(!cancelBtn.isVisible());
 			playBtn.setVisible(!playBtn.isVisible());
 			repaint();
-			if(event.getSource() == this.cancelBtn) LauncherConfig.saveConfig();
+			if(event.getSource() != this.cancelBtn) LauncherConfig.saveConfig(ramField.getText(), jmvArgsField.getText());
 		} else if(event.getSource() == this.frenchButton || event.getSource() == this.englishButton) {
 			LauncherConfig.getConfig().language = event.getSource() == this.englishButton ? TranslationManager.locale_en.getLanguage() : TranslationManager.locale_fr.getLanguage();
 			final boolean french = LauncherConfig.getConfig().language.equals("fr");
@@ -209,7 +208,7 @@ public class MainPanel extends Panel implements EventListener {
 				@Override
 				public void run() {
 					ApplicationUtils.restart(LauncherEngine.class, new String[] {});
-					LauncherConfig.saveConfig();
+					LauncherConfig.saveConfig(ramField.getText(), jmvArgsField.getText());
 				}
 			});
 			repaint();

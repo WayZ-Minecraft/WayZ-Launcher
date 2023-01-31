@@ -7,7 +7,6 @@ import com.photon.informations.PhotonInfosManager;
 import com.photon.ui.PhotonInterfaceUtils;
 import com.photon.ui.base.Frame;
 
-@SuppressWarnings("serial")
 public class MainFrame extends Frame {
 
 	public MainFrame() {

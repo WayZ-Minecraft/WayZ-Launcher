@@ -9,7 +9,6 @@ import com.photon.ui.base.Frame;
 import com.photon.ui.base.Panel;
 import com.photon.ui.components.progressbar.ColoredProgressbar;
 
-@SuppressWarnings("serial")
 public class SplashScreen extends Frame
 {
     public SplashScreen(final String title, final Image image, final int x, final int y) {

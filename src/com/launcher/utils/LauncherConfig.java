@@ -20,15 +20,17 @@ public class LauncherConfig {
     		if(!file.exists()) {
     			file.createNewFile();
     			config = new ConfigVersion();
-    			saveConfig();
-    		} else { config = gson.fromJson(new FileReader(file), ConfigVersion.class); }
+    			saveConfig(config.allocatedram, config.vmarguments);
+    		} else config = gson.fromJson(new FileReader(file), ConfigVersion.class);
 		} catch (Exception e) { e.printStackTrace(); }
     }
     
     public static ConfigVersion getConfig() { return config; }
     
-    public static void saveConfig() {
+    public static void saveConfig(String allocatedram, String vmarguments) {
 		try {
+			config.allocatedram = allocatedram;
+			config.vmarguments = vmarguments;
 			String cfg = gson.toJson(config);
 			FileWriter writer = new FileWriter(file);
 			writer.write(cfg);
