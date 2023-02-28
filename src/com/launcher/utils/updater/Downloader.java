@@ -47,10 +47,12 @@ public class Downloader extends Thread {
 			bufferedInputStream = new BufferedInputStream(urlConnection.getInputStream());
 			fileOutputStream = new FileOutputStream(this.file);
 
-			byte[] data = new byte[1024];
+			int len = 8*1024;
+
+			byte[] data = new byte[len];
 			int read;
 
-			while (engine.getGameUpdater().addMB(read = bufferedInputStream.read(data, 0, 1024)) != -1) fileOutputStream.write(data, 0, read);
+			while (engine.getGameUpdater().addMB(read = bufferedInputStream.read(data, 0, len)) != -1) fileOutputStream.write(data, 0, read);
 			engine.getGameUpdater().downloadedFiles++;
 		} finally {
 			if (bufferedInputStream != null) bufferedInputStream.close();
