@@ -245,7 +245,6 @@ public class FileUtil {
 			etag = "-";
 		else if (etag.startsWith("\"") && etag.endsWith("\""))
 			etag = etag.substring(1, etag.length() - 1);
-
 		return etag;
 	}
 

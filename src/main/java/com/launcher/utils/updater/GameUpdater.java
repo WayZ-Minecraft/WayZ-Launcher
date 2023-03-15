@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +31,7 @@ import com.launcher.utils.file.FileUtil;
 import com.launcher.utils.file.JsonUtil;
 import com.launcher.utils.file.LauncherFile;
 import com.launcher.utils.minecraft.CompatibilityRule;
+import com.launcher.utils.minecraft.CompatibilityRule.Action;
 import com.launcher.utils.minecraft.json.MinecraftLibrary;
 import com.launcher.utils.minecraft.json.MinecraftVersion;
 import com.photon.informations.PhotonInfosManager;
@@ -39,6 +41,7 @@ import com.photon.util.ProtectorManager;
 import com.photon.util.auth.GameAuth;
 import com.photon.util.os.Arch;
 import com.photon.util.os.FileLocation;
+import com.photon.util.os.MultiThreadWorker;
 
 public class GameUpdater extends Thread {
 
@@ -229,87 +232,104 @@ public class GameUpdater extends Thread {
 		return result;
 	}
 
-	@SuppressWarnings({ "unlikely-arg-type", "unused" })
-	public void updateJars() {
-		for (MinecraftLibrary lib : minecraftVersion.getLibraries()) {
-			File libPath = new File(engine.getGameFolder().getLibsDir(), lib.getArtifactPath());
-			GameVerifier.addToFileList(libPath.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
+	public void writeJar(MinecraftLibrary lib) {
+		File libPath = new File(engine.getGameFolder().getLibsDir(), lib.getArtifactPath());
+		GameVerifier.addToFileList(libPath.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
+		if (lib.getCompatibilityRules() != null) {
+			for (final CompatibilityRule rule : lib.getCompatibilityRules()) {
+				if (rule.getOs() != null && rule.getAction() != null) {
+					if (lib.appliesToCurrentEnvironment()) {
+						if (rule.getAction().equals(Action.disallow)) lib.setSkipped(true);
+						else lib.setSkipped(false);
+					} else {
+						if (rule.getAction().equals(Action.allow)) lib.setSkipped(false);
+						else lib.setSkipped(true);
+					}
+				}
+			}
+		}
 
-			if (lib.getCompatibilityRules() != null) {
-				for (final CompatibilityRule rule : lib.getCompatibilityRules()) {
-					if (rule.getOs() != null && rule.getAction() != null) {
-						for (final String os : rule.getOs().getName().getAliases()) {
-							if (lib.appliesToCurrentEnvironment()) {
-								if (rule.getAction().equals("disallow")) {
-									lib.setSkipped(true);
-								} else {
-									lib.setSkipped(false);
-								}
-							} else {
-								if (rule.getAction().equals("allow")) {
-									lib.setSkipped(false);
-								} else {
-									lib.setSkipped(true);
-								}
-							}
-						}
+		if (!lib.isSkipped()) {
+			if (lib.getDownloads().getArtifact() != null) {
+				final Downloader downloadTask = new Downloader(libPath,
+						lib.getDownloads().getArtifact().getUrl().toString(),
+						lib.getDownloads().getArtifact().getSha1(), engine);
+				if (downloadTask.requireUpdate()) {
+					if (!verifier.existInDeleteList(libPath.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), ""))) {
+						filesToDownload++;
+						jarsExecutor.submit(downloadTask);
 					}
 				}
 			}
 
-			if (!lib.isSkipped()) {
-				if (lib.getDownloads().getArtifact() != null) {
-					final Downloader downloadTask = new Downloader(libPath,
-							lib.getDownloads().getArtifact().getUrl().toString(),
-							lib.getDownloads().getArtifact().getSha1(), engine);
-					if (downloadTask.requireUpdate()) {
-						if (!verifier.existInDeleteList(libPath.getAbsolutePath()
-								.replace(engine.getGameFolder().getGameDir().getAbsolutePath(), ""))) {
-							this.filesToDownload++;
-							this.jarsExecutor.submit(downloadTask);
-						}
-					}
-				}
-
-				if (lib.hasNatives()) {
-					for (final String osName : lib.getNatives().values()) {
-						String realOsName = osName.replace("${arch}", Arch.CURRENT.getBit());
-						if (lib.getDownloads().getClassifiers().get(realOsName) != null) {
-							final File nativePath = new File(engine.getGameFolder().getNativesCacheDir(),
-									lib.getArtifactNatives(realOsName));
-							GameVerifier.addToFileList(nativePath.getAbsolutePath()
-									.replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "")
-									.replace('/', File.separatorChar));
-							final Downloader downloadTask8 = new Downloader(nativePath,
-									lib.getDownloads().getClassifiers().get(realOsName).getUrl().toString(),
-									lib.getDownloads().getClassifiers().get(realOsName).getSha1(), engine);
-							if (downloadTask8.requireUpdate()) {
-								if (!verifier.existInDeleteList(nativePath.getAbsolutePath()
-										.replace(engine.getGameFolder().getGameDir().getAbsolutePath(), ""))) {
-									this.filesToDownload++;
-									this.jarsExecutor.submit(downloadTask8);
-								}
+			if (lib.hasNatives()) {
+				for (final String osName : lib.getNatives().values()) {
+					String realOsName = osName.replace("${arch}", Arch.CURRENT.getBit());
+					if (lib.getDownloads().getClassifiers().get(realOsName) != null) {
+						final File nativePath = new File(engine.getGameFolder().getNativesCacheDir(),
+								lib.getArtifactNatives(realOsName));
+						GameVerifier.addToFileList(nativePath.getAbsolutePath()
+								.replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "")
+								.replace('/', File.separatorChar));
+						final Downloader downloadTask8 = new Downloader(nativePath,
+								lib.getDownloads().getClassifiers().get(realOsName).getUrl().toString(),
+								lib.getDownloads().getClassifiers().get(realOsName).getSha1(), engine);
+						if (downloadTask8.requireUpdate()) {
+							if (!verifier.existInDeleteList(nativePath.getAbsolutePath()
+									.replace(engine.getGameFolder().getGameDir().getAbsolutePath(), ""))) {
+								filesToDownload++;
+								jarsExecutor.submit(downloadTask8);
 							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private static int filesAnalysed = 0;
+	public void updateJars() {
+		final Iterator<MinecraftLibrary> jarsIterator = minecraftVersion.getLibraries().iterator();
+		final long start = System.nanoTime();
+		new MultiThreadWorker() {
+			@Override
+			protected boolean work() {
+				synchronized (jarsIterator) {
+					final MinecraftLibrary lib = jarsIterator.next();
+					if (jarsIterator.hasNext()) {
+						synchronized(lib) {
+							filesAnalysed++;
+							writeJar(lib);
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		};
+
 		final File minecraftJarFile = new File(engine.getGameFolder().getBinDir(), "minecraft.jar");
-		final Downloader downloadTask3 = new Downloader(minecraftJarFile,
-				minecraftVersion.getDownloads().getClient().getUrl().toString(),
-				minecraftVersion.getDownloads().getClient().getSha1(), engine);
+		final Downloader downloadTask3 = new Downloader(minecraftJarFile, minecraftVersion.getDownloads().getClient().getUrl().toString(), minecraftVersion.getDownloads().getClient().getSha1(), engine);
 		GameVerifier.addToFileList(minecraftJarFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
 		
 		if (downloadTask3.requireUpdate()) {
 			if (!this.hasCustomJar) {
 				this.jarsExecutor.submit(downloadTask3);
 				this.filesToDownload++;
+				filesAnalysed++;
 			}
 		}
-		
+
 		final String modFileName = PhotonInfosManager.getInfos().project_id+"-"+PhotonInfosManager.getLatestModUpdate()+".jar";
 		final File modFile = new File(engine.getGameFolder().getBinDir(), "game/mods/"+modFileName);
+
+		for(File mod : modFile.getParentFile().listFiles()) {
+			if(mod.getName().contains(PhotonInfosManager.getInfos().project_id) && !mod.getName().equalsIgnoreCase(modFileName) && !mod.getName().contains(PhotonInfosManager.getLatestModUpdate())) {
+				this.verifier.deleteList.add(mod.getAbsolutePath().replace('/', File.separatorChar));
+				mod.delete();
+			}
+		}
+
 		final Downloader downloadModTask = new Downloader(modFile, PhotonInfosManager.getLatestModURL(), PhotonInfosManager.getLatestModSHA1(), engine);
 		GameVerifier.addToFileList(modFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
 				
@@ -317,19 +337,17 @@ public class GameUpdater extends Thread {
 			if (!this.hasModJar) {
 				this.jarsExecutor.submit(downloadModTask);
 				this.filesToDownload++;
-			}
-		}
-		
-		for(File mod : modFile.getParentFile().listFiles()) {
-			if(mod.getName().contains(PhotonInfosManager.getInfos().project_id) && !mod.getName().equalsIgnoreCase(modFileName) && !mod.getName().contains(PhotonInfosManager.getLatestModUpdate())) {
-				this.verifier.deleteList.add(mod.getAbsolutePath().replace('/', File.separatorChar));
-				mod.delete();
+				filesAnalysed++;
 			}
 		}
 		
 		this.jarsExecutor.shutdown();
-
 		try { this.jarsExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+
+		final long end = System.nanoTime();
+		final long delta = end - start;
+		ConsoleManager.print(EnumLogType.LAUNCHER, "Time (delta) to update jars: " + delta / 1000000L + " ms");
+		ConsoleManager.print(EnumLogType.LAUNCHER, "For : " + filesAnalysed + " files analysed");
 	}
 
 	public void updateAssets() {

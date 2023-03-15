@@ -1,0 +1,2 @@
+include('lib')
+project(':lib').projectDir = new File('../lib')

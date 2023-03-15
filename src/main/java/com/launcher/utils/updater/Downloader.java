@@ -10,6 +10,8 @@ import java.net.URLConnection;
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameVerifier;
 import com.launcher.utils.file.FileUtil;
+import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.ProtectorManager;
 
 public class Downloader extends Thread {
@@ -37,6 +39,8 @@ public class Downloader extends Thread {
 	}
 
 	public void download() throws IOException {
+		final long start = System.nanoTime();
+		ConsoleManager.print(EnumLogType.LAUNCHER, "Starting downloading "+this.file.getPath());
 		engine.getGameUpdater().setCurrentFile(this.file.getName());
 		BufferedInputStream bufferedInputStream = null;
 		FileOutputStream fileOutputStream = null;
@@ -47,7 +51,7 @@ public class Downloader extends Thread {
 			bufferedInputStream = new BufferedInputStream(urlConnection.getInputStream());
 			fileOutputStream = new FileOutputStream(this.file);
 
-			int len = 8*1024;
+			int len = 8192;
 
 			byte[] data = new byte[len];
 			int read;
@@ -58,6 +62,10 @@ public class Downloader extends Thread {
 			if (bufferedInputStream != null) bufferedInputStream.close();
 			if (fileOutputStream != null) fileOutputStream.close();
 		}
+
+		final long end = System.nanoTime();
+		final long delta = end - start;
+		ConsoleManager.print(EnumLogType.LAUNCHER, "└> Time (delta) to download: " + delta / 1000000L + " ms");
 	}
 
 	public boolean requireUpdate() {
