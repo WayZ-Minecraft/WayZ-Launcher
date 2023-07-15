@@ -25,74 +25,95 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.launcher.utils.GameEngine;
+import com.launcher.utils.GameFolder;
 
 public class FileUtil {
 
+	public static GameFolder workDir;
+	
+	/**
+	 * Skip folders in extractions
+	 */
 	public static String skipFoldersInExtraction = "META-INF/";
 
-	public static void deleteFakeNatives(File targetDir, GameEngine engine) throws IOException {
-		File[] listOfFiles = engine.getGameFolder().getNativesDir().listFiles();
-		for (int index = 0; index < listOfFiles.length; index++) {
-			if (listOfFiles[index].isFile()) {
-				if (listOfFiles[index].getName().endsWith(".dll") || listOfFiles[index].getName().endsWith(".dylib") || listOfFiles[index].getName().endsWith(".so")) continue;
-				listOfFiles[index].delete();
-			} else deleteFolder(listOfFiles[index]);
-		}
-	}
-
+	/**
+	 * Unpack natives in a designed folder
+	 * @param targetDir The target directory
+	 * @param engine 
+	 * @param engine The GameEngine instance
+	 * @throws IOException
+	 */
 	public static void unpackNatives(File targetDir, GameEngine engine) throws IOException {
-		File[] listOfFiles = engine.getGameFolder().getNativesCacheDir().listFiles();
-		for (int index = 0; index < listOfFiles.length; index++) {
-			if (listOfFiles[index].isFile()) {
-				ZipFile zip = new ZipFile(listOfFiles[index]);
-				try {
-					Enumeration<? extends ZipEntry> entries = zip.entries();
-					while (entries.hasMoreElements()) {
-						ZipEntry entry = (ZipEntry) entries.nextElement();
-						File targetFile = new File(targetDir, entry.getName());
-						if (targetFile.getParentFile() != null) {
-							targetFile.getParentFile().mkdirs();
-						}
-						if (!entry.isDirectory()) {
-							BufferedInputStream inputStream = new BufferedInputStream(zip.getInputStream(entry));
+		workDir = engine.getGameFolder();
+		if (workDir.getNativesCacheDir().exists()) {
+			File[] listOfFiles = workDir.getNativesCacheDir().listFiles();
+			for (int index = 0; index < listOfFiles.length; index++) {
+				if (listOfFiles[index].isFile()) {
+					ZipFile zip = new ZipFile(listOfFiles[index]);
+					try {
+						Enumeration<? extends ZipEntry> entries = zip.entries();
+						while (entries.hasMoreElements()) {
+							ZipEntry entry = (ZipEntry) entries.nextElement();
+							File targetFile = new File(targetDir, entry.getName());
+							if (targetFile.getParentFile() != null) {
+								targetFile.getParentFile().mkdirs();
+							}
+							if (!entry.isDirectory()) {
+								BufferedInputStream inputStream = new BufferedInputStream(zip.getInputStream(entry));
 
-							byte[] buffer = new byte[2048];
-							FileOutputStream outputStream = new FileOutputStream(targetFile);
-							BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-							try {
-								int length;
-								while ((length = inputStream.read(buffer, 0, buffer.length)) != -1) {
-									bufferedOutputStream.write(buffer, 0, length);
+								byte[] buffer = new byte[2048];
+								FileOutputStream outputStream = new FileOutputStream(targetFile);
+								BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+								try {
+									int length;
+									while ((length = inputStream.read(buffer, 0, buffer.length)) != -1) {
+										bufferedOutputStream.write(buffer, 0, length);
+									}
+								} finally {
+									closeSilently(bufferedOutputStream);
+									closeSilently(outputStream);
+									closeSilently(inputStream);
 								}
-							} finally {
-								closeSilently(bufferedOutputStream);
-								closeSilently(outputStream);
-								closeSilently(inputStream);
 							}
 						}
+					} finally {
+						zip.close();
 					}
-				} finally {
-					zip.close();
 				}
 			}
 		}
 	}
 
-
+	/**
+	 * Force delete on exit
+	 * @param file The file in question
+	 * @throws IOException
+	 */
 	public static void forceDeleteOnExit(File file) throws IOException {
 		if (file.isDirectory()) {
 			deleteDirectoryOnExit(file);
-		} else file.deleteOnExit();
-	}
-
-	private static void deleteDirectoryOnExit(File directory) throws IOException {
-		if (!directory.exists()) return;
-		directory.deleteOnExit();
-		if (!isSymlink(directory)) {
-			cleanDirectoryOnExit(directory);
+		} else {
+			file.deleteOnExit();
 		}
 	}
 
+	/**
+	 * Delete a directory on exit
+	 * @param directory The directory in question
+	 * @throws IOException
+	 */
+	private static void deleteDirectoryOnExit(File directory) throws IOException {
+		if (!directory.exists()) return;
+		directory.deleteOnExit();
+		if (!isSymlink(directory)) cleanDirectoryOnExit(directory);
+	}
+
+	/**
+	 * 
+	 * @param file The File
+	 * @return
+	 * @throws IOException
+	 */
 	public static boolean isSymlink(File file) throws IOException {
 		if (file == null) {
 			throw new NullPointerException("File must not be null");
@@ -102,19 +123,21 @@ public class FileUtil {
 			return false;
 		}
 		File fileInCanonicalDir = null;
-		if (file.getParent() == null) {
-			fileInCanonicalDir = file;
-		} else {
+		if (file.getParent() == null) fileInCanonicalDir = file;
+		else {
 			File canonicalDir = file.getParentFile().getCanonicalFile();
 			fileInCanonicalDir = new File(canonicalDir, file.getName());
 		}
-		if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) {
-			return false;
-		}
+		if (fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile())) return false;
 		return true;
 	}
 
-	private static void cleanDirectoryOnExit(File directory) throws IOException {
+	/**
+	 * Clean a directory on exit
+	 * @param directory The directory to clean
+	 * @throws IOException
+	 */
+	public static void cleanDirectoryOnExit(File directory) throws IOException {
 		if (!directory.exists()) {
 			String message = directory + " does not exist";
 			throw new IllegalArgumentException(message);
@@ -129,25 +152,24 @@ public class FileUtil {
 		}
 		IOException exception = null;
 		for (File file : files) {
-			try {
-				forceDeleteOnExit(file);
-			} catch (IOException ioe) {
-				exception = ioe;
-			}
+			try { forceDeleteOnExit(file); } catch (IOException ioe) { exception = ioe; }
 		}
-		if (null != exception) {
-			throw exception;
-		}
+		if (null != exception) throw exception;
 	}
 
+	/**
+	 * @return The Charset
+	 */
 	public static Charset getCharset() {
-		try {
-			return Charset.forName("UTF-8");
-		} catch (Exception var1) {
-			throw new Error("UTF-8 is not supported", var1);
-		}
+		try { return Charset.forName("UTF-8"); } catch (Exception var1) { throw new Error("UTF-8 is not supported", var1); }
 	}
 
+	/**
+	 * @param file The file
+	 * @param algorithm The algorithm to use
+	 * @param hashLength The hash lenght
+	 * @return A new String
+	 */
 	public static String getDigest(File file, String algorithm, int hashLength) {
 		DigestInputStream stream = null;
 		try {
@@ -166,6 +188,10 @@ public class FileUtil {
 		return null;
 	}
 
+	/**
+	 * Close
+	 * @param a The Closeable
+	 */
 	private static void close(Closeable a) {
 		try {
 			a.close();
@@ -178,6 +204,11 @@ public class FileUtil {
 		return getDigest(file, "SHA", 40);
 	}
 
+	/**
+	 * @param file The File
+	 * @param sha1 The Sha1
+	 * @return True if the file Md5 Match with the Sha1 String
+	 */
 	public static boolean matchSHA1(final File file, final String sha1) {
 		try {
 			return getSHA(file).equals(sha1);
@@ -187,6 +218,10 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * Close silently 
+	 * @param closeable The Closeable
+	 */
 	public static void closeSilently(Closeable closeable) {
 		if (closeable != null) {
 			try {
@@ -196,6 +231,12 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * Copy a file from mc directory to our directory
+	 * @param mc The mc folder
+	 * @param local The directory in question
+	 * @throws IOException
+	 */
 	public static void copy(File mc, File local) throws IOException {
 		InputStream input = null;
 		OutputStream output = null;
@@ -213,9 +254,13 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * Delete a folder
+	 * @param folder The folder in question
+	 */
 	public static void deleteFolder(File folder) {
 		File[] files = folder.listFiles();
-		if (files != null) {
+		if (files != null) { // some JVMs return null for empty dirs
 			for (File f : files) {
 				if (f.isDirectory()) {
 					deleteFolder(f);
@@ -227,6 +272,10 @@ public class FileUtil {
 		folder.delete();
 	}
 
+	/**
+	 * Delete something
+	 * @param path The pathto the file to delete
+	 */
 	public static void deleteSomething(String path) {
 		Path filePath_1 = Paths.get(path);
 		try {
@@ -240,14 +289,23 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * @param etag The etag
+	 * @return The etag as a String
+	 */
 	public static String getEtag(String etag) {
 		if (etag == null)
 			etag = "-";
 		else if (etag.startsWith("\"") && etag.endsWith("\""))
 			etag = etag.substring(1, etag.length() - 1);
+
 		return etag;
 	}
 
+	/**
+	 * @param file The file to get the MD5
+	 * @return The MD5 as a String
+	 */
 	public static String getMD5(final File file) {
 		DigestInputStream stream = null;
 		try {
@@ -265,7 +323,11 @@ public class FileUtil {
 
 		return String.format("%1$032x", new Object[] { new BigInteger(1, stream.getMessageDigest().digest()) });
 	}
-
+	
+	/**
+	 * @param url The URL to read
+	 * @return The result of the url
+	 */
 	public static String readMD5(String url) {
 		String result = "";
 		try {

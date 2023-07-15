@@ -1,65 +1,46 @@
 package com.launcher.utils;
 
+import java.io.File;
+
 import com.launcher.utils.minecraft.json.MinecraftVersion;
-import com.launcher.utils.updater.GameUpdater;
+import com.photon.ui.base.Frame;
+import com.photon.util.os.OperatingSystem;
 
 public class GameEngine {
-	
+
 	private GameFolder gameFolder;
 	private String name;
 	private GameLinks gameLinks;
-	private GameUpdater gameUpdater;
-	private JVMArguments jvmArgs;
 	private MinecraftVersion minecraftVersion;
-	private boolean debugMode;
+	public Frame appFrame;
 	
 	public GameEngine(GameFolder folder, GameLinks links, String name) {
 		this.gameFolder = folder;
 		this.gameLinks = links;
 		this.name = name;
 	}
-
-	public void reg(JVMArguments jvArgs) {
-		this.jvmArgs = jvArgs;
-	}
-	
-	public void setDebugMode(boolean debugMode) { this.debugMode = debugMode; }
-	
-	public boolean isDebugMode() { return this.debugMode; }
 	
 	public void reg(MinecraftVersion version) {
 		this.minecraftVersion = version;
 	}
 	
-	public void reg(GameLinks links) {
-		this.gameLinks = links;
-	}
-
-	public void reg(GameUpdater updater) {
-		this.gameUpdater = updater;
-	}
+	public void reg(GameLinks links) { this.gameLinks = links; }
 	
-	public String getName() {
-		return this.name;
-	}
+	public String getName() { return this.name; }
 
-	public GameFolder getGameFolder() {
-		return this.gameFolder;
-	}
+	public GameFolder getGameFolder() { return this.gameFolder; }
 
-	public GameLinks getGameLinks() {
-		return this.gameLinks;
-	}
+	public GameLinks getGameLinks() { return this.gameLinks; }
 
-	public GameUpdater getGameUpdater() {
-		return this.gameUpdater;
-	}
+	public MinecraftVersion getMinecraftVersion() { return this.minecraftVersion; }
 
-	public MinecraftVersion getMinecraftVersion() {
-		return this.minecraftVersion;
-	}
-
-	public JVMArguments getJVMArguments() {
-		return jvmArgs;
+	/**
+	 * @return The Java Path Installed
+	 */
+	public static String getJavaPath(MinecraftVersion mcVersion, GameEngine engine) {
+		final String component = mcVersion.getJavaVersion().getComponent();
+		final File javaPath = new File(engine.getGameFolder().getRuntimeDir(), component);
+		if (OperatingSystem.getCurrentPlatform() == OperatingSystem.WINDOWS && new File(javaPath + "/bin/javaw.exe").isFile()) return javaPath + "/bin/javaw.exe";
+		return javaPath + "/bin/java";
 	}
 }

@@ -10,13 +10,13 @@ public class GameLinks {
 	public String CUSTOM_FILES_URL;
 
 	public GameLinks(String baseUrl, String jsonName) {
-		if (baseUrl.endsWith("/")) this.BASE_URL = baseUrl;
+		if(baseUrl.endsWith("/")) this.BASE_URL = baseUrl;
 		else this.BASE_URL = baseUrl + "/";
 		this.JSON_URL = this.BASE_URL + jsonName;
 		this.JSON_NAME = jsonName;
 		this.IGNORE_LIST = this.BASE_URL + "ignore.cfg";
 		this.DELETE_LIST = this.BASE_URL + "delete.cfg";
-		this.CUSTOM_FILES_URL = this.BASE_URL + "files/";
+		this.CUSTOM_FILES_URL = this.BASE_URL + "files_"+jsonName.replace(".json", "")+"/";
 	}
 
 	public String getBaseUrl() {

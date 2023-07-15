@@ -5,7 +5,7 @@ import com.photon.informations.PhotonInfosManager;
 import com.photon.ui.base.Frame;
 import com.photon.util.TranslationManager;
 
-@SuppressWarnings({ "serial", "deprecation" })
+@SuppressWarnings({ "deprecation" })
 public class AlertFrame extends Frame {
 
 	private Frame parent;

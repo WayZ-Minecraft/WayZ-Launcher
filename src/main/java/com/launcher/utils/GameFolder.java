@@ -15,6 +15,8 @@ public class GameFolder {
 	public File assetsDir;
 	public File nativesDir;
 	public File nativesCacheDir;
+	public File runtimeDir;
+	public File versionsDir;
 
 	public GameFolder(String location) {
 		this.gameDir = FileLocation.getWorkingDirectory(location);
@@ -26,7 +28,10 @@ public class GameFolder {
 		this.nativesCacheDir = new File(this.gameDir, "cache"+ File.separator + "natives");
 		this.assetsDir = new File(this.gameDir, "assets");
 		this.nativesDir = new File(this.gameDir, "natives");
+		this.runtimeDir = new File(this.gameDir, "runtime");
+		this.versionsDir = new File(this.gameDir, "versions");
 		
+		/* Create missing folders */
 		this.getLibsDir().mkdirs();
 		this.getCacheDir().mkdirs();
 		this.getAssetsDir().mkdirs();
@@ -35,6 +40,16 @@ public class GameFolder {
 		this.getNativesDir().mkdirs();
 		this.getNativesCacheDir().mkdirs();
 		this.getPlayDir().mkdirs();
+		this.getRuntimeDir().mkdirs();
+		this.getVersionsDir().mkdirs();
+	}
+
+	public File getVersionsDir() {
+		return this.versionsDir;
+	}
+
+	public File getRuntimeDir() {
+		return this.runtimeDir;
 	}
 
 	public File getGameDir() {

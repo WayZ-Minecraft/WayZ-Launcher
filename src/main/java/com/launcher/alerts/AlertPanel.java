@@ -12,7 +12,6 @@ import com.photon.ui.components.buttons.ColoredButton;
 import com.photon.ui.components.utils.AbstractButton;
 import com.photon.util.TranslationManager;
 
-@SuppressWarnings("serial")
 public class AlertPanel extends Panel implements EventListener {
 
 	private EnumAlertType type;

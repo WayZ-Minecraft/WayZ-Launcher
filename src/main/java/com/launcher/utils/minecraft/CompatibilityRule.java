@@ -2,9 +2,6 @@ package com.launcher.utils.minecraft;
 
 import java.util.Map;
 
-/**
- * @author Trxyy
- */
 public class CompatibilityRule {
 	/**
 	 * The Action

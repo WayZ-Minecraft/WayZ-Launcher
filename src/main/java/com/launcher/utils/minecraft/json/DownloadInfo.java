@@ -15,8 +15,7 @@ public class DownloadInfo {
 
 	protected int size;
 
-	public DownloadInfo() {
-	}
+	public DownloadInfo() {}
 
 	public DownloadInfo(DownloadInfo other) {
 		this.path = other.path;

@@ -18,8 +18,7 @@ public class Substitutor {
 			if (strArray[i] == '$' && strArray[i + 1] == '{') {
 				i = i + 2;
 				int begin = i;
-				while (strArray[i] != '}')
-					++i;
+				while (strArray[i] != '}') ++i;
 				sb.append(map.get(str.substring(begin, i++)));
 			} else {
 				sb.append(strArray[i]);

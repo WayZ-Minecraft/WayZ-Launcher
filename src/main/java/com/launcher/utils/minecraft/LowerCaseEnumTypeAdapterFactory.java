@@ -18,22 +18,14 @@ public class LowerCaseEnumTypeAdapterFactory implements TypeAdapterFactory {
 	public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
 		@SuppressWarnings("unchecked")
 		final Class<T> rawType = (Class<T>) type.getRawType();
-		if (!rawType.isEnum()) {
-			return null;
-		}
+		if (!rawType.isEnum()) return null;
 		final Map<String, T> lowercaseToConstant = new HashMap<String, T>();
-		for (final T constant : rawType.getEnumConstants()) {
-			lowercaseToConstant.put(this.toLowercase(constant), constant);
-		}
+		for (final T constant : rawType.getEnumConstants()) lowercaseToConstant.put(this.toLowercase(constant), constant);
 		return new TypeAdapter<T>() {
-
 			@Override
 			public void write(final JsonWriter out, final T value) throws IOException {
-				if (value == null) {
-					out.nullValue();
-				} else {
-					out.value(LowerCaseEnumTypeAdapterFactory.this.toLowercase(value));
-				}
+				if (value == null) out.nullValue();
+				else out.value(LowerCaseEnumTypeAdapterFactory.this.toLowercase(value));
 			}
 
 			@Override

@@ -1,0 +1,145 @@
+.text-area {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+}
+
+.justify.text-area *.text {
+    -fx-text-alignment: justify;
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+
+.text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.slider .track {
+    -fx-background-color: transparent;
+    -fx-scale-y: 3.5;
+    -fx-background-insets: 0;
+}
+
+.slider .thumb {
+    -fx-background-color: transparent;
+    -fx-scale-x: 1.5;
+    -fx-scale-y: 2;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal,
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.increment-button,
+.decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:vertical *.increment-arrow,
+.scroll-bar:vertical *.decrement-arrow {
+    -fx-background-color: transparent;
+}
+
+#framePane .scroll-bar:horizontal .track,
+#framePane .scroll-bar:vertical .track {
+    -fx-scale-x: 0.5;
+    -fx-background-color: #0c0d0e;
+    -fx-border-color: transparent;
+    -fx-background-radius: 3em;
+}
+
+#framePane .scroll-bar:horizontal .thumb,
+#framePane .scroll-bar:vertical .thumb {
+    -fx-scale-x: 1.2;
+    -fx-background-color: #a4a4a4;
+    -fx-background-radius: 5em;
+}
+
+#textArea .scroll-bar:horizontal .track,
+#textArea .scroll-bar:vertical .track {
+    -fx-scale-x: 0.3;
+    -fx-background-color: #0c0d0e;
+    -fx-border-color: transparent;
+    -fx-background-radius: 3em;
+}
+
+#textArea .scroll-bar:horizontal .thumb,
+#textArea .scroll-bar:vertical .thumb {
+    -fx-scale-x: 0.8;
+    -fx-background-color: #a4a4a4;
+    -fx-background-radius: 3em;
+}
+
+
+
+
+* {
+    -fx-darkest-grey-color: #181a1c;
+}
+
+.check-box .box {
+    -fx-background-color: -fx-darkest-grey-color;
+    -fx-border-color: -fx-darkest-grey-color;
+    -fx-border-radius: 5px;
+}
+
+.check-box .mark {
+    -fx-shape: "M1.73,12.91 8.1,19.28 22.79,4.59 22.79,1.59 8.1,16.28 1.73,9.91";
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}

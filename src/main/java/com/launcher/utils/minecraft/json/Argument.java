@@ -2,6 +2,7 @@ package com.launcher.utils.minecraft.json;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -17,6 +18,9 @@ public class Argument {
 	public final String[] values;
 	
 	private final List<CompatibilityRule> compatibilityRules;
+
+	@Override
+	public String toString() { return String.join(",", Arrays.asList(values)); }
 
 	public Argument(String[] values, List<CompatibilityRule> compatibilityRules) {
 		this.values = values;

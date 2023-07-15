@@ -1,2 +1,9 @@
-include('lib')
-project(':lib').projectDir = new File('../lib')
+pluginManagement {
+    repositories {
+        maven { url "https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots" }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+include('photon')
+project(':photon').projectDir = new File('../photon')

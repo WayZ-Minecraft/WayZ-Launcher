@@ -1,25 +1,83 @@
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+	id("org.panteleyev.jpackageplugin") version "1.5.2"
 }
 
 repositories {
     mavenCentral()
-    maven { url = "https://clojars.org/repo/" }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
-dependencies { implementation project(':lib') /* Add Photon */ }
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.jar', '*.zip'])
+	implementation(project(':photon')) {
+    	exclude group: 'com.sun.mail'
+    	exclude group: 'net.dv8tion'
+	} /* Add Photon */
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+	shadow(fileTree(dir: 'libs', include: ['*.jar']))
+	shadow(project(':photon')) {
+		exclude group: 'com.sun.mail'
+    	exclude group: 'net.dv8tion'
+	}
+}
 
+tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+version = ''
+archivesBaseName = 'WayZ-launcher'
+
+/* Create basic JAR */
+jar {
+	duplicatesStrategy 'exclude'
+   	manifest { attributes([ "Main-Class": "com.launcher.LauncherEngine" ]) }
+}
+
+/* Add required dependencies */
 shadowJar {
-    baseName = 'launcher'
-    version = '1.0.0'
-   	manifest {
-        attributes([ "Main-Class": "com.launcher.LauncherEngine" ])
-    }    
-    from('build/classes/java/main')
-   	from('src/main/resources')
+	archiveClassifier.set('')
+   	configurations = [project.configurations.shadow]
+   	duplicatesStrategy 'exclude'
 }
 
-jar { dependsOn shadowJar }
+/* Create a native executable */
+tasks.jpackage {
+    dependsOn shadowJar
+
+    input  = "$buildDir/libs"
+    destination = "$buildDir/libs"
+
+    appName = "${archivesBaseName}"
+	appDescription = "Install our launcher for our servers"
+    vendor = ""
+
+    mainJar = tasks.shadowJar.outputs.files.singleFile
+    mainClass = "com.launcher.LauncherEngine"
+    appVersion = "${version}";
+
+    windows {
+		icon = "$projectDir/assets/launcher.ico"
+        winConsole = false
+        fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
+
+        winShortcut = true
+        winShortcutPrompt = true
+
+        winMenu = true
+        winMenuGroup = "${archivesBaseName}"
+
+        winPerUserInstall = true
+    }
+    mac {
+        icon = "$projectDir/assets/launcher.icns"
+    }
+    linux {
+        icon = "$projectDir/assets/launcher.png"
+        linuxShortcut = true
+    }
+}
+
+tasks.build.dependsOn shadowJar

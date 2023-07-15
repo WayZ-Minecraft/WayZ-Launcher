@@ -7,69 +7,87 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.launcher.utils.GameEngine;
-import com.launcher.utils.GameVerifier;
 import com.launcher.utils.file.FileUtil;
-import com.photon.util.ConsoleManager;
-import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.ProtectorManager;
 
 public class Downloader extends Thread {
-
+	/**
+	 * The download url
+	 */
 	private final String url;
-
+	/**
+	 * The Sha1
+	 */
 	private final String sha1;
-
+	/**
+	 * The file location
+	 */
 	private final File file;
 
-	private GameEngine engine;
+	/**
+	 * The gameUpdater instance
+	 */
+	private GameUpdater updater;
 
+	/**
+	 * Run the Thread
+	 */
 	public void run() {
-		try { download(); }
-		catch (IOException e) { e.printStackTrace(); }
+		try { download(updater); } catch (IOException e) { e.printStackTrace(); }
 	}
 
-	public Downloader(File file, String url, String sha1, GameEngine engine_) {
+	/**
+	 * The Constructor
+	 * @param file The file
+	 * @param url The Url
+	 * @param sha1 The Sha1
+	 * @param engine_ The gameEngine instance
+	 */
+	public Downloader(File file, String url, String sha1, GameUpdater updater) {
 		this.file = file;
 		this.url = url;
 		this.sha1 = sha1;
-		this.engine = engine_;
-		GameVerifier.addToFileList(file.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace("\\", "/"));
+		this.updater = updater;
 		file.getParentFile().mkdirs();
 	}
 
-	public void download() throws IOException {
-		final long start = System.nanoTime();
-		ConsoleManager.print(EnumLogType.LAUNCHER, "Starting downloading "+this.file.getPath());
-		engine.getGameUpdater().setCurrentFile(this.file.getName());
+	/**
+	 * Download the file ion question
+	 * @throws IOException
+	 */
+	public void download(GameUpdater updater) throws IOException {
+		System.out.println("Acquiring file '" + this.file.getName() + "'");
+		updater.setCurrentFile(this.file.getName());
+		if (this.file.getAbsolutePath().contains("assets")) updater.setCurrentInfoText("Downloading resource.");
+		else if (this.file.getAbsolutePath().contains("jre-legacy") || this.file.getAbsolutePath().contains("java-runtime-alpha")) updater.setCurrentInfoText("Telechargement de java.");
+		else updater.setCurrentInfoText("Downloading library.");
 		BufferedInputStream bufferedInputStream = null;
 		FileOutputStream fileOutputStream = null;
 		try {
 			URL downloadUrl = new URL(this.url.replace(" ", "%20"));
 			URLConnection urlConnection = downloadUrl.openConnection();
-			ProtectorManager.addProperties(urlConnection, "mojang");
+			ProtectorManager.addProperties(urlConnection);
 			bufferedInputStream = new BufferedInputStream(urlConnection.getInputStream());
 			fileOutputStream = new FileOutputStream(this.file);
-
-			int len = 8192;
-
-			byte[] data = new byte[len];
+			
+			byte[] data = new byte[1024];
 			int read;
 
-			while (engine.getGameUpdater().addMB(read = bufferedInputStream.read(data, 0, len)) != -1) fileOutputStream.write(data, 0, read);
-			engine.getGameUpdater().downloadedFiles++;
+			while ((read = bufferedInputStream.read(data, 0, 1024)) != -1) fileOutputStream.write(data, 0, read);
+			updater.downloadedFiles++;
 		} finally {
 			if (bufferedInputStream != null) bufferedInputStream.close();
 			if (fileOutputStream != null) fileOutputStream.close();
 		}
-
-		final long end = System.nanoTime();
-		final long delta = end - start;
-		ConsoleManager.print(EnumLogType.LAUNCHER, "└> Time (delta) to download: " + delta / 1000000L + " ms");
 	}
 
+	/**
+	 * @return If the file require a update
+	 */
 	public boolean requireUpdate() {
-		if ((this.file.exists()) && (FileUtil.matchSHA1(this.file, this.sha1))) return false;
+		if ((this.file.exists()) && (FileUtil.matchSHA1(this.file, this.sha1))) {
+			return false;
+		}
 		return true;
 	}
 }
