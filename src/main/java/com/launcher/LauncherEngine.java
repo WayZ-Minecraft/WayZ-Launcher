@@ -1,7 +1,6 @@
 package com.launcher;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +24,6 @@ import com.photon.network.NetworkDirectories;
 import com.photon.util.ConsoleManager;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.ApplicationUtils;
-import com.photon.util.os.FileLocation;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -35,7 +33,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class LauncherEngine /* extends Application */
+public class LauncherEngine
 {	
 	public static Color boxColor = new Color(12, 13, 14);
 	public static Color buttonColor = new Color(24, 26, 28);
@@ -47,11 +45,7 @@ public class LauncherEngine /* extends Application */
 	public static GameFolder gameFolder;
 	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
-	
-    public static Font getFont(int size) { return FileLocation.loadFont("fonts/axia_bold.otf", "Myriad", size); }
-    
-    public static Font getFontBOLD(int size) { return FileLocation.loadFont("fonts/axia_bold.otf", "Myriad", size).deriveFont(Font.BOLD); }
-	
+
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		/* Init logging */
     	final File logsFolder = new File("./logs/");
@@ -79,7 +73,7 @@ public class LauncherEngine /* extends Application */
     	gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
 		gameFolder = new GameFolder(PhotonInfosManager.getInfos().project_id+"-launcher");
     	gameEngine = new GameEngine(gameFolder, gameLinks, PhotonInfosManager.getInfos().project_name);
-
+		
 		/* Check for updates */
     	final File currentExecutionFile = new File(LauncherEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     	final File currentExecutionFolder = currentExecutionFile.getParentFile();

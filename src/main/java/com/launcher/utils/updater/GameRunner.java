@@ -41,21 +41,21 @@ public class GameRunner {
         processBuilder.redirectError(Redirect.INHERIT);
 		processBuilder.directory(engine.getGameFolder().getGameDir());
 		processBuilder.redirectErrorStream(true);
-		//updater.setCurrentInfoText("updater.launching");
+		updater.setCurrentInfoText("updater.launching");
 		
 		/* Display configuration */
 		List<String> commandLine = processBuilder.command();
 		ConsoleManager.create(String.join(" ", commandLine)).end();
 
 		try {
-			this.engine.appFrame.setVisible(false);
+			// this.engine.appFrame.setVisible(false);
 			final Process process = processBuilder.start();
 			final int exitVal = process.waitFor();
 			if (exitVal != 0) {
 				/* Show the frames and active buttons */
 				try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
 
-				this.engine.appFrame.setVisible(true);
+				// this.engine.appFrame.setVisible(true);
 				// new AlertFrame((Frame)this.engine.appFrame, 1, "", "Unable to launch, game has crashed!", EnumAlertType.ERROR);
 				// if(this.engine.appFrame.getContentPane() instanceof MainPanel panel) {
 				// 	panel.switchPlayVisibility(true);
