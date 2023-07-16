@@ -132,8 +132,9 @@
 
 .check-box .box {
     -fx-background-color: -fx-darkest-grey-color;
+    -fx-background-radius: 10px;
     -fx-border-color: -fx-darkest-grey-color;
-    -fx-border-radius: 5px;
+    -fx-border-radius: 10px;
 }
 
 .check-box .mark {
