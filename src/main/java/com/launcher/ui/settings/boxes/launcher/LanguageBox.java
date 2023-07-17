@@ -15,7 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -164,16 +163,16 @@ public class LanguageBox extends TextFieldElement {
      */
     private void setSelected(StackPane languageBox, Rectangle background, int index) {
         this.setHover(languageBox, background, selectedColor, focusColor, index);
-        if (this.transitions[index] != null) this.transitions[index].stop();
 
         if (background.getFill().toString().equals(basicColor.toString())){ // if the language box is not hovered (ex: on launch)
             background.setFill(selectedColor);
             return;
         };
 
+
         Timeline timeline = new Timeline(
-            new KeyFrame(Duration.seconds(0.3), new KeyValue(background.fillProperty(), selectedColor)),
-            new KeyFrame(Duration.seconds(0.6), new KeyValue(background.fillProperty(), focusColor))
+            new KeyFrame(Duration.seconds(0.2), new KeyValue(background.fillProperty(), selectedColor)),
+            new KeyFrame(Duration.seconds(0.4), new KeyValue(background.fillProperty(), focusColor))
         );
         timeline.setCycleCount(1);
 
