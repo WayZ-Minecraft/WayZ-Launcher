@@ -169,6 +169,7 @@ public class LauncherEngine /* extends Application */
             });
 
             // Set stage properties
+			globalShape.requestFocus();
             stage.getIcons().add(getIcon());
             stage.initStyle( StageStyle.TRANSPARENT);
             stage.setResizable(false);
