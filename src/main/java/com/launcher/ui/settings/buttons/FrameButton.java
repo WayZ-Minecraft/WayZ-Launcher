@@ -5,7 +5,6 @@ import com.launcher.ui.settings.GlobalSettings;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
-import javafx.animation.ParallelTransition;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;

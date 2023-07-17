@@ -13,8 +13,7 @@ public class FrameButtonList {
     int selectedButton;
     final static int buttonJump = 15;
 
-    public FrameButtonList(int selectedButton) {
-        this.selectedButton = selectedButton;
+    public FrameButtonList() {
     }
 
     public List<FrameButton> getButtonList() {
@@ -27,13 +26,12 @@ public class FrameButtonList {
     }
 
     public void setSelectedButton(int index) {
-        FillTransition selectedPointTransition = this.buttonList.get(index).pointTransition;
         if (index == this.selectedButton) {
-            selectedPointTransition.setToValue(FrameButton.pointColor);
-            selectedPointTransition.playFromStart();
+            this.buttonList.get(index).pointTransition.getShape().setFill(FrameButton.pointColor);
             return;
         }
         ParallelTransition parallelTransition = new ParallelTransition();
+        FillTransition selectedPointTransition = this.buttonList.get(index).pointTransition;
         
         selectedPointTransition.setFromValue(FrameButton.backgroundColor);
         selectedPointTransition.setToValue(FrameButton.pointColor);
@@ -45,7 +43,6 @@ public class FrameButtonList {
         
         parallelTransition.getChildren().addAll(selectedPointTransition, unselectedPointTransition);
         this.selectedButton = index;
-        System.out.println("Selected button : " + this.selectedButton);
 
         parallelTransition.playFromStart();
     }
