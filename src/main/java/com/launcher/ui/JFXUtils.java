@@ -146,6 +146,8 @@ public class JFXUtils {
         valueText.selectRange(0, 0);
         textBox.getChildren().add(valueText);
 
+        background.requestFocus();
+
         return new Pair<StackPane,TextField>(textBox, valueText);
     }
 
