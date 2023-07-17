@@ -174,8 +174,9 @@ public class GlobalSettings {
             case "GAME":
                 frame = gameFrame;
                 break;
-            default: throw new IllegalArgumentException("The frame name is not valid");
-        }
+                default: throw new IllegalArgumentException("The frame name is not valid");
+            }
+        frame.requestFocus();
         return frame;
     }
 

@@ -15,6 +15,7 @@ public class resolutionBox extends TextFieldElement{
 
     final static String title = "Launch Resolution";
     final static int boxHeight = 105;
+    TextField[] textFields;
 
     final static String maskedColor = "#ffff00";
 
@@ -68,11 +69,10 @@ public class resolutionBox extends TextFieldElement{
 
         Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField(Integer.toString(width), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
         StackPane widthResolutionBox = widthResolution.getKey();
-        // TextField widthResolutionText = widthResolution.getValue();
 
         Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
         StackPane heightResolutionBox = heightResolution.getKey();
-        // TextField heightResolutionText = heightResolution.getValue();
+        this.textFields = new TextField[]{widthResolution.getValue(), heightResolution.getValue()};
 
         Pane cross = this.loadCross((int)(lineTextSize*0.8), (int)(lineTextSize * 0.8));
 
@@ -94,9 +94,7 @@ public class resolutionBox extends TextFieldElement{
      * @param Activate : true to activate the mask, false to desactivate
      */
     private void setMask(Pane Box,boolean Activate){
-        StackPane[] boxs = new StackPane[]{(StackPane)Box.getChildren().get(0), (StackPane)Box.getChildren().get(1)};
-        TextField[] textFields = new TextField[]{(TextField)boxs[0].getChildren().get(1), (TextField)boxs[1].getChildren().get(1)};
-        for (TextField textField : textFields) {
+        for (TextField textField : this.textFields) {
             textField.setDisable(!Activate);
         }
 
