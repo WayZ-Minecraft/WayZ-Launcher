@@ -8,7 +8,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Pair;
 
 public class resolutionBox extends TextFieldElement{
@@ -16,6 +18,9 @@ public class resolutionBox extends TextFieldElement{
     final static String title = "Launch Resolution";
     final static int boxHeight = 105;
 
+    final static Color maskedColor = Color.web("#55555599");
+
+    
     final GridPane content = new GridPane();
 
     public resolutionBox(int boxWidth) {
@@ -57,14 +62,14 @@ public class resolutionBox extends TextFieldElement{
      * load the resolution custom zone (2 text field and a cross)
      * @return Pane : resolution custom zone
      */
-    private Pane loadResolutionCustome(){
+    private Pane loadResolutionCustome(int width, int height, boolean isActivated){
         Pane pane = new Pane();
 
-        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField("1920", lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
+        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField(Integer.toString(width), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
         StackPane widthResolutionBox = widthResolution.getKey();
         // TextField widthResolutionText = widthResolution.getValue();
 
-        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField("1080", lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
+        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
         StackPane heightResolutionBox = heightResolution.getKey();
         // TextField heightResolutionText = heightResolution.getValue();
 
@@ -75,20 +80,68 @@ public class resolutionBox extends TextFieldElement{
         cross.setLayoutY((lineHeight - lineTextSize*0.8)/2);
         heightResolutionBox.setLayoutX(105);
 
+        if (!isActivated) {
+            Rectangle mask = JFXUtils.loadBackground(200, lineHeight + 12, maskedColor, 20);
+            mask.setLayoutY(-5);
+            pane.getChildren().add(mask);
+        }
+
         return pane;
+    }
+
+    /**
+     * set the mask of the box (work only in the resolution custom zone)
+     * @param Box : box to mask
+     * @param Activate : true to activate the mask, false to desactivate
+     */
+    private void setMask(Pane Box,boolean Activate){
+        Rectangle Mask = (Rectangle)Box.getChildren().get(3);
+        Mask.setDisable(!Activate);
+        if (Activate) {
+            Mask.setFill(maskedColor);
+        } else {
+            Mask.setFill(Color.TRANSPARENT);
+        }
+    }
+
+
+    /**
+     * set the link between the checkboxs
+     * @param checkBoxs : checkboxs to link
+     */
+    private void setLinkCheckbox(CheckBox[] checkBoxs){
+        for (CheckBox checkBox : checkBoxs) {
+            checkBox.setOnAction(e -> {
+                checkBox.setSelected(true);
+                if (checkBox.isSelected()) {
+                    for (CheckBox checkBox2 : checkBoxs) {
+                        if (checkBox2 != checkBox) {
+                            checkBox2.setSelected(false);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
     protected void fillBox() {
-        CheckBox fullScreen = new CheckBox("Fullscreen");
-        fullScreen.setFont(JFXUtils.getFont("regular", lineTextSize));
         
-        CheckBox custom = new CheckBox("standard");
+        CheckBox standard = new CheckBox("standard");
+        standard.setFont(JFXUtils.getFont("regular", lineTextSize));
+        standard.setSelected(true);
+        
+        CheckBox custom = new CheckBox("custom");
         custom.setFont(JFXUtils.getFont("regular", lineTextSize));
-        
-        Pane resolutionCustom = this.loadResolutionCustome();
 
-        this.content.add(fullScreen, 0, 0);
+        setLinkCheckbox(new CheckBox[]{standard, custom});
+
+        Pane resolutionCustom = this.loadResolutionCustome(1920, 1080, false);
+        custom.selectedProperty().addListener((observable, oldValue, newValue) -> {
+             this.setMask(resolutionCustom, !newValue);
+        });
+
+        this.content.add(standard, 0, 0);
         this.content.add(custom, 1, 0);
         this.content.add(resolutionCustom, 2, 0);
     }
