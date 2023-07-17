@@ -30,7 +30,7 @@ public class resolutionBox extends TextFieldElement{
         this.content.setLayoutX(sidePadding);
         this.content.setLayoutY(50);
 
-        this.content.setHgap(35);
+        this.content.setHgap(40);
 
         this.fillBox();
 
@@ -127,11 +127,11 @@ public class resolutionBox extends TextFieldElement{
     @Override
     protected void fillBox() {
         
-        CheckBox standard = new CheckBox("standard");
+        CheckBox standard = new CheckBox("Standard");
         standard.setFont(JFXUtils.getFont("regular", lineTextSize));
         standard.setSelected(true);
         
-        CheckBox custom = new CheckBox("custom");
+        CheckBox custom = new CheckBox("Custom");
         custom.setFont(JFXUtils.getFont("regular", lineTextSize));
 
         setLinkCheckbox(new CheckBox[]{standard, custom});
@@ -143,6 +143,7 @@ public class resolutionBox extends TextFieldElement{
 
         this.content.add(standard, 0, 0);
         this.content.add(custom, 1, 0);
+        custom.setTranslateX(20);
         this.content.add(resolutionCustom, 2, 0);
     }
     

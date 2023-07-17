@@ -4,7 +4,9 @@ import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.TextFieldElement;
 
 import javafx.geometry.Insets;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 /**
  * RamBox
@@ -21,6 +23,14 @@ public class RamBox extends TextFieldElement{
     public RamBox(int boxWidth) {
         super("Allocate Ram", boxWidth, boxHeight);
 
+
+        Text ramAllocable = getNumberRamAllocable(16);
+        this.box.getChildren().add(ramAllocable);
+        AnchorPane.setRightAnchor(ramAllocable, (double)sidePadding);
+        ramAllocable.setLayoutY(25);
+
+
+
         this.contentWidth = boxWidth - 2*sidePadding;
         this.content.setPrefWidth(this.contentWidth);
         this.content.setPrefHeight(boxHeight - 20);
@@ -35,6 +45,10 @@ public class RamBox extends TextFieldElement{
 
         this.fillBox();
 
+    }
+
+    private Text getNumberRamAllocable(int ramAllocable) {
+        return JFXUtils.loadText("ram allocable : " + ramAllocable + " GB", titleSize - 3, lineTextColor, "light");
     }
     
     @Override
