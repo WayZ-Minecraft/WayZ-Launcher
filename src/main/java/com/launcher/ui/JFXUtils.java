@@ -2,6 +2,8 @@ package com.launcher.ui;
 
 import java.io.InputStream;
 
+import com.photon.util.os.FileLocation;
+
 import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -141,6 +143,7 @@ public class JFXUtils {
         valueText.setFont(getFont("light", textSize));
         valueText.setStyle("-fx-background-color: transparent; -fx-text-fill: " + textColor.toString().replace("0x", "#") + ";");
         valueText.setAlignment(Pos.CENTER);
+        valueText.selectRange(0, 0);
         textBox.getChildren().add(valueText);
 
         return new Pair<StackPane,TextField>(textBox, valueText);
@@ -240,6 +243,7 @@ public class JFXUtils {
 
         boxCheck.setOnMouseClicked(e -> {
             switchedOn.set(!switchedOn.get());
+            FileLocation.playSound("sounds/switch_btn.wav", -30f);
         });
 
         return boxCheck;

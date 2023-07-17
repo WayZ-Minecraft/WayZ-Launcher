@@ -8,9 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Pair;
 
 public class resolutionBox extends TextFieldElement{
@@ -18,7 +16,7 @@ public class resolutionBox extends TextFieldElement{
     final static String title = "Launch Resolution";
     final static int boxHeight = 105;
 
-    final static Color maskedColor = Color.web("#55555599");
+    final static String maskedColor = "#ffff00";
 
     
     final GridPane content = new GridPane();
@@ -60,6 +58,9 @@ public class resolutionBox extends TextFieldElement{
 
     /**
      * load the resolution custom zone (2 text field and a cross)
+     * @param width : width of the resolution
+     * @param height : height of the resolution
+     * @param isActivated : true if the resolution is activated, false if not
      * @return Pane : resolution custom zone
      */
     private Pane loadResolutionCustome(int width, int height, boolean isActivated){
@@ -81,9 +82,7 @@ public class resolutionBox extends TextFieldElement{
         heightResolutionBox.setLayoutX(105);
 
         if (!isActivated) {
-            Rectangle mask = JFXUtils.loadBackground(200, lineHeight + 12, maskedColor, 20);
-            mask.setLayoutY(-5);
-            pane.getChildren().add(mask);
+            this.setMask(pane, false);
         }
 
         return pane;
@@ -95,13 +94,12 @@ public class resolutionBox extends TextFieldElement{
      * @param Activate : true to activate the mask, false to desactivate
      */
     private void setMask(Pane Box,boolean Activate){
-        Rectangle Mask = (Rectangle)Box.getChildren().get(3);
-        Mask.setDisable(!Activate);
-        if (Activate) {
-            Mask.setFill(maskedColor);
-        } else {
-            Mask.setFill(Color.TRANSPARENT);
+        StackPane[] boxs = new StackPane[]{(StackPane)Box.getChildren().get(0), (StackPane)Box.getChildren().get(1)};
+        TextField[] textFields = new TextField[]{(TextField)boxs[0].getChildren().get(1), (TextField)boxs[1].getChildren().get(1)};
+        for (TextField textField : textFields) {
+            textField.setDisable(!Activate);
         }
+
     }
 
 
@@ -138,7 +136,7 @@ public class resolutionBox extends TextFieldElement{
 
         Pane resolutionCustom = this.loadResolutionCustome(1920, 1080, false);
         custom.selectedProperty().addListener((observable, oldValue, newValue) -> {
-             this.setMask(resolutionCustom, !newValue);
+             this.setMask(resolutionCustom, newValue);
         });
 
         this.content.add(standard, 0, 0);
