@@ -89,9 +89,10 @@ public class GlobalSettings {
      * @return Pane : The frame buttons (Launcher, Game, ...)
      */
     private static Pane getFrameButtons(){
-        FrameButtonList buttonList = new FrameButtonList();
+        FrameButtonList buttonList = new FrameButtonList(0);
         buttonList.addButton("LAUNCHER", "logos/launcherSettings.png", true);
         buttonList.addButton("GAME", "logos/gameSettings.png", true);
+        buttonList.setSelectedButton(0);
         return buttonList.printButtonList();
     }
 

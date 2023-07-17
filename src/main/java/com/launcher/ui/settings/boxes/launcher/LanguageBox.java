@@ -7,11 +7,15 @@ import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -101,7 +105,15 @@ public class LanguageBox extends TextFieldElement {
         return languageBox;
     }
 
-    private void setBasicFocus(StackPane languageBox, Rectangle background, Color UnActiveColor, Color ActiveColor, int index){
+    /**
+     * Change the background color of the language box when the mouse is on it (hover)
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param UnActiveColor : the color of the background when the mouse is not on it
+     * @param ActiveColor : the color of the background when the mouse is on it
+     * @param index : the index of the language box (this.languages)
+     */
+    private void setHover(StackPane languageBox, Rectangle background, Color UnActiveColor, Color ActiveColor, int index){
         FillTransition fillTransition = this.transitions[index];
 
         languageBox.setOnMouseEntered(e -> {
@@ -127,7 +139,7 @@ public class LanguageBox extends TextFieldElement {
         this.transitions[index] = new FillTransition(Duration.seconds(0.3), background);
         this.transitions[index].setCycleCount(1);
 
-        this.setBasicFocus(languageBox, background, basicColor, focusColor, index);
+        this.setHover(languageBox, background, basicColor, focusColor, index);
 
         languageBox.setOnMouseClicked(e -> {
             FileLocation.playSound("sounds/click_btn");
@@ -144,26 +156,47 @@ public class LanguageBox extends TextFieldElement {
 
     }
 
-
+    /**
+     * Set the selected animation on the language box, to show that it is the selected language
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param index : the index of the language box (this.languages)
+     */
     private void setSelected(StackPane languageBox, Rectangle background, int index) {
-        FillTransition fillTransition = this.transitions[index];
-        fillTransition.setFromValue(focusColor);
-        fillTransition.setToValue(selectedColor);
-        fillTransition.playFromStart();
+        this.setHover(languageBox, background, selectedColor, focusColor, index);
+        if (this.transitions[index] != null) this.transitions[index].stop();
 
-        this.setBasicFocus(languageBox, background, selectedColor, focusColor, index);
+        if (background.getFill().toString().equals(basicColor.toString())){ // if the language box is not hovered (ex: on launch)
+            background.setFill(selectedColor);
+            return;
+        };
+
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(0.3), new KeyValue(background.fillProperty(), selectedColor)),
+            new KeyFrame(Duration.seconds(0.6), new KeyValue(background.fillProperty(), focusColor))
+        );
+        timeline.setCycleCount(1);
+
+        timeline.playFromStart();
+
 
     }
 
+    /**
+     * Set the basic animation on the language box, to undo the selected animation
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param index : the index of the language box (this.languages)
+     */
     private void setUnselected(StackPane languageBox, Rectangle background, int index) {
+        this.setHover(languageBox, background, basicColor, focusColor, index);
+        
         FillTransition fillTransition = this.transitions[index];
-
         fillTransition.setFromValue(selectedColor);
         fillTransition.setToValue(basicColor);
         fillTransition.playFromStart();
 
         
-        this.setBasicFocus(languageBox, background, basicColor, focusColor, index);
 
 
     }
