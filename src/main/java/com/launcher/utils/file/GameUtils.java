@@ -55,6 +55,7 @@ public class GameUtils {
 		final File versionFolder = new File(workDir.getVersionsDir(), engine.getMinecraftVersion().getId());
 		result += new File(workDir.getLibsDir(), "opus/opus-jni-java-1.0.3.jar").getAbsolutePath()+separator;
 		result += new File(workDir.getLibsDir(), "com/photon/photon.jar").getAbsolutePath()+separator;
+		result += new File(workDir.getLibsDir(), "me/rich-presence/discord-rich-presence.jar").getAbsolutePath()+separator;
 		result += new File(versionFolder, engine.getMinecraftVersion().getId() + ".jar").getAbsolutePath();
 		return result;
 	}
