@@ -10,6 +10,8 @@ import com.launcher.utils.minecraft.java.JavaVersion;
 
 public class MinecraftVersion {
 
+	private static final transient JavaVersion JVM_17 = new JavaVersion("java-runtime-gamma", 17);
+
 	/**
 	 * The minecraft version id
 	 */
@@ -103,7 +105,7 @@ public class MinecraftVersion {
 	 * @return The Minecraft required java version
 	 */
 	public JavaVersion getJavaVersion() {
-		return javaVersion;
+		return JVM_17;
 	}
 
 	/**

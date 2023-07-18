@@ -5,7 +5,12 @@ public class JavaVersion {
 	private String component;
 	private int majorVersion;
 
-	private JavaVersion(JavaVersion o) {
+	public JavaVersion(String component, int majorVersion) {
+		this.component = component;
+		this.majorVersion = majorVersion;
+	}
+
+	protected JavaVersion(JavaVersion o) {
 		this.component = o.component;
 		this.majorVersion = o.majorVersion;
 	}
