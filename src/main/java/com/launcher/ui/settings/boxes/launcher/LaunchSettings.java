@@ -8,11 +8,12 @@ import javafx.scene.layout.GridPane;
 
 public class LaunchSettings extends TextFieldElement {
 
+    final static String title = TranslationManager.format("settings.launcher.properties.title");
     final GridPane content = new GridPane();
-    final static int boxHeight = 210;
+    final static int boxHeight = 240;
 
     public LaunchSettings(int boxWidth) {
-        super(TranslationManager.format("title.launcher"), boxWidth, boxHeight);
+        super(title, boxWidth, boxHeight);
 
         this.content.setPrefWidth(boxWidth - 2*sidePadding);
         this.content.setPrefHeight(boxHeight - 20);
@@ -28,9 +29,10 @@ public class LaunchSettings extends TextFieldElement {
     }
     
     protected void fillBox(){
-        this.content.add(this.getSwitchLine(TranslationManager.format("btn.keep_open")), 0, 0);
-        this.content.add(this.getSwitchLine(TranslationManager.format("btn.send_reports")), 0, 1);
-        this.content.add(this.getButtonLine(TranslationManager.format("btn.reset_files"), "Reset", "logos/refresh-arrow.png", "#ffffff"), 0, 2);
-        this.content.add(this.getButtonLine(TranslationManager.format("btn.uninstall"), "Uninstall", "logos/delete.png", "#8b2628"), 0, 3);
+        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.keep_open")), 0, 0);
+        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.send_reports")), 0, 1);
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"), TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/refresh-arrow.png", "#ffffff"), 0, 2);
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.get_files"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e"), 0, 3);
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.uninstall"), TranslationManager.format("settings.launcher.properties.btn.uninstall.inner"), "logos/delete.png", "#8b2628"), 0, 4);
     }
 }

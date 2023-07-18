@@ -1,11 +1,11 @@
 package com.launcher.ui.settings.buttons;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.FrameName;
 import com.launcher.ui.settings.GlobalSettings;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
-import javafx.animation.ParallelTransition;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -18,23 +18,23 @@ public class FrameButton extends NavigateButton {
     final static Color animationColor = Color.web("#ffffff08");
     final static Color pointColor = Color.web("#ffffff");
     final static String pictureColor = "#ffffff";
+    final static Color backgroundColor = Color.web("#00000000");
 
-    boolean isSelected = false;
-    final FrameButtonList list;
-    
+    FrameName frameName;
+    final FillTransition pointTransition = this.pointAnimation();
+
     /**
      * Constructor for interactive button like Game, Launcher, ...
      * @param text Text : Text for the button
      * @param imagePath String : Path for the image
-     * @param pictureColor String : Color for the image
      */
-    public FrameButton(String text, String imagePath, boolean isNavMenu, FrameButtonList list) {
-        super(text, 21, imagePath, pictureColor, 50, 15, "#ffffff", "light", "#00000000", false);
+    public FrameButton(String text, FrameName frameName ,String imagePath, boolean isNavMenu, FrameButtonList buttonList, int index) {
+        super(text, 21, imagePath, pictureColor, 50, 15, "#ffffff", "light", backgroundColor.toString().replace("0x", "#"), false);
         this.buttonWidth = 220;
         this.imageV = JFXUtils.loadImageView(imagePath, 250, (int)(textSize * 1.3), pictureColor);
-        this.list = list;
+        this.frameName = frameName;
 
-        this.setClick();
+        this.setClick(buttonList, index);
     }
 
     @Override
@@ -44,19 +44,16 @@ public class FrameButton extends NavigateButton {
 
     /**
      * Create the point animation
-     * @return FillTransition : the point with the animation
+     * @return FillTransition : The FillTransition with the point
      */
-    private FillTransition pointAnimation(){
+    protected FillTransition pointAnimation(){
         final int pointRadius = 4;
         Circle circle = new Circle(pointRadius);
-        circle.setFill(this.backgroundColor);
+        circle.setFill(backgroundColor);
 
         this.button.getChildren().add(circle);
-        
-        final Text textWidth = JFXUtils.loadText(text, 1, backgroundColor, this.fontWeight);
-        final double width = textWidth.getLayoutBounds().getWidth();
 
-        AnchorPane.setRightAnchor(circle, (double)width + pointRadius);
+        AnchorPane.setRightAnchor(circle, 5.0 + pointRadius);
         AnchorPane.setTopAnchor(circle, (double)(this.buttonHeight / 2 - pointRadius));
 
         FillTransition pointTransition = new FillTransition(Duration.seconds(0.3), circle);
@@ -65,27 +62,16 @@ public class FrameButton extends NavigateButton {
         return pointTransition;
     }
 
-    protected void setClick(){
+    /**
+     * Set the click event for the button
+     * @param buttonList FrameButtonList : The button list
+     * @param index int : The index of the button
+     */
+    protected void setClick(FrameButtonList buttonList, int index){
         this.button.setOnMouseClicked(e -> {
-            GlobalSettings.setLauncherFrame(this.text);
+            GlobalSettings.setLauncherFrame(this.frameName);
             FileLocation.playSound("sounds/click_btn");
-            
-            /* Unselect all buttons */
-            for(FrameButton btn : this.list.buttonList) btn.isSelected = false;
-
-            isSelected = true;
-            ParallelTransition transition = new ParallelTransition();
-            FillTransition pointTransition = this.pointAnimation();
-            transition.getChildren().addAll(pointTransition);
-
-            if(isSelected) {
-                pointTransition.setFromValue(this.backgroundColor);
-                pointTransition.setToValue(pointColor);
-            } else {
-                pointTransition.setFromValue(pointColor);
-                pointTransition.setToValue(this.backgroundColor);
-            }
-            transition.playFromStart();
+            buttonList.setSelectedButton(index);
         });
     }
 
@@ -94,20 +80,17 @@ public class FrameButton extends NavigateButton {
         FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), background);
         fillTransition.setCycleCount(1);
 
-        ParallelTransition transition = new ParallelTransition();
-        transition.getChildren().addAll(fillTransition);
-
         this.button.setOnMouseEntered(e -> {
             FileLocation.playSound("sounds/hover_btn");
-            fillTransition.setFromValue(this.backgroundColor);
+            fillTransition.setFromValue(backgroundColor);
             fillTransition.setToValue(animationColor);
-            transition.playFromStart();
+            fillTransition.playFromStart();
         });
 
         this.button.setOnMouseExited(e -> {
             fillTransition.setFromValue(animationColor);
-            fillTransition.setToValue(this.backgroundColor);
-            transition.playFromStart();
+            fillTransition.setToValue(backgroundColor);
+            fillTransition.playFromStart();
         });
         
         this.pointAnimation();

@@ -7,6 +7,9 @@ import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -22,16 +25,20 @@ import javafx.util.Duration;
  */
 public class LanguageBox extends TextFieldElement {
 
-    final boolean isSelected = false;
+    final static String title = TranslationManager.format("settings.launcher.language.title");
     final GridPane content = new GridPane();
+    StackPane[] languages = new StackPane[5];
+    FillTransition[] transitions = new FillTransition[5];
+    int selectedLanguage = 0;
     final static int boxHeight = 150;
 
     final static Color basicColor = Color.web("#00000000");
     final static Color focusColor = Color.web("#4b4b4b");
+    final static Color selectedColor = Color.web("#2f2f2f");
 
 
     public LanguageBox(int boxWidth) {
-        super(TranslationManager.format("title.languages"), boxWidth, boxHeight);
+        super(title, boxWidth, boxHeight);
 
         this.content.setPrefWidth(boxWidth - 2*sidePadding);
         this.content.setPrefHeight(boxHeight - 20);
@@ -53,7 +60,7 @@ public class LanguageBox extends TextFieldElement {
      * @param imagePath : the path to the flag image
      * @return StackPane : the language box
      */
-    private StackPane getLanguage(String language, String imagePath){
+    private StackPane getLanguage(String language, String imagePath, int index){
         StackPane languageBox = new StackPane();
         languageBox.setMinWidth(80);
         languageBox.setMinHeight(80);
@@ -90,9 +97,36 @@ public class LanguageBox extends TextFieldElement {
             FileLocation.playSound("sounds/click_btn");
         });
 
-        this.setFocus(languageBox, background);
+        this.setFocus(languageBox, background, index);
+        if (this.selectedLanguage == index) this.setSelected(languageBox, background, index);
+        
 
         return languageBox;
+    }
+
+    /**
+     * Change the background color of the language box when the mouse is on it (hover)
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param UnActiveColor : the color of the background when the mouse is not on it
+     * @param ActiveColor : the color of the background when the mouse is on it
+     * @param index : the index of the language box (this.languages)
+     */
+    private void setHover(StackPane languageBox, Rectangle background, Color UnActiveColor, Color ActiveColor, int index){
+        FillTransition fillTransition = this.transitions[index];
+
+        languageBox.setOnMouseEntered(e -> {
+            FileLocation.playSound("sounds/hover_btn");
+            fillTransition.setFromValue(UnActiveColor);
+            fillTransition.setToValue(ActiveColor);
+            fillTransition.playFromStart();
+        });
+    
+        languageBox.setOnMouseExited(e -> {
+            fillTransition.setFromValue(ActiveColor);
+            fillTransition.setToValue(UnActiveColor);
+            fillTransition.playFromStart();
+        });
     }
 
     /**
@@ -100,36 +134,86 @@ public class LanguageBox extends TextFieldElement {
      * @param languageBox : the language box
      * @param background : the background of the language box
      */
-    private void setFocus(StackPane languageBox, Rectangle background) {
-        FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), background);
-        fillTransition.setCycleCount(1);
-    
-        languageBox.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
-            fillTransition.setFromValue(basicColor);
-            fillTransition.setToValue(focusColor);
-            fillTransition.playFromStart();
+    private void setFocus(StackPane languageBox, Rectangle background, int index) {
+        this.transitions[index] = new FillTransition(Duration.seconds(0.3), background);
+        this.transitions[index].setCycleCount(1);
+
+        this.setHover(languageBox, background, basicColor, focusColor, index);
+
+        languageBox.setOnMouseClicked(e -> {
+            FileLocation.playSound("sounds/click_btn");
+            setUnselected(this.languages[this.selectedLanguage], background, this.selectedLanguage);
+            setSelected(languageBox, background, index);
+            for(int i = 0; i < this.languages.length; i++) {
+                if(this.languages[i] == languageBox) {
+                    this.selectedLanguage = i;
+                }
+
+            }
+            
         });
-    
-        languageBox.setOnMouseExited(e -> {
-            fillTransition.setFromValue(focusColor);
-            fillTransition.setToValue(basicColor);
-            fillTransition.playFromStart();
-        });
+
+    }
+
+    /**
+     * Set the selected animation on the language box, to show that it is the selected language
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param index : the index of the language box (this.languages)
+     */
+    private void setSelected(StackPane languageBox, Rectangle background, int index) {
+        this.setHover(languageBox, background, selectedColor, focusColor, index);
+
+        if (background.getFill().toString().equals(basicColor.toString())){ // if the language box is not hovered (ex: on launch)
+            background.setFill(selectedColor);
+            return;
+        };
+
+
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(0.2), new KeyValue(background.fillProperty(), selectedColor)),
+            new KeyFrame(Duration.seconds(0.4), new KeyValue(background.fillProperty(), focusColor))
+        );
+        timeline.setCycleCount(1);
+
+        timeline.playFromStart();
+
+
+    }
+
+    /**
+     * Set the basic animation on the language box, to undo the selected animation
+     * @param languageBox : the language box
+     * @param background : the background of the language box
+     * @param index : the index of the language box (this.languages)
+     */
+    private void setUnselected(StackPane languageBox, Rectangle background, int index) {
+        this.setHover(languageBox, background, basicColor, focusColor, index);
+        
+        FillTransition fillTransition = this.transitions[index];
+        fillTransition.setFromValue(selectedColor);
+        fillTransition.setToValue(basicColor);
+        fillTransition.playFromStart();
+
+        
+
+
     }
     
     @Override
     protected void fillBox() {
-        StackPane system = getLanguage("System", "logos/language/system.png");
-        StackPane english = getLanguage("English", "logos/language/united-kingdom.png");
-        StackPane french = getLanguage("French", "logos/language/france.png");
-        StackPane german = getLanguage("Deutsch", "logos/language/germany.png");
-        StackPane russia = getLanguage("Russia", "logos/language/russia.png");
+        StackPane system = getLanguage("System", "logos/language/system.png", 0);
+        StackPane english = getLanguage("English", "logos/language/united-kingdom.png", 1);
+        StackPane french = getLanguage("French", "logos/language/france.png", 2);
+        StackPane german = getLanguage("Deutsch", "logos/language/germany.png", 3);
+        StackPane russia = getLanguage("Russia", "logos/language/russia.png", 4);
 
-        content.add(system, 0, 0);
-        content.add(english, 1, 0);
-        content.add(french, 2, 0);
-        content.add(german, 3, 0);
-        content.add(russia, 4, 0);
+        this.languages = new StackPane[] {system, english, french, german, russia};
+
+        content.add(this.languages[0], 0, 0);
+        content.add(this.languages[1], 1, 0);
+        content.add(this.languages[2], 2, 0);
+        content.add(this.languages[3], 3, 0);
+        content.add(this.languages[4], 4, 0);
     }
 }

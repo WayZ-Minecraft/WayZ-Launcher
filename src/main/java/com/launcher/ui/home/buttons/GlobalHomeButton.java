@@ -70,7 +70,7 @@ public class GlobalHomeButton {
      * @return ImageView : Discord logo
      */
     private static Pane loadDiscordLogo(){
-        return loadLogoMedia("logos/discord.png", 24, 25);
+        return loadLogoMedia("logos/discord.png", 25, 25);
     }
 
     /**
@@ -78,7 +78,7 @@ public class GlobalHomeButton {
      * @return ImageView : Twitch logo
      */
     private static Pane loadTwitchLogo(){
-        return loadLogoMedia("logos/twitch.png", 23, 23);
+        return loadLogoMedia("logos/twitch.png", 25, 25);
     }
 
     /**
@@ -128,16 +128,16 @@ public class GlobalHomeButton {
         AnchorPane.setTopAnchor(textSettings, 1.0);
         AnchorPane.setLeftAnchor(textSettings, 40.0);
 
-        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.3), logoSettings);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.6), logoSettings);
         
         button.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
-            rotateTransition.setByAngle(-60);
+            FileLocation.playSound("sounds/settings_gear", -20f);
+            rotateTransition.setByAngle(-100);
             rotateTransition.play();
         });
 
         button.setOnMouseExited(e -> {
-            rotateTransition.setByAngle(60);
+            rotateTransition.setByAngle(100);
             rotateTransition.play();
         });
 

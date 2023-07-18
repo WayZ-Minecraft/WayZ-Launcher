@@ -90,8 +90,9 @@ public class GlobalSettings {
      */
     private static Pane getFrameButtons(){
         FrameButtonList buttonList = new FrameButtonList();
-        buttonList.addButton("LAUNCHER", "logos/launcherSettings.png", true);
-        buttonList.addButton("GAME", "logos/gameSettings.png", true);
+        buttonList.addButton(TranslationManager.format("btn.frame.settings.launcher"), FrameName.LAUNCHER, "logos/launcherSettings.png", true);
+        buttonList.addButton(TranslationManager.format("btn.frame.settings.game"), FrameName.GAME, "logos/gameSettings.png", true);
+        buttonList.setSelectedButton(0);
         return buttonList.printButtonList();
     }
 
@@ -164,21 +165,22 @@ public class GlobalSettings {
      * @param frameName : The name of the frame to return
      * @return ScrollPane : The frame
      */
-    private static ScrollPane getFrame(String frameName){
+    private static ScrollPane getFrame(FrameName frameName){
         ScrollPane frame;
         switch (frameName) {
-            case "LAUNCHER":
+            case LAUNCHER:
                 frame = launcherFrame;
                 break;
-            case "GAME":
+            case GAME:
                 frame = gameFrame;
                 break;
-            default: throw new IllegalArgumentException("The frame name is not valid");
-        }
+                default: throw new IllegalArgumentException("The frame name is not valid");
+            }
+        frame.requestFocus();
         return frame;
     }
 
-    public static void setLauncherFrame(String frameName) { frame.setContent(getFrame(frameName)); }
+    public static void setLauncherFrame(FrameName frameName) { frame.setContent(getFrame(frameName)); }
 
     /**
      * Function that return the settings menu
@@ -187,7 +189,7 @@ public class GlobalSettings {
     public static Pane getSettingsMenu(){
         Pane settingsMenu = getSettingsTemplate();
         
-        frame.setContent(getFrame("LAUNCHER"));
+        frame.setContent(getFrame(FrameName.LAUNCHER));
         frame.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         frame.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         settingsMenu.getChildren().add(frame);

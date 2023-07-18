@@ -30,7 +30,7 @@ public abstract class TextFieldElement {
 
     protected final static int switchWidth = 30;
     protected final static int switchHeight = 16;
-    protected final static Color switchColorNotCheck = Color.web("#8b2628");
+    protected final static Color switchColorNotCheck = Color.web("#f2f2f2");
     protected final static Color switchColorCheck = Color.web("#82a77d");
     protected final static Color switchColorBackground = Color.web("#181a1c");
 

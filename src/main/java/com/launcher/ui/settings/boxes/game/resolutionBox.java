@@ -2,6 +2,7 @@ package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.photon.util.TranslationManager;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -13,9 +14,13 @@ import javafx.util.Pair;
 
 public class resolutionBox extends TextFieldElement{
 
-    final static String title = "Launch Resolution";
+    final static String title = TranslationManager.format("settings.game.resolution.title");
     final static int boxHeight = 105;
+    TextField[] textFields;
 
+    final static String maskedColor = "#ffff00";
+
+    
     final GridPane content = new GridPane();
 
     public resolutionBox(int boxWidth) {
@@ -25,7 +30,7 @@ public class resolutionBox extends TextFieldElement{
         this.content.setLayoutX(sidePadding);
         this.content.setLayoutY(50);
 
-        this.content.setHgap(35);
+        this.content.setHgap(40);
 
         this.fillBox();
 
@@ -55,18 +60,20 @@ public class resolutionBox extends TextFieldElement{
 
     /**
      * load the resolution custom zone (2 text field and a cross)
+     * @param width : width of the resolution
+     * @param height : height of the resolution
+     * @param isActivated : true if the resolution is activated, false if not
      * @return Pane : resolution custom zone
      */
-    private Pane loadResolutionCustome(){
+    private Pane loadResolutionCustome(int width, int height, boolean isActivated){
         Pane pane = new Pane();
 
-        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField("1920", lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
+        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField(Integer.toString(width), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
         StackPane widthResolutionBox = widthResolution.getKey();
-        // TextField widthResolutionText = widthResolution.getValue();
 
-        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField("1080", lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
+        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
         StackPane heightResolutionBox = heightResolution.getKey();
-        // TextField heightResolutionText = heightResolution.getValue();
+        this.textFields = new TextField[]{widthResolution.getValue(), heightResolution.getValue()};
 
         Pane cross = this.loadCross((int)(lineTextSize*0.8), (int)(lineTextSize * 0.8));
 
@@ -75,21 +82,65 @@ public class resolutionBox extends TextFieldElement{
         cross.setLayoutY((lineHeight - lineTextSize*0.8)/2);
         heightResolutionBox.setLayoutX(105);
 
+        if (!isActivated) {
+            this.setMask(pane, false);
+        }
+
         return pane;
+    }
+
+    /**
+     * set the mask of the box (work only in the resolution custom zone)
+     * @param Box : box to mask
+     * @param Activate : true to activate the mask, false to desactivate
+     */
+    private void setMask(Pane Box,boolean Activate){
+        for (TextField textField : this.textFields) {
+            textField.setDisable(!Activate);
+        }
+
+    }
+
+
+    /**
+     * set the link between the checkboxs
+     * @param checkBoxs : checkboxs to link
+     */
+    private void setLinkCheckbox(CheckBox[] checkBoxs){
+        for (CheckBox checkBox : checkBoxs) {
+            checkBox.setOnAction(e -> {
+                checkBox.setSelected(true);
+                if (checkBox.isSelected()) {
+                    for (CheckBox checkBox2 : checkBoxs) {
+                        if (checkBox2 != checkBox) {
+                            checkBox2.setSelected(false);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
     protected void fillBox() {
-        CheckBox fullScreen = new CheckBox("Fullscreen");
-        fullScreen.setFont(JFXUtils.getFont("regular", lineTextSize));
         
-        CheckBox custom = new CheckBox("standard");
+        CheckBox standard = new CheckBox("Standard");
+        standard.setFont(JFXUtils.getFont("regular", lineTextSize));
+        standard.setSelected(true);
+        
+        CheckBox custom = new CheckBox("Custom");
         custom.setFont(JFXUtils.getFont("regular", lineTextSize));
-        
-        Pane resolutionCustom = this.loadResolutionCustome();
 
-        this.content.add(fullScreen, 0, 0);
+        setLinkCheckbox(new CheckBox[]{standard, custom});
+
+        Pane resolutionCustom = this.loadResolutionCustome(1920, 1080, false);
+        custom.selectedProperty().addListener((observable, oldValue, newValue) -> {
+             this.setMask(resolutionCustom, newValue);
+        });
+
+        this.content.add(standard, 0, 0);
         this.content.add(custom, 1, 0);
+        custom.setTranslateX(20);
         this.content.add(resolutionCustom, 2, 0);
     }
     
