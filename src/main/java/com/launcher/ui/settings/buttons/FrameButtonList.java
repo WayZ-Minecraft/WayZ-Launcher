@@ -3,6 +3,8 @@ package com.launcher.ui.settings.buttons;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.launcher.ui.settings.FrameName;
+
 import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.scene.layout.AnchorPane;
@@ -20,8 +22,8 @@ public class FrameButtonList {
         return buttonList;
     }
 
-    public void addButton(String text, String imagePath, boolean isNavMenu) {
-        FrameButton button = new FrameButton(text, imagePath, isNavMenu, this, this.buttonList.size());
+    public void addButton(String text, FrameName frameName ,String imagePath, boolean isNavMenu) {
+        FrameButton button = new FrameButton(text, frameName ,imagePath, isNavMenu, this, this.buttonList.size());
         this.buttonList.add(button);
     }
 

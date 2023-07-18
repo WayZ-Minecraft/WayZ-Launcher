@@ -1,6 +1,7 @@
 package com.launcher.ui.settings.buttons;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.FrameName;
 import com.launcher.ui.settings.GlobalSettings;
 import com.photon.util.os.FileLocation;
 
@@ -19,18 +20,19 @@ public class FrameButton extends NavigateButton {
     final static String pictureColor = "#ffffff";
     final static Color backgroundColor = Color.web("#00000000");
 
+    FrameName frameName;
     final FillTransition pointTransition = this.pointAnimation();
 
     /**
      * Constructor for interactive button like Game, Launcher, ...
      * @param text Text : Text for the button
      * @param imagePath String : Path for the image
-     * @param pictureColor String : Color for the image
      */
-    public FrameButton(String text, String imagePath, boolean isNavMenu, FrameButtonList buttonList, int index) {
+    public FrameButton(String text, FrameName frameName ,String imagePath, boolean isNavMenu, FrameButtonList buttonList, int index) {
         super(text, 21, imagePath, pictureColor, 50, 15, "#ffffff", "light", backgroundColor.toString().replace("0x", "#"), false);
         this.buttonWidth = 220;
         this.imageV = JFXUtils.loadImageView(imagePath, 250, (int)(textSize * 1.3), pictureColor);
+        this.frameName = frameName;
 
         this.setClick(buttonList, index);
     }
@@ -67,7 +69,7 @@ public class FrameButton extends NavigateButton {
      */
     protected void setClick(FrameButtonList buttonList, int index){
         this.button.setOnMouseClicked(e -> {
-            GlobalSettings.setLauncherFrame(this.text);
+            GlobalSettings.setLauncherFrame(this.frameName);
             FileLocation.playSound("sounds/click_btn");
             buttonList.setSelectedButton(index);
         });
