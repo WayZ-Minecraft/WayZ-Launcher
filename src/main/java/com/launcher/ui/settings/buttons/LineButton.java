@@ -24,7 +24,7 @@ public class LineButton extends NavigateButton {
     public LineButton(String text, String imagePath, String pictureColor) {
         super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight, 
         marginSide, TextFieldElement.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
-        this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 2 + 2 * TextFieldElement.lineTextSize + 2 * marginSide);
+        this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 3 + 3 * TextFieldElement.lineTextSize + 2 * marginSide);
         this.buttonRadius = 15;
     }
 

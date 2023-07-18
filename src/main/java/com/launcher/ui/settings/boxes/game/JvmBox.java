@@ -2,6 +2,7 @@ package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.photon.util.TranslationManager;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -12,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 
 public class JvmBox extends TextFieldElement {
     
-    final static String title = "JVM Arguments";
+    final static String title = TranslationManager.format("settings.game.jvm.title");
     final static int boxHeight = 160;
 
     final Pane content = new Pane();

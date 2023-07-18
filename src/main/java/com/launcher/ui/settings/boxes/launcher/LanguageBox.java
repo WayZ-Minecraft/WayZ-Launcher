@@ -25,7 +25,7 @@ import javafx.util.Duration;
  */
 public class LanguageBox extends TextFieldElement {
 
-    final boolean isSelected = false;
+    final static String title = TranslationManager.format("settings.launcher.language.title");
     final GridPane content = new GridPane();
     StackPane[] languages = new StackPane[5];
     FillTransition[] transitions = new FillTransition[5];
@@ -38,7 +38,7 @@ public class LanguageBox extends TextFieldElement {
 
 
     public LanguageBox(int boxWidth) {
-        super(TranslationManager.format("title.languages"), boxWidth, boxHeight);
+        super(title, boxWidth, boxHeight);
 
         this.content.setPrefWidth(boxWidth - 2*sidePadding);
         this.content.setPrefHeight(boxHeight - 20);

@@ -2,6 +2,7 @@ package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.photon.util.TranslationManager;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -13,7 +14,7 @@ import javafx.util.Pair;
 
 public class resolutionBox extends TextFieldElement{
 
-    final static String title = "Launch Resolution";
+    final static String title = TranslationManager.format("settings.game.resolution.title");
     final static int boxHeight = 105;
     TextField[] textFields;
 
