@@ -1,6 +1,7 @@
 package com.launcher.ui.settings.buttons;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.JFXUtils.RunnableTask;
 import com.photon.util.TranslationManager;
 
 import javafx.scene.image.ImageView;
@@ -28,7 +29,7 @@ abstract class NavigateButton {
     Color backgroundColor;
 
     boolean isNavMenu;
-
+    Text textPlay;
     
     /**
      * Constructor for interactive button like Back, Save, Launcher, Game, ...
@@ -51,9 +52,16 @@ abstract class NavigateButton {
         this.textColor = textColor;
         this.fontWeight = fontWeight;
         this.backgroundColor = Color.web(backgroundColor);
+        this.textPlay = JFXUtils.loadText(isNavMenu ? TranslationManager.format("btn.settings."+this.text.toLowerCase()) : this.text, this.textSize, this.textColor, this.fontWeight);
         this.isNavMenu = isNavMenu;
     }
     
+    public void setIcon(String imagePath) {
+        this.imageV = JFXUtils.loadImageView(imagePath, 250, this.textSize, this.pictureColor);
+        this.button.getChildren().clear();
+        this.loadNavigateButton();
+    }
+
     /**
      * Set the position of the text
      * @param textPlay Text : Text to set
@@ -84,7 +92,6 @@ abstract class NavigateButton {
         
         this.button.getChildren().add(background);
         
-        Text textPlay = JFXUtils.loadText(isNavMenu ? TranslationManager.format("btn.settings."+this.text.toLowerCase()) : this.text, this.textSize, this.textColor, this.fontWeight);
         this.button.getChildren().addAll(this.imageV, textPlay);
         AnchorPane.setLeftAnchor(this.imageV, this.marginSide);
         AnchorPane.setTopAnchor(this.imageV, this.buttonHeight / 2 - this.imageV.getLayoutBounds().getHeight() / 2);
@@ -93,10 +100,12 @@ abstract class NavigateButton {
         AnchorPane.setTopAnchor(textPlay, this.buttonHeight / 2 - textPlay.getLayoutBounds().getHeight() / 2);
         
         this.setAnimation(background);
-
         return this.button;
     }
     
+    public void setAction(RunnableTask<AnchorPane, javafx.scene.input.MouseEvent> action) {
+        this.button.setOnMouseClicked(event -> action.run(button, event));
+    }
 }
 
 

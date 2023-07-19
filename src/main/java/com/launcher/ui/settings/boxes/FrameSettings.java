@@ -32,7 +32,7 @@ public class FrameSettings {
             asyncLoop(0, deltaY);
         });
     }
-
+    
     private void asyncLoop(int count, double deltaY){
         CompletableFuture.delayedExecutor(15, TimeUnit.MILLISECONDS)
         .execute(() -> {

@@ -70,7 +70,7 @@ public class FrameButton extends NavigateButton {
     protected void setClick(FrameButtonList buttonList, int index){
         this.button.setOnMouseClicked(e -> {
             GlobalSettings.setLauncherFrame(this.frameName);
-            FileLocation.playSound("sounds/click_btn");
+            FileLocation.playSound("sounds/click_btn", 0);
             buttonList.setSelectedButton(index);
         });
     }
@@ -81,7 +81,7 @@ public class FrameButton extends NavigateButton {
         fillTransition.setCycleCount(1);
 
         this.button.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
             fillTransition.setFromValue(backgroundColor);
             fillTransition.setToValue(animationColor);
             fillTransition.playFromStart();

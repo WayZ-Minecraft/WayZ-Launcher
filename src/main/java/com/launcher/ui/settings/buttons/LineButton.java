@@ -22,14 +22,13 @@ public class LineButton extends NavigateButton {
      * @param pictureColor : color of the image
      */
     public LineButton(String text, String imagePath, String pictureColor) {
-        super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight, 
+        super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight,
         marginSide, TextFieldElement.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
         this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 3 + 3 * TextFieldElement.lineTextSize + 2 * marginSide);
         this.buttonRadius = 15;
     }
 
-    @Override
-    protected void setTextPosition(Text textPlay) { AnchorPane.setRightAnchor(textPlay, marginSide); }
+    @Override protected void setTextPosition(Text textPlay) { AnchorPane.setRightAnchor(textPlay, marginSide); }
 
     /**
      * Function to set the fill animation of the button
@@ -40,12 +39,12 @@ public class LineButton extends NavigateButton {
     protected void setAnimation(Rectangle background) {
         FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), background);
         fillTransition.setCycleCount(1);
-    
+
         this.button.setOnMouseEntered(e -> {
             fillTransition.setFromValue(this.backgroundColor);
             fillTransition.setToValue(this.animationColor);
             fillTransition.playFromStart();
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
         });
     
         this.button.setOnMouseExited(e -> {
@@ -53,7 +52,5 @@ public class LineButton extends NavigateButton {
             fillTransition.setToValue(backgroundColor);
             fillTransition.playFromStart();
         });
-        
     }
-    
 }

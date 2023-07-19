@@ -26,6 +26,7 @@ public class GlobalSettings {
 
     public final static ScrollPane launcherFrame = getLauncherFrame();
     public final static ScrollPane gameFrame = getGameFrame();
+    public static ActionButton saveButton;
 
     final static int frameLayoutX = 300;
     final static int frameLayoutY = 120;
@@ -65,9 +66,10 @@ public class GlobalSettings {
      * @return Pane : The save button
      */
     private static Pane getSaveButton() {
-        ActionButton button = new ActionButton(TranslationManager.format("btn.settings.save"), "logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png", "#3ba55d");
+        ActionButton button = saveButton = new ActionButton(TranslationManager.format("btn.settings.save"), "logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png", "#3ba55d");
         button.setClick(()-> {
             LauncherConfig.saveConfig();
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         });
         return button.loadNavigateButton();
     }
@@ -96,7 +98,6 @@ public class GlobalSettings {
         return buttonList.printButtonList();
     }
 
-
     /**
      * 
      * @return Pane : The settings template (background, NavButtons, title, ...)
@@ -104,7 +105,7 @@ public class GlobalSettings {
     private static Pane getSettingsTemplate() {
         Pane template = new Pane();
 
-        ImageView backgroundPicture = JFXUtils.loadImageView("settingsBackground.jpg", MainStage.launcherWidht, MainStage.launcherHeight);
+        ImageView backgroundPicture = JFXUtils.loadImageView("settingsBackground.jpg", MainStage.launcherWidth, MainStage.launcherHeight);
         template.getChildren().add(backgroundPicture);
 
         Pane buttonBack = getBackButton();
@@ -119,7 +120,7 @@ public class GlobalSettings {
 
         Pane buttonReset = getResetButton();
         template.getChildren().add(buttonReset);
-        buttonReset.setLayoutX(MainStage.launcherWidht - 30 - buttonReset.getPrefWidth());
+        buttonReset.setLayoutX(MainStage.launcherWidth - 30 - buttonReset.getPrefWidth());
         buttonReset.setLayoutY(MainStage.launcherHeight - 70);
 
         Pane buttonList = getFrameButtons();

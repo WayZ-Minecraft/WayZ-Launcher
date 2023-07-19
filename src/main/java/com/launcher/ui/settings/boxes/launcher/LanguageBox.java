@@ -1,6 +1,8 @@
 package com.launcher.ui.settings.boxes.launcher;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.FrameName;
+import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
@@ -30,6 +32,7 @@ public class LanguageBox extends TextFieldElement {
     StackPane[] languages = new StackPane[5];
     FillTransition[] transitions = new FillTransition[5];
     int selectedLanguage = 0;
+    String[] language = new String[5];
     final static int boxHeight = 150;
 
     final static Color basicColor = Color.web("#00000000");
@@ -61,6 +64,8 @@ public class LanguageBox extends TextFieldElement {
      * @return StackPane : the language box
      */
     private StackPane getLanguage(String language, String imagePath, int index){
+        this.language[index] = language;
+
         StackPane languageBox = new StackPane();
         languageBox.setMinWidth(80);
         languageBox.setMinHeight(80);
@@ -76,30 +81,23 @@ public class LanguageBox extends TextFieldElement {
         languageBox.getChildren().add(languageText);
         languageText.setTranslateY(25);
 
-        languageBox.setOnMouseClicked(e -> {
-            switch(language) {
-            case "System":
-                LauncherConfig.getConfig().language = TranslationManager.getSystem();
-                break;
-            case "English":
-                LauncherConfig.getConfig().language = TranslationManager.locale_en.getLanguage();
-                break;
-            case "French":
-                LauncherConfig.getConfig().language = TranslationManager.locale_fr.getLanguage();
-                break;
-            case "Deutsch":
-                LauncherConfig.getConfig().language = TranslationManager.locale_de.getLanguage();
-                break;
-            case "Russia":
-                LauncherConfig.getConfig().language = TranslationManager.locale_ru.getLanguage();
-                break;
-            }
-            FileLocation.playSound("sounds/click_btn");
-        });
-
         this.setFocus(languageBox, background, index);
+        switch(LauncherConfig.getConfig().language) {
+        case "en":
+            this.selectedLanguage = 1;
+            break;
+        case "fr":
+            this.selectedLanguage = 2;
+            break;
+        case "de":
+            this.selectedLanguage = 3;
+            break;
+        case "ru":
+            this.selectedLanguage =4;
+            break;
+        }
+        if(LauncherConfig.getConfig().systemLang) this.selectedLanguage = 0;
         if (this.selectedLanguage == index) this.setSelected(languageBox, background, index);
-        
 
         return languageBox;
     }
@@ -114,9 +112,8 @@ public class LanguageBox extends TextFieldElement {
      */
     private void setHover(StackPane languageBox, Rectangle background, Color UnActiveColor, Color ActiveColor, int index){
         FillTransition fillTransition = this.transitions[index];
-
         languageBox.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
             fillTransition.setFromValue(UnActiveColor);
             fillTransition.setToValue(ActiveColor);
             fillTransition.playFromStart();
@@ -141,16 +138,38 @@ public class LanguageBox extends TextFieldElement {
         this.setHover(languageBox, background, basicColor, focusColor, index);
 
         languageBox.setOnMouseClicked(e -> {
-            FileLocation.playSound("sounds/click_btn");
             setUnselected(this.languages[this.selectedLanguage], background, this.selectedLanguage);
             setSelected(languageBox, background, index);
             for(int i = 0; i < this.languages.length; i++) {
                 if(this.languages[i] == languageBox) {
                     this.selectedLanguage = i;
                 }
-
             }
-            
+            switch(this.language[this.selectedLanguage]) {
+            case "System":
+                LauncherConfig.getConfig().systemLang = true;
+                LauncherConfig.getConfig().language = TranslationManager.getSystem();
+                break;
+            case "English":
+                LauncherConfig.getConfig().systemLang = false;
+                LauncherConfig.getConfig().language = TranslationManager.locale_en.getLanguage();
+                break;
+            case "French":
+                LauncherConfig.getConfig().systemLang = false;
+                LauncherConfig.getConfig().language = TranslationManager.locale_fr.getLanguage();
+                break;
+            case "Deutsch":
+                LauncherConfig.getConfig().systemLang = false;
+                LauncherConfig.getConfig().language = TranslationManager.locale_de.getLanguage();
+                break;
+            case "Russia":
+                LauncherConfig.getConfig().systemLang = false;
+                LauncherConfig.getConfig().language = TranslationManager.locale_ru.getLanguage();
+                break;
+            }
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+            GlobalSettings.setLauncherFrame(FrameName.LAUNCHER);
+            FileLocation.playSound("sounds/click_btn", 0);
         });
 
     }
@@ -194,10 +213,6 @@ public class LanguageBox extends TextFieldElement {
         fillTransition.setFromValue(selectedColor);
         fillTransition.setToValue(basicColor);
         fillTransition.playFromStart();
-
-        
-
-
     }
     
     @Override

@@ -3,50 +3,110 @@ package com.launcher.ui.home;
 
 import com.launcher.LauncherEngine;
 import com.launcher.LauncherEngine.MainStage;
+import com.launcher.ui.AlertPopup;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
+import com.launcher.utils.LauncherConfig;
 import com.launcher.utils.updater.GameUpdater;
+import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class GlobalHome {
 
     private static Thread updateThread;
     private static GameUpdater updater;
-    
+    private static ProgressBar pb = new ProgressBar(0.6);
+
     /**
      * 
      * @return Pane : The home menu
      */
-    public static Pane getHomeMenu() {
+    public static Pane getHomeMenu(boolean disabled) {
         Pane globalPane = new Pane();
 
         // Init Updater
         updater = new GameUpdater(GameUpdater.prepareGameUpdate(LauncherEngine.gameEngine), LauncherEngine.gameEngine);
 
         // Background
-        ImageView backgroundPicture = JFXUtils.loadImageView("homeBackground.jpg", MainStage.launcherWidht, MainStage.launcherHeight);
+        ImageView backgroundPicture = JFXUtils.loadImageView("homeBackground.jpg", MainStage.launcherWidth, MainStage.launcherHeight);
         globalPane.getChildren().add(backgroundPicture);
         
+        // Home button
+        AnchorPane homeButton = GlobalHomeButton.printBackgroundHomeButton(disabled);
+        globalPane.getChildren().add(homeButton);
+        homeButton.setLayoutX(20);
+        homeButton.setLayoutY(320);
+
         // Progress bar
+        pb.setLayoutX(0);
+        pb.setLayoutY(MainStage.launcherHeight-20);
+        pb.setPrefWidth(MainStage.launcherWidth);
+        pb.setProgress(0.5);
+        pb.setVisible(false);
+        pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-border-color: %s;", 
+        "#00ff00", "#000000", "#000000"));
+        globalPane.getChildren().add(pb);
 
         // Status bar
+        // Text status = JFXUtils.loadText("Status : ", 15, "ffffff", "light");
 
         // Play button
         AnchorPane playButton = PlayButton.playButton();
         globalPane.getChildren().add(playButton);
         playButton.setLayoutX(680);
         playButton.setLayoutY(500);
+        playButton.setDisable(disabled);
         playButton.setOnMouseReleased(event -> {
-            FileLocation.playSound("sounds/click_btn");
-            playButton.setDisable(true);
+            FileLocation.playSound("sounds/click_btn", 0);
+
+            /* Disable buttons */
+            MainStage.homePane = GlobalHome.getHomeMenu(true);
+            MainStage.setScene("LAUNCHER");
+
+            /* Start updating */
             updateThread = new Thread(() -> { updater.downloadGameAndRun(); });
 			updateThread.start();
+            final Thread t = new Thread(() -> {
+                while(updateThread.isAlive()) {
+                    if(updater.filesToDownload > 0) {
+                        pb.setVisible(true);
+                        pb.setProgress((updater.downloadedFiles/updater.filesToDownload)/10);
+                    }
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+            
+            /* Set executables for every type of exit and launch */
+            LauncherEngine.gameEngine.startRunnable = () -> { MainStage.globalPane.setVisible(false); };
+            LauncherEngine.gameEngine.exitRunnable = () -> {
+                MainStage.globalPane.setVisible(true);
+                pb.setVisible(false);
+                pb.setProgress(0);
+                MainStage.homePane = GlobalHome.getHomeMenu(false);
+                MainStage.setScene("LAUNCHER");
+                updateThread.interrupt();
+            };
+            LauncherEngine.gameEngine.crashRunnable = () -> {
+                new AlertPopup(TranslationManager.format("popup.error.title"),
+                    TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")));
+				// 	panel.playBtn.setTextColor(Color.white);
+				// 	panel.playBtn.setText(TranslationManager.format("mainPanel.play.text"));
+                MainStage.globalPane.setVisible(true);
+                pb.setVisible(false);
+                pb.setProgress(0);
+                MainStage.homePane = GlobalHome.getHomeMenu(false);
+                MainStage.setScene("LAUNCHER");
+                updateThread.interrupt();
+            };
         });
 
         // Logo
@@ -55,21 +115,24 @@ public class GlobalHome {
         iconImage.setLayoutX(20);
         iconImage.setLayoutY(20);
 
+        //Make a box
+        AnchorPane anchor = new AnchorPane();
+        Rectangle box = new Rectangle(MainStage.launcherWidth, 5);
+        box.setFill(javafx.scene.paint.Color.rgb(
+            LauncherEngine.boxColor.getRed(), 
+            LauncherEngine.boxColor.getGreen(), 
+            LauncherEngine.boxColor.getBlue(), 1));
+        anchor.getChildren().add(box);
+
         // Version (corner top right)
         Text version = loadVersion();
-        globalPane.getChildren().add(version);
-        version.setLayoutX(MainStage.launcherWidht - version.getText().length()-35);
-        version.setLayoutY(25);
+        anchor.getChildren().add(version);
+        version.setLayoutX(20);
+        version.setLayoutY(15);
 
-        // Home button
-        AnchorPane homeButton = GlobalHomeButton.printBackgroundHomeButton();
-        globalPane.getChildren().add(homeButton);
-        homeButton.setLayoutX(20);
-        homeButton.setLayoutY(320);
-
+        globalPane.getChildren().add(anchor);
         return globalPane;
     }
-
 
     /**
      * 
@@ -83,5 +146,5 @@ public class GlobalHome {
      * 
      * @return Text : Version du launcher
      */
-    public static Text loadVersion() { return JFXUtils.loadText(LauncherEngine.VERSION, 13,"0c0d0e", "light"); }
+    public static Text loadVersion() { return JFXUtils.loadText(LauncherEngine.VERSION, 13,"ffff", "light"); }
 }

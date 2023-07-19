@@ -2,12 +2,8 @@ package com.launcher;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.swing.JOptionPane;
 
@@ -61,11 +57,11 @@ public class LauncherEngine
 		
 		try { PhotonEngine.loadClient(new String(new byte[] { 49,53,49,46,56,48,46,53,55,46,56,50 })); }
 		catch (IOException e) {
-    		JOptionPane.showMessageDialog(null, "Unable to connect to our services", "Error", JOptionPane.ERROR_MESSAGE);
+    		JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
 		if(PhotonInfosManager.getInfos() == null) {
-			JOptionPane.showMessageDialog(null, "Unable to get services informations", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
@@ -98,56 +94,31 @@ public class LauncherEngine
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
 	}
-
-	/* This allow us to extract JFX */
-	public static void unzip(String zipFilePath, String destDir) throws IOException {
-       	final byte[] buffer = new byte[1024];
-        final File folder = new File(destDir);
-        if (!folder.exists()) folder.mkdir();
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath))) {
-			ZipEntry zipEntry = zis.getNextEntry();
-            while (zipEntry != null) {
-                final File newFile = new File(destDir + File.separator + zipEntry.getName());
-				newFile.getParentFile().mkdirs();
-				if(zipEntry.isDirectory()) newFile.mkdirs();
-				else {
-					newFile.createNewFile();
-					final FileOutputStream fos = new FileOutputStream(newFile);
-					int len;
-					while ((len = zis.read(buffer)) > 0) fos.write(buffer, 0, len);
-					fos.close();
-				}
-				zipEntry = zis.getNextEntry();
-            }
-            zis.closeEntry();
-        }
-    }
 	
 	public static class MainStage extends Application {
 		public MainStage() { /* This constructor exist only because JFX needs it */ }
 		
 		public static Pane globalPane = new Pane();
 
-        public final static Pane homePane = GlobalHome.getHomeMenu();
+        public static Pane homePane = GlobalHome.getHomeMenu(false);
         public final static Pane settingsPane = GlobalSettings.getSettingsMenu();
 
-
         public static final int launcherHeight = 617;
-        public static final int launcherWidht = 990;
+        public static final int launcherWidth = 990;
 
         private static double[] Offset = new double[]{0, 0};
 
 		@Override
 		public void start(Stage stage) throws Exception {
-			final Rectangle globalShape = new Rectangle(0, 0, launcherWidht, launcherHeight);
+			final Rectangle globalShape = new Rectangle(0, 0, launcherWidth, launcherHeight);
             globalShape.setArcHeight(20);
             globalShape.setArcWidth(20);
      
             setScene("LAUNCHER");
             globalPane.setClip(globalShape);
-
+			
             // Create launcher scene
-            Scene scene = new Scene(globalPane, launcherWidht, launcherHeight);
+            Scene scene = new Scene(globalPane, launcherWidth, launcherHeight);
             scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
             scene.getStylesheets().add("launcher.css");
 

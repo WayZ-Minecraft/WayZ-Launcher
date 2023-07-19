@@ -29,7 +29,7 @@ public class LauncherConfig {
 
     public static boolean isSaved() {
 		try {
-    		if(!file.exists()) return false;
+			if(!file.exists()) return false;
     		final ConfigVersion cfg = gson.fromJson(new FileReader(file), ConfigVersion.class);
 			return getConfig().equals(cfg);
 		} catch (Exception e) { e.printStackTrace(); }

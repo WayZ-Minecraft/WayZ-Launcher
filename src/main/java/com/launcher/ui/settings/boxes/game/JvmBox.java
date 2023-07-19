@@ -1,8 +1,11 @@
 package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
+import com.photon.util.os.FileLocation;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -47,7 +50,11 @@ public class JvmBox extends TextFieldElement {
     }
 
     private Pane getJvmInfoPane(){
-        Pane infoText = JFXUtils.loadTextBox("", textSizeZoneText, contentWidth, contentHeight, backgroundColorZoneText, false ,true, true);
+        Pane infoText = JFXUtils.loadTextBox(LauncherConfig.getConfig().vmarguments, textSizeZoneText, contentWidth, contentHeight, backgroundColorZoneText, false, true, true, (o, e) -> {
+            LauncherConfig.getConfig().vmarguments = ((TextArea)o).getText();
+            FileLocation.playSound("sounds/key_typing", 0);
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        });
         TextArea textArea = (TextArea)infoText.getChildren().get(1);
         textArea.setTranslateX(30);
         textArea.setPromptText(textJVM);

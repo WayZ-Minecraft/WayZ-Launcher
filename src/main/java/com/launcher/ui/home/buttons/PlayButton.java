@@ -111,7 +111,7 @@ public class PlayButton {
         buttonCanvas.setOnMouseEntered(e -> {
             timelineExited.stop();
             timelineEntered.play();
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
         });
             
         buttonCanvas.setOnMouseExited(e -> {

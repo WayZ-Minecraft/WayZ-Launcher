@@ -43,33 +43,29 @@ public class GameRunner {
 		processBuilder.redirectErrorStream(true);
 		updater.setCurrentInfoText("updater.launching");
 		
+		ConsoleManager.print("zeze");
 		/* Display configuration */
 		List<String> commandLine = processBuilder.command();
 		ConsoleManager.create(String.join(" ", commandLine)).end();
 
 		try {
-			// this.engine.appFrame.setVisible(false);
+			this.engine.startRunnable.run();
 			final Process process = processBuilder.start();
 			final int exitVal = process.waitFor();
 			if (exitVal != 0) {
 				/* Show the frames and active buttons */
 				try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
-
-				// this.engine.appFrame.setVisible(true);
-				// new AlertFrame((Frame)this.engine.appFrame, 1, "", "Unable to launch, game has crashed!", EnumAlertType.ERROR);
-				// if(this.engine.appFrame.getContentPane() instanceof MainPanel panel) {
-				// 	panel.switchPlayVisibility(true);
-				// 	panel.playBtn.setTextColor(Color.white);
-				// 	panel.playBtn.setText(TranslationManager.format("mainPanel.play.text"));
-				// 	panel.updateThread.interrupt();
-				// 	panel.updaterTimer.stop();
-				// 	panel.launchingTimer.stop();
-				// }
+				this.engine.crashRunnable.run();
 				this.updater.reset();
-
 				/* Log the error */
 				ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
-			} else System.exit(0);
+			} else {
+				if(!LauncherConfig.getConfig().keep_open) System.exit(0);
+				else {
+					this.engine.exitRunnable.run();
+					this.updater.reset();
+				}
+			}
 		} catch (IOException e) { throw new Exception("Cannot launch !", e); }
 	}
 
@@ -130,11 +126,13 @@ public class GameRunner {
 			commands.addAll(newerList);
 		}
 		
-		// /** ----- Size of window ----- */
-		commands.add("--width");
-		commands.add(LauncherConfig.getConfig().screenWidth);
-		commands.add("--height");
-		commands.add(LauncherConfig.getConfig().screenHeight);
+		/** ----- Size of window ----- */
+		if(LauncherConfig.getConfig().useCustomSize) {
+			commands.add("--width");
+			commands.add(LauncherConfig.getConfig().screenWidth);
+			commands.add("--height");
+			commands.add(LauncherConfig.getConfig().screenHeight);
+		}
 		
 		return commands;
 	}

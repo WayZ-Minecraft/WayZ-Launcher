@@ -1,8 +1,10 @@
 package com.launcher.ui.settings.boxes;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.JFXUtils.RunnableTask;
 import com.launcher.ui.settings.buttons.LineButton;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -122,13 +124,13 @@ public abstract class TextFieldElement {
      * @param columnNumber : the number of column in the row to manage Bow width
      * @return Pane : a line of settings box with a switch button
      */
-    protected Pane getSwitchLine(String Setting, int columnNumber) {
-        final Pane boxCheck = JFXUtils.loadSwitchButton(switchWidth, switchHeight, switchColorBackground, switchColorCheck, switchColorNotCheck);
+    protected Pane getSwitchLine(String Setting, int columnNumber, boolean active, RunnableTask<Boolean, ? super MouseEvent> action) {
+        final Pane boxCheck = JFXUtils.loadSwitchButton(switchWidth, switchHeight, switchColorBackground, switchColorCheck, switchColorNotCheck, active, action);
         return this.getSettingsLine(Setting, boxCheck, columnNumber);
     }
 
-    protected Pane getSwitchLine(String Setting) {
-        return this.getSwitchLine(Setting, 1);
+    protected Pane getSwitchLine(String Setting, boolean active, RunnableTask<Boolean, ? super MouseEvent> action) {
+        return this.getSwitchLine(Setting, 1, active, action);
     }
 
     /**
@@ -139,9 +141,10 @@ public abstract class TextFieldElement {
      * @param pictureColor : the color of the icon of the button
      * @return Pane : a line of settings box with a slider
      */
-    protected Pane getButtonLine(String setting, String buttonText, String imagePath, String pictureColor) {
+    protected Pane getButtonLine(String setting, String buttonText, String imagePath, String pictureColor, RunnableTask<AnchorPane, javafx.scene.input.MouseEvent> action) {
         LineButton button = new LineButton(buttonText, imagePath, pictureColor);
         final Pane boxButton = button.loadNavigateButton();
+        button.setAction(action);
         return this.getSettingsLine(setting, boxButton);
     }
 }

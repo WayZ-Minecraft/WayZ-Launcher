@@ -1,8 +1,11 @@
 package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
+import com.photon.util.os.FileLocation;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
@@ -24,14 +27,11 @@ public class RamBox extends TextFieldElement{
 
     public RamBox(int boxWidth) {
         super(title, boxWidth, boxHeight);
-
-
+        
         Text ramAllocable = getNumberRamAllocable(16);
         this.box.getChildren().add(ramAllocable);
         AnchorPane.setRightAnchor(ramAllocable, (double)sidePadding);
         ramAllocable.setLayoutY(25);
-
-
 
         this.contentWidth = boxWidth - 2*sidePadding;
         this.content.setPrefWidth(this.contentWidth);
@@ -44,7 +44,7 @@ public class RamBox extends TextFieldElement{
 
         this.content.setVgap(10);
         this.content.setHgap(30);
-
+        
         this.fillBox();
 
     }
@@ -55,14 +55,17 @@ public class RamBox extends TextFieldElement{
     
     @Override
     protected void fillBox() {
-        this.content.add(this.getSwitchLine(TranslationManager.format("settings.game.ram.automatic"), 2), 0, 0);
+        this.content.add(this.getSwitchLine(TranslationManager.format("settings.game.ram.automatic"), 2, LauncherConfig.getConfig().autoRAM, (object, event) -> {
+            FileLocation.playSound("sounds/click_btn", 0);
+            LauncherConfig.getConfig().autoRAM = object;
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        }), 0, 0);
         this.content.add(JFXUtils.loadSlider(20, this.contentWidth/2 - sidePadding, 12, sliderBackgroundColorPreThumb, 
         sliderBackgroundColorPostThumb, sliderThumbColor, TranslationManager.format("settings.game.ram.slider"), lineTextSize, lineTextColor), 0, 1);
         this.content.add(JFXUtils.loadTextBox(ramDefinition, textSizeZoneText, this.contentWidth/2 - sidePadding, 100, 
-            backgroundColorZoneText,true ,false, false), 1, 0, 1, 2);
+            backgroundColorZoneText,true ,false, false, (o, e) -> {
+                FileLocation.playSound("sounds/key_typing", 0);
+                GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+            }), 1, 0, 1, 2);
     }
-    
-
-
-
 }

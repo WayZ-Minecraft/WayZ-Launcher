@@ -3,7 +3,6 @@ package com.launcher.utils;
 import java.io.File;
 
 import com.launcher.utils.minecraft.json.MinecraftVersion;
-import com.photon.ui.base.Frame;
 import com.photon.util.os.OperatingSystem;
 
 public class GameEngine {
@@ -12,7 +11,9 @@ public class GameEngine {
 	private String name;
 	private GameLinks gameLinks;
 	private MinecraftVersion minecraftVersion;
-	public Frame appFrame;
+	public Runnable startRunnable;
+	public Runnable crashRunnable;
+	public Runnable exitRunnable;
 	
 	public GameEngine(GameFolder folder, GameLinks links, String name) {
 		this.gameFolder = folder;
