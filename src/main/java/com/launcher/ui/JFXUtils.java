@@ -108,7 +108,7 @@ public class JFXUtils {
         }
         textArea.setOnKeyTyped(event -> action.run(textArea, event));
         if (!editable) textArea.setEditable(false);
-
+        
         textArea.setPrefWidth(with - 20);
         textArea.setPrefHeight(height - 20);
         textArea.setWrapText(true);
@@ -327,25 +327,23 @@ public class JFXUtils {
      * @param textColor : Color of the label
      * @return Pane : The slider with a label and a textfield for the value
      */
-    public static Pane loadSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb ,Color thumbColor, String text, int textSize, Color textColor){
-
+    public static Pane loadSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb, Color thumbColor, 
+        String text, int textSize, Color textColor, RunnableTask<Slider, Double> action) {
         Pair<StackPane,Slider> sliderPair = generateSlider(maxValue, width, height, BackgroundColorPreThumb, BackgroundColorPostThumb, thumbColor);
-       
         Text label = loadText(text, textSize, textColor, "regular");
         
         final Slider slider = sliderPair.getValue();
-
         Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb, null);
         TextField valueText = valuePair.getValue();
         StackPane value = valuePair.getKey();
-
         
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
                 valueText.setText(Double.toString(Math.round(slider.getValue() * 10) / 10.0));
+                action.run(slider, slider.getValue());
             }
         });
-
+        
         valueText.setOnKeyReleased(e -> {
             if(e.getCode() == KeyCode.ENTER){
                 slider.setValue(Double.parseDouble(valueText.getText()));

@@ -49,8 +49,8 @@ public class SplashScreen extends JFrame {
         	this.progressBar = new ColoredProgressBar();
         	this.progressBar.setSize(this.x, this.y);
         	this.progressBar.setLocation(this.getWidth()/2, this.getHeight()/2);
-            this.progressBar.setValue(15);
-			this.progressBar.setMaximum(25);
+            this.progressBar.setValue(0);
+			this.progressBar.setMaximum(10);
         	this.add(this.progressBar);
         }
 

@@ -9,6 +9,8 @@ import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
 import com.launcher.utils.LauncherConfig;
 import com.launcher.utils.updater.GameUpdater;
+import com.photon.informations.PhotonInfosManager;
+import com.photon.network.NetworkDirectories;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
@@ -51,12 +53,16 @@ public class GlobalHome {
         pb.setPrefWidth(MainStage.launcherWidth);
         pb.setProgress(0.5);
         pb.setVisible(false);
-        pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-border-color: %s;", 
+        pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-border-color: %s;",
         "#00ff00", "#000000", "#000000"));
         globalPane.getChildren().add(pb);
-
+        
         // Status bar
-        // Text status = JFXUtils.loadText("Status : ", 15, "ffffff", "light");
+        final Text status = JFXUtils.loadText("", 15, "ffffff", "light");
+        status.setLayoutX(MainStage.launcherWidth-15-status.getLayoutBounds().getWidth());
+        status.setLayoutY(MainStage.launcherHeight-25);
+        status.setVisible(disabled);
+        globalPane.getChildren().add(status);
 
         // Play button
         AnchorPane playButton = PlayButton.playButton();
@@ -66,7 +72,7 @@ public class GlobalHome {
         playButton.setDisable(disabled);
         playButton.setOnMouseReleased(event -> {
             FileLocation.playSound("sounds/click_btn", 0);
-
+            
             /* Disable buttons */
             MainStage.homePane = GlobalHome.getHomeMenu(true);
             MainStage.setScene("LAUNCHER");
@@ -79,6 +85,7 @@ public class GlobalHome {
                     if(updater.filesToDownload > 0) {
                         pb.setVisible(true);
                         pb.setProgress((updater.downloadedFiles/updater.filesToDownload)/10);
+                        status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
                     }
                 }
             });
@@ -117,17 +124,17 @@ public class GlobalHome {
 
         //Make a box
         AnchorPane anchor = new AnchorPane();
-        Rectangle box = new Rectangle(MainStage.launcherWidth, 5);
+        Rectangle box = new Rectangle(MainStage.launcherWidth, 20);
         box.setFill(javafx.scene.paint.Color.rgb(
-            LauncherEngine.boxColor.getRed(), 
-            LauncherEngine.boxColor.getGreen(), 
+            LauncherEngine.boxColor.getRed(),
+            LauncherEngine.boxColor.getGreen(),
             LauncherEngine.boxColor.getBlue(), 1));
         anchor.getChildren().add(box);
 
         // Version (corner top right)
         Text version = loadVersion();
         anchor.getChildren().add(version);
-        version.setLayoutX(20);
+        version.setLayoutX(15);
         version.setLayoutY(15);
 
         globalPane.getChildren().add(anchor);
@@ -135,16 +142,14 @@ public class GlobalHome {
     }
 
     /**
-     * 
-     * @return ImageView : Icone WayZ
+     * Get the logo of the launcher
+     * @return ImageView : The logo of the launcher
      */
-    public static ImageView getIconImage() {
-        return JFXUtils.loadImageView("logos/WayZ.png", 125, 125);
-    }
+    public static ImageView getIconImage() { return JFXUtils.loadImageView(NetworkDirectories.config.webUrl+"/project-logo.png", 125, 125); }
 
     /**
      * 
      * @return Text : Version du launcher
      */
-    public static Text loadVersion() { return JFXUtils.loadText(LauncherEngine.VERSION, 13,"ffff", "light"); }
+    public static Text loadVersion() { return JFXUtils.loadText(PhotonInfosManager.getInfos().project_name+" "+LauncherEngine.VERSION, 13,"ffff", "light"); }
 }

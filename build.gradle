@@ -28,7 +28,7 @@ tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 version = ''
-archivesBaseName = 'WayZ-launcher'
+archivesBaseName = 'launcher'
 
 /* Create basic JAR */
 jar {
@@ -50,7 +50,7 @@ tasks.jpackage {
     input  = "$buildDir/libs"
     destination = "$buildDir/libs"
 
-    appName = "${archivesBaseName}"
+    appName = "WayZ Launcher"
 	appDescription = "Install our launcher for our servers"
     vendor = ""
 
@@ -65,9 +65,9 @@ tasks.jpackage {
 
         winShortcut = true
         winShortcutPrompt = true
-
+        
         winMenu = true
-        winMenuGroup = "${archivesBaseName}"
+        winMenuGroup = "Minecraft Launcher"
 
         winPerUserInstall = true
     }

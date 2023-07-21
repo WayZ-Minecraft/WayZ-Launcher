@@ -48,7 +48,7 @@ public class LaunchSettings extends TextFieldElement {
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
 
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/refresh-arrow.png", "#ffffff", (object, event) -> {
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
                 FileLocation.playSound("sounds/click_btn", 0);
                 final File folder = LauncherEngine.gameEngine.getGameFolder().getGameDir();
                 for(File file : folder.listFiles()) {
@@ -61,8 +61,5 @@ public class LaunchSettings extends TextFieldElement {
                 FileLocation.playSound("sounds/click_btn", 0);
                 OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
             }), 0, 3);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.uninstall"), TranslationManager.format("settings.launcher.properties.btn.uninstall.inner"), "logos/delete.png", "#8b2628", (object, event) -> {
-                FileLocation.playSound("sounds/click_btn", 0);
-            }), 0, 4);
     }
 }

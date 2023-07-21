@@ -5,7 +5,7 @@ import com.photon.util.TranslationManager;
 public class ConfigVersion {
 
 	public String language = TranslationManager.locale_en.getLanguage();
-	public String allocatedram = "2";
+	public double allocatedram = 2;
 	public String vmarguments = "";
 	public boolean useCustomSize = false;
 	public String screenWidth = "800";
@@ -21,7 +21,7 @@ public class ConfigVersion {
 	
 	public void setValue(ConfigVersion o) {
 		if(!this.language.equals(o.language)) this.language = o.language;
-		if(!this.allocatedram.equals(o.allocatedram)) this.allocatedram = o.allocatedram;
+		if(this.allocatedram == o.allocatedram) this.allocatedram = o.allocatedram;
 		if(!this.vmarguments.equals(o.vmarguments)) this.vmarguments = o.vmarguments;
 		if(this.useCustomSize != o.useCustomSize) this.useCustomSize = o.useCustomSize;
 		if(!this.screenWidth.equals(o.screenWidth)) this.screenWidth = o.screenWidth;
@@ -35,7 +35,7 @@ public class ConfigVersion {
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof ConfigVersion cfg) {
-			final boolean isEqual = this.language.equals(cfg.language) && this.allocatedram.equals(cfg.allocatedram) 
+			final boolean isEqual = this.language.equals(cfg.language) && this.allocatedram == cfg.allocatedram
 			&& this.vmarguments.equals(cfg.vmarguments) && this.useCustomSize == cfg.useCustomSize 
 			&& this.screenWidth.equals(cfg.screenWidth) && this.screenHeight.equals(cfg.screenHeight)
 			&& this.keep_open == cfg.keep_open && this.send_reports == cfg.send_reports && this.autoRAM == cfg.autoRAM && this.systemLang == cfg.systemLang
