@@ -1,6 +1,12 @@
 package com.launcher.ui.home.buttons;
 
+import com.launcher.LauncherEngine;
+import com.launcher.LauncherEngine.MainStage;
+import com.launcher.ui.AlertPopup;
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.home.GlobalHome;
+import com.launcher.utils.LauncherConfig;
+import com.launcher.utils.updater.GameUpdater;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
@@ -18,6 +24,12 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class PlayButton {
+
+    private static final Color backgroundColor = Color.web("#0c0d0e");
+    private static final Color hoveredColor = Color.web("#1a1b1c");
+
+    private static Thread updateThread;
+    private static GameUpdater updater;
     
     /**
      * 
@@ -43,7 +55,7 @@ public class PlayButton {
         Rectangle shape = new Rectangle(270, 70);
         shape.setArcHeight(36);
         shape.setArcWidth(36);
-        shape.setFill(Color.web("#0c0d0e"));
+        shape.setFill(backgroundColor);
 
         Rectangle shape2 = new Rectangle(270, 70);
         shape2.setArcHeight(36);
@@ -121,6 +133,69 @@ public class PlayButton {
 
         return buttonCanvas;
     }
+
+
+    /**
+     * Set the click event for Play button
+     * @param playButton : AnchorPane : Play button
+     */
+    private static void setClick(AnchorPane playButton){
+        // Init Updater
+        updater = new GameUpdater(GameUpdater.prepareGameUpdate(LauncherEngine.gameEngine), LauncherEngine.gameEngine);
+
+        playButton.setOnMouseReleased(event -> {
+            FileLocation.playSound("sounds/click_btn", 0);
+            
+            /* Disable buttons */
+            MainStage.homePane = GlobalHome.getHomeMenu(true);
+            MainStage.setScene("LAUNCHER");
+
+            /* Start updating */
+            updateThread = new Thread(() -> { updater.downloadGameAndRun(); });
+            final Thread t = new Thread(() -> {
+                GlobalHome.pb.setVisible(true);
+                while(updateThread.isAlive()) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(updater.filesToDownload > 0) {
+                        System.out.println(updater.downloadedFiles + " / " + updater.filesToDownload);
+                        GlobalHome.pb.setProgress(updater.downloadedFiles/(double)updater.filesToDownload);
+                        Thread.yield();
+                        // status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
+                    }
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+            updateThread.start();
+            
+            /* Set executables for every type of exit and launch */
+            LauncherEngine.gameEngine.startRunnable = () -> { MainStage.globalPane.setVisible(false); };
+            LauncherEngine.gameEngine.exitRunnable = () -> {
+                MainStage.globalPane.setVisible(true);
+                GlobalHome.pb.setVisible(false);
+                GlobalHome.pb.setProgress(0);
+                MainStage.homePane = GlobalHome.getHomeMenu(false);
+                MainStage.setScene("LAUNCHER");
+                updateThread.interrupt();
+            };
+            LauncherEngine.gameEngine.crashRunnable = () -> {
+                new AlertPopup(TranslationManager.format("popup.error.title"),
+                    TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")));
+				// 	panel.playBtn.setTextColor(Color.white);
+				// 	panel.playBtn.setText(TranslationManager.format("mainPanel.play.text"));
+                MainStage.globalPane.setVisible(true);
+                GlobalHome.pb.setVisible(false);
+                GlobalHome.pb.setProgress(0);
+                MainStage.homePane = GlobalHome.getHomeMenu(false);
+                MainStage.setScene("LAUNCHER");
+                updateThread.interrupt();
+            };
+        });
+    }
     
     /**
      * 
@@ -138,6 +213,8 @@ public class PlayButton {
         buttonCanvas.getChildren().add(textPlay);
         AnchorPane.setTopAnchor(textPlay, 35.0 - textPlay.getLayoutBounds().getHeight()/2);
         AnchorPane.setLeftAnchor(textPlay, 40.0);
+
+        setClick(buttonCanvas);
 
         return buttonCanvas;
     }

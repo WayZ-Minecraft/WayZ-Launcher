@@ -104,8 +104,12 @@ public class LauncherEngine
 
         private static double[] Offset = new double[]{0, 0};
 
+		public static Stage classStage;
+
 		@Override
 		public void start(Stage stage) throws Exception {
+			classStage = stage;
+
 			final Rectangle globalShape = new Rectangle(0, 0, launcherWidth, launcherHeight);
             globalShape.setArcHeight(20);
             globalShape.setArcWidth(20);
@@ -156,5 +160,10 @@ public class LauncherEngine
                 default: break;
             }
         }
+
+		public static void closeLauncher() { System.exit(0); }
+
+		public static void minimizeLauncher() { classStage.setIconified(true); }
+
 	}
 }

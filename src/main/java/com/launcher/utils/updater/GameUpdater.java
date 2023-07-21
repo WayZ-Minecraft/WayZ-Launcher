@@ -132,16 +132,25 @@ public class GameUpdater {
 	 */
 	public void downloadGameAndRun() {
 		/* Getting infos */
+		System.out.println("1");
 		GameParser.getFilesToDownload(this.engine, this);
+		System.out.println("2");
 		this.gameVerifier.getIgnoreList();
+		System.out.println("3");
 		this.gameVerifier.getDeleteList();
+		System.out.println("4");
 		/* Updating */
 		this.updateAssets();
+		System.out.println("5");
 		this.updateJars();
+		System.out.println("6");
 		this.updateCustomFiles();
+		System.out.println("7");
 		this.downloadJavaManifest();
+		System.out.println("8");
 		/* Verify files before launching */
 		this.gameVerifier.verify();
+		System.out.println("9");
 		/* Start the game if all files are downloaded */
 		this.runGame();
 	}
