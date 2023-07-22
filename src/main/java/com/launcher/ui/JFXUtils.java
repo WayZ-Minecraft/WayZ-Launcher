@@ -106,19 +106,19 @@ public class JFXUtils {
                 return change;
             }));
         }
-        textArea.setOnKeyTyped(event -> action.run(textArea, event));
         if (!editable) textArea.setEditable(false);
+        textArea.setOnKeyTyped(event -> action.run(textArea, event));
         
         textArea.setPrefWidth(with - 20);
         textArea.setPrefHeight(height - 20);
         textArea.setWrapText(true);
-
+        
         textArea.setId("textArea");
         if (justify) textArea.getStyleClass().add("justify");
-
-        textBox.getChildren().add(textArea);
+        
         textArea.setLayoutX(10);
         textArea.setLayoutY(10);
+        textBox.getChildren().add(textArea);
 
         return textBox;
     }
@@ -145,9 +145,8 @@ public class JFXUtils {
         valueText.setStyle("-fx-background-color: transparent; -fx-text-fill: " + textColor.toString().replace("0x", "#") + ";");
         valueText.setAlignment(Pos.CENTER);
         valueText.selectRange(0, 0);
-        valueText.setOnKeyTyped(event -> action.run(valueText, event));
+        if(action !=null) valueText.setOnKeyTyped(event -> action.run(valueText, event));
         textBox.getChildren().add(valueText);
-
 
         return new Pair<StackPane,TextField>(textBox, valueText);
     }
@@ -328,12 +327,12 @@ public class JFXUtils {
      * @return Pane : The slider with a label and a textfield for the value
      */
     public static Pane loadSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb, Color thumbColor, 
-        String text, int textSize, Color textColor, RunnableTask<Slider, Double> action) {
+        String text, int textSize, Color textColor, RunnableTask<Slider, Double> action, RunnableTask<TextField, ? super KeyEvent> actionText) {
         Pair<StackPane,Slider> sliderPair = generateSlider(maxValue, width, height, BackgroundColorPreThumb, BackgroundColorPostThumb, thumbColor);
         Text label = loadText(text, textSize, textColor, "regular");
         
         final Slider slider = sliderPair.getValue();
-        Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb, null);
+        Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb, actionText);
         TextField valueText = valuePair.getValue();
         StackPane value = valuePair.getKey();
         

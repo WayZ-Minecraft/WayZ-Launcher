@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.guardsquare:proguard-gradle:7.3.2'
+    }
+}
+
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
@@ -27,8 +36,8 @@ dependencies {
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
-version = ''
-archivesBaseName = 'launcher'
+version = '1.0.2'
+archivesBaseName = 'launcher-unobfuscated'
 
 /* Create basic JAR */
 jar {
@@ -43,11 +52,18 @@ shadowJar {
    	duplicatesStrategy 'exclude'
 }
 
+tasks.register('proguard', proguard.gradle.ProGuardTask) {
+    dependsOn shadowJar
+    configuration file('obfuscate.pro')
+    injars(tasks.named("shadowJar").flatMap { it.archiveFile })
+    outjars(layout.buildDirectory.file("libs/hey-minified.jar"))
+    libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+}
+proguard.shouldRunAfter shadowJar
+
 /* Create a native executable */
 tasks.jpackage {
-    dependsOn shadowJar
-
-    input  = "$buildDir/libs"
+    input  = "$buildDir/libs/${archivesBaseName}-${version}.jar"
     destination = "$buildDir/libs"
 
     appName = "WayZ Launcher"
@@ -57,11 +73,11 @@ tasks.jpackage {
     mainJar = tasks.shadowJar.outputs.files.singleFile
     mainClass = "com.launcher.LauncherEngine"
     appVersion = "${version}";
+    fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
 
     windows {
 		icon = "$projectDir/assets/launcher.ico"
         winConsole = false
-        fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
 
         winShortcut = true
         winShortcutPrompt = true

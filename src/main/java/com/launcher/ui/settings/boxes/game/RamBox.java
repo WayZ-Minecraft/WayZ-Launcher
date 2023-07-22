@@ -65,9 +65,15 @@ public class RamBox extends TextFieldElement{
         sliderBackgroundColorPostThumb, sliderThumbColor, TranslationManager.format("settings.game.ram.slider"), lineTextSize, lineTextColor, (object, value) -> {
             LauncherConfig.getConfig().allocatedram = value;
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        },
+        (o, e) -> {
+            FileLocation.playSound("sounds/key_typing", 0);
+            LauncherConfig.getConfig().allocatedram = Double.valueOf(o.getText());
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
-        this.content.add(JFXUtils.loadTextBox(ramDefinition, textSizeZoneText, this.contentWidth/2 - sidePadding, 100,
-            backgroundColorZoneText,true ,false, false, (o, e) -> {
+        this.content.add(JFXUtils.loadTextBox(
+                ramDefinition, textSizeZoneText, this.contentWidth/2 - sidePadding, 100,
+                backgroundColorZoneText, true ,false, false, (o, e) -> {
                 FileLocation.playSound("sounds/key_typing", 0);
                 LauncherConfig.getConfig().allocatedram = Double.valueOf(o.getText());
                 GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
