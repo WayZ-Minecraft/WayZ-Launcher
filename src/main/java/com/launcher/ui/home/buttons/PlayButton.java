@@ -2,9 +2,10 @@ package com.launcher.ui.home.buttons;
 
 import java.util.StringJoiner;
 
+import javax.swing.JOptionPane;
+
 import com.launcher.LauncherEngine;
 import com.launcher.LauncherEngine.MainStage;
-import com.launcher.ui.AlertPopup;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.GlobalHome;
 import com.launcher.utils.LauncherConfig;
@@ -238,7 +239,6 @@ public class PlayButton {
                                 break;
                             }
                             
-                            System.out.println(updater.downloadedFiles + " / " + updater.filesToDownload);
                             GlobalHome.pb.setProgress(updater.downloadedFiles/(double)updater.filesToDownload);
                             // status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
                         }
@@ -260,8 +260,7 @@ public class PlayButton {
             };
             LauncherEngine.gameEngine.crashRunnable = () -> {
                 reLaunchLauncher();
-                new AlertPopup(TranslationManager.format("popup.error.title"),
-                    TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")));
+                JOptionPane.showMessageDialog(null, TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")), TranslationManager.format("popup.error.title"), JOptionPane.ERROR_MESSAGE);
             };
         });
     }

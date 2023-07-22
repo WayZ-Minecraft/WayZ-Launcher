@@ -43,7 +43,6 @@ public class GameRunner {
 		processBuilder.redirectErrorStream(true);
 		updater.setCurrentInfoText("updater.launching");
 		
-		ConsoleManager.print("zeze");
 		/* Display configuration */
 		List<String> commandLine = processBuilder.command();
 		ConsoleManager.create(String.join(" ", commandLine)).end();

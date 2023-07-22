@@ -157,8 +157,10 @@
     -fx-padding: 15px;
 }
 
+.progress-bar .track{
+    -fx-background-color: -pb-background;
 
-
+}
 
 
 

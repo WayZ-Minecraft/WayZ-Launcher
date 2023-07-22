@@ -47,7 +47,7 @@ public class GlobalHome {
         pb.setLayoutX(0);
         pb.setLayoutY(MainStage.launcherHeight-15);
         pb.setPrefWidth(MainStage.launcherWidth);
-        pb.setProgress(0.2);
+        pb.setProgress(0);
         pb.setVisible(false);
         pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-box-border: %s; -fx-padding: 0;",
         "#8b2628", "#0c0d0e", "none"));

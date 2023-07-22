@@ -37,7 +37,7 @@ public class LauncherEngine
 	public static Color hoveredButtonColor = new Color(164, 164, 164);
 	public static Color tooltipTextColor = new Color(168, 168, 168, 200);
 	
-	public static String VERSION = "1.0.2";
+	public static String VERSION = "1.0.1";
 	public static GameFolder gameFolder;
 	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
