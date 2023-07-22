@@ -3,6 +3,7 @@ bin
 .classpath
 .project
 .settings
+.vscode
 build/
 .gradle
 logs/
