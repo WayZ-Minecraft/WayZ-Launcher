@@ -130,11 +130,12 @@ public class GameUpdater {
 	/**
 	 * @param session
 	 */
-	public void downloadGameAndRun() {
+	public void downloadGameAndRun(Thread pb) {
 		/* Getting infos */
 		System.out.println("1");
 		GameParser.getFilesToDownload(this.engine, this);
 		System.out.println("2");
+		pb.start();
 		this.gameVerifier.getIgnoreList();
 		System.out.println("3");
 		this.gameVerifier.getDeleteList();

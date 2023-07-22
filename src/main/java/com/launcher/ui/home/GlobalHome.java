@@ -22,7 +22,7 @@ import javafx.scene.text.Text;
 public class GlobalHome {
 
 
-    public static ProgressBar pb = new ProgressBar(0.6);
+    public static ProgressBar pb = new ProgressBar(0);
 
     /**
      * 
@@ -45,12 +45,12 @@ public class GlobalHome {
 
         // Progress bar
         pb.setLayoutX(0);
-        pb.setLayoutY(MainStage.launcherHeight-20);
+        pb.setLayoutY(MainStage.launcherHeight-15);
         pb.setPrefWidth(MainStage.launcherWidth);
         pb.setProgress(0.2);
         pb.setVisible(false);
-        pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-border-color: %s;",
-        "#00ff00", "#000000", "#000000"));
+        pb.setStyle(String.format("-fx-accent: %s; -fx-background-color: %s; -fx-box-border: %s; -fx-padding: 0;",
+        "#8b2628", "#0c0d0e", "none"));
         globalPane.getChildren().add(pb);
         
         // // Status bar
@@ -61,7 +61,7 @@ public class GlobalHome {
         // globalPane.getChildren().add(status);
 
         // Play button
-        AnchorPane playButton = PlayButton.playButton();
+        AnchorPane playButton = PlayButton.getPlayButton();
         globalPane.getChildren().add(playButton);
         playButton.setLayoutX(680);
         playButton.setLayoutY(500);
