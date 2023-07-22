@@ -1,7 +1,9 @@
 bin
+.vscode
 .classpath
 .project
 .settings
+.vscode
 build/
 .gradle
 logs/

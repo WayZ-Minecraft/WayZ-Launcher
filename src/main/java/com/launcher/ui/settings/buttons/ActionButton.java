@@ -30,7 +30,7 @@ public class ActionButton extends NavigateButton {
     public void setClick(Runnable action) {
         this.button.setOnMouseClicked(e -> {
             action.run();
-            FileLocation.playSound("sounds/click_btn");
+            FileLocation.playSound("sounds/click_btn", 0);
         });
     }
 
@@ -47,7 +47,7 @@ public class ActionButton extends NavigateButton {
         fillTransition.setCycleCount(1);
 
         this.button.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
             fillTransition.setFromValue(this.backgroundColor);
             fillTransition.setToValue(this.animationColor);
             fillTransition.playFromStart();

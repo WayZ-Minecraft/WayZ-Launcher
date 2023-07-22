@@ -2,12 +2,12 @@ package com.launcher.ui;
 
 import java.io.InputStream;
 
-import com.photon.util.os.FileLocation;
+import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 
 import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +22,8 @@ import javafx.scene.effect.ColorInput;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -88,7 +90,7 @@ public class JFXUtils {
      * @param backgroundColor : Color of the box
      * @return Pane : The box with the text
      */
-    public static Pane loadTextBox(String text, int textSize, int with, int height, Color backgroundColor, boolean justify ,boolean editable, boolean mouseSelection){
+    public static Pane loadTextBox(String text, int textSize, int with, int height, Color backgroundColor, boolean justify ,boolean editable, boolean mouseSelection, RunnableTask<TextArea, ? super KeyEvent> action){
         Pane textBox = new Pane();
         textBox.setPrefWidth(with);
         textBox.setPrefHeight(height);
@@ -96,28 +98,27 @@ public class JFXUtils {
         Rectangle background = JFXUtils.loadBackground(with, height, backgroundColor, 20);
         textBox.getChildren().add(background);
 
-        
         TextArea textArea = new TextArea(text);
         textArea.setFont(JFXUtils.getFont("light", textSize));
         if (!mouseSelection){
             textArea.setTextFormatter(new TextFormatter<String>(change ->  {
                 change.setAnchor(change.getCaretPosition());
-                return change ;
+                return change;
             }));
         }
         if (!editable) textArea.setEditable(false);
-
+        textArea.setOnKeyTyped(event -> action.run(textArea, event));
+        
         textArea.setPrefWidth(with - 20);
         textArea.setPrefHeight(height - 20);
         textArea.setWrapText(true);
-
-        // textArea.getStylesheets().add(EZgenerate.class.getResource("textArea.css").toExternalForm());
+        
         textArea.setId("textArea");
         if (justify) textArea.getStyleClass().add("justify");
-
-        textBox.getChildren().add(textArea);
+        
         textArea.setLayoutX(10);
         textArea.setLayoutY(10);
+        textBox.getChildren().add(textArea);
 
         return textBox;
     }
@@ -131,7 +132,7 @@ public class JFXUtils {
      * @param backgroundColor : Color of the box
      * @return Pane : The box with the text
      */
-    public static Pair<StackPane,TextField> loadTextField(String text, int textSize, Color textColor ,int with, int height, Color backgroundColor){
+    public static Pair<StackPane,TextField> loadTextField(String text, int textSize, Color textColor ,int with, int height, Color backgroundColor, RunnableTask<TextField, ? super KeyEvent> action){
         StackPane textBox = new StackPane();
         textBox.setPrefSize(with, height);
         textBox.setMaxWidth(with);
@@ -144,8 +145,8 @@ public class JFXUtils {
         valueText.setStyle("-fx-background-color: transparent; -fx-text-fill: " + textColor.toString().replace("0x", "#") + ";");
         valueText.setAlignment(Pos.CENTER);
         valueText.selectRange(0, 0);
+        if(action !=null) valueText.setOnKeyTyped(event -> action.run(valueText, event));
         textBox.getChildren().add(valueText);
-
 
         return new Pair<StackPane,TextField>(textBox, valueText);
     }
@@ -158,12 +159,16 @@ public class JFXUtils {
      * @return ImageView : The picture
      */
     public static ImageView loadImageView(String path, int width, int height){
-
-        final Image image = new Image(path, width, height, true, true);
-        ImageView imageV = new ImageView(image);
-        imageV.setFitHeight(image.getHeight());
-        imageV.setFitWidth(image.getWidth());
-        return imageV;
+        try {
+            final Image image = new Image(path, width, height, true, true);
+            ImageView imageV = new ImageView(image);
+            imageV.setFitHeight(image.getHeight());
+            imageV.setFitWidth(image.getWidth());
+            return imageV;
+        } catch(Exception e) {
+            ConsoleManager.create(path).withType(EnumLogType.LAUNCHER).error().end();
+            return null;
+        }
     }
 
     /**
@@ -212,11 +217,11 @@ public class JFXUtils {
      * @param triggerColor : Color of the trigger when the button is not checked
      * @return Pane : The switch button
      */
-    public static Pane loadSwitchButton(int width, int height, Color backgroundColor, Color TriggerColorCheck, Color triggerColor){
+    public static Pane loadSwitchButton(int width, int height, Color backgroundColor, Color TriggerColorCheck, Color triggerColor, boolean active, RunnableTask<Boolean, ? super MouseEvent> action) {
         Pane boxCheck = new Pane();
         boxCheck.setPrefSize(width, height);
 
-        BooleanProperty switchedOn = new SimpleBooleanProperty(false);
+        SimpleBooleanProperty switchedOn = new SimpleBooleanProperty(active);
         
         Rectangle background = JFXUtils.loadBackground(width, height, backgroundColor, height);
         
@@ -230,9 +235,15 @@ public class JFXUtils {
         FillTransition fillTransition = new FillTransition(Duration.millis(100), trigger);
 
         ParallelTransition parallelTransition = new ParallelTransition(translateTransition, fillTransition);
-
         
         boxCheck.getChildren().addAll(background, trigger);
+
+        if(active) {
+            translateTransition.setToX(width - height);
+            fillTransition.setFromValue(triggerColor);
+            fillTransition.setToValue(TriggerColorCheck);
+            parallelTransition.play();
+        }
 
         switchedOn.addListener((obs, oldState, newState) -> {
             boolean isOn = newState.booleanValue();
@@ -244,7 +255,7 @@ public class JFXUtils {
 
         boxCheck.setOnMouseClicked(e -> {
             switchedOn.set(!switchedOn.get());
-            FileLocation.playSound("sounds/switch_btn.wav", -30f);
+            action.run(switchedOn.get(), e);
         });
 
         return boxCheck;
@@ -315,25 +326,23 @@ public class JFXUtils {
      * @param textColor : Color of the label
      * @return Pane : The slider with a label and a textfield for the value
      */
-    public static Pane loadSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb ,Color thumbColor, String text, int textSize, Color textColor){
-
+    public static Pane loadSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb, Color thumbColor, 
+        String text, int textSize, Color textColor, RunnableTask<Slider, Double> action, RunnableTask<TextField, ? super KeyEvent> actionText) {
         Pair<StackPane,Slider> sliderPair = generateSlider(maxValue, width, height, BackgroundColorPreThumb, BackgroundColorPostThumb, thumbColor);
-       
         Text label = loadText(text, textSize, textColor, "regular");
         
         final Slider slider = sliderPair.getValue();
-
-        Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb);
+        Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb, actionText);
         TextField valueText = valuePair.getValue();
         StackPane value = valuePair.getKey();
-
         
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
                 valueText.setText(Double.toString(Math.round(slider.getValue() * 10) / 10.0));
+                action.run(slider, slider.getValue());
             }
         });
-
+        
         valueText.setOnKeyReleased(e -> {
             if(e.getCode() == KeyCode.ENTER){
                 slider.setValue(Double.parseDouble(valueText.getText()));
@@ -354,6 +363,7 @@ public class JFXUtils {
         return pane;
     }
 
-
-
+    public static interface RunnableTask<T, E> {
+        public void run(T object, E event);
+    }
 }

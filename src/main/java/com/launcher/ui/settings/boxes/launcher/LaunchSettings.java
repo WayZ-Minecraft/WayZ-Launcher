@@ -1,7 +1,15 @@
 package com.launcher.ui.settings.boxes.launcher;
 
+import java.io.File;
+
+import com.launcher.LauncherEngine;
+import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
+import com.photon.util.os.ApplicationUtils;
+import com.photon.util.os.FileLocation;
+import com.photon.util.os.OperatingSystem;
 
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
@@ -28,11 +36,30 @@ public class LaunchSettings extends TextFieldElement {
         this.fillBox();
     }
     
-    protected void fillBox(){
-        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.keep_open")), 0, 0);
-        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.send_reports")), 0, 1);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"), TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/refresh-arrow.png", "#ffffff"), 0, 2);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.get_files"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e"), 0, 3);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.uninstall"), TranslationManager.format("settings.launcher.properties.btn.uninstall.inner"), "logos/delete.png", "#8b2628"), 0, 4);
+    protected void fillBox() {
+        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.keep_open"), LauncherConfig.getConfig().keep_open, (object, event) -> {
+            FileLocation.playSound("sounds/click_btn", 0);
+            LauncherConfig.getConfig().keep_open = object;
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        }), 0, 0);
+        this.content.add(this.getSwitchLine(TranslationManager.format("settings.launcher.properties.swt.send_reports"), LauncherConfig.getConfig().send_reports, (object, event) -> {
+            FileLocation.playSound("sounds/click_btn", 0);
+            LauncherConfig.getConfig().send_reports = object;
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        }), 0, 1);
+
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
+                FileLocation.playSound("sounds/click_btn", 0);
+                final File folder = LauncherEngine.gameEngine.getGameFolder().getGameDir();
+                for(File file : folder.listFiles()) {
+                    if(file.getName().equals("launcher_config.json")) continue;
+                    file.delete();
+                }
+                ApplicationUtils.exitProperly();
+            }), 0, 2);
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.get_files"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e", (object, event) -> {
+                FileLocation.playSound("sounds/click_btn", 0);
+                OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
+            }), 0, 3);
     }
 }

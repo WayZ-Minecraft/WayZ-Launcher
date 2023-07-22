@@ -130,25 +130,36 @@ public class GameUpdater {
 	/**
 	 * @param session
 	 */
-	public void downloadGameAndRun() {
+	public void downloadGameAndRun(Thread pb) {
 		/* Getting infos */
+		System.out.println("1");
 		GameParser.getFilesToDownload(this.engine, this);
+		System.out.println("2");
+		pb.start();
 		this.gameVerifier.getIgnoreList();
+		System.out.println("3");
 		this.gameVerifier.getDeleteList();
+		System.out.println("4");
 		/* Updating */
-		boolean finished = this.updateAssets();
-		finished = finished && this.updateJars();
-		finished = finished && this.updateCustomFiles();
-		finished = finished && this.downloadJavaManifest();
+		this.updateAssets();
+		System.out.println("5");
+		this.updateJars();
+		System.out.println("6");
+		this.updateCustomFiles();
+		System.out.println("7");
+		this.downloadJavaManifest();
+		System.out.println("8");
 		/* Verify files before launching */
-		//this.gameVerifier.verify();
-		if(finished) this.runGame();
+		this.gameVerifier.verify();
+		System.out.println("9");
+		/* Start the game if all files are downloaded */
+		this.runGame();
 	}
 	
 	/**
 	 * Update minecraft assets
 	 */
-	public boolean updateAssets() {
+	public void updateAssets() {
 		String json = null;
 		String assetUrl = minecraftVersion.getAssetIndex().getUrl().toString();
 		AssetIndex assetsList;
@@ -183,7 +194,6 @@ public class GameUpdater {
 		}
 		try { this.assetsExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); }
 		catch (InterruptedException e) { e.printStackTrace(); }
-		return true;
 	}
 
 	/**
@@ -209,9 +219,9 @@ public class GameUpdater {
 	private String toURL(String hash) { return ASSETS_URL + hash.substring(0, 2) + "/" + hash; }
 	
 	/**
-	 * Update custom files 
+	 * Update custom files
 	 */
-	public boolean updateCustomFiles() {
+	public void updateCustomFiles() {
 		for (String name : this.files) {
 			String fileDest = name.replace(engine.getGameLinks().getCustomFilesUrl(), "");
 			String fileName = fileDest;
@@ -222,16 +232,21 @@ public class GameUpdater {
 			String url = engine.getGameLinks().getCustomFilesUrl() + name;
 
 			final Downloader customDownloadTask = new Downloader(libPath, url, null, this);
-			if (customDownloadTask.requireUpdate()) this.filesExecutor.submit(customDownloadTask);
+			GameVerifier.addToFileList(libPath.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
+			if (customDownloadTask.requireUpdate()) {
+				this.filesExecutor.submit(customDownloadTask);
+				this.filesToDownload++;
+			}
 		}
-		return true;
+		this.filesExecutor.shutdown();
+		try { this.filesExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
 	}
 
 	/**
 	 * Update minecraft libraries
 	 */
 	@SuppressWarnings({ "unused" })
-	public boolean updateJars() {
+	public void updateJars() {
 		FileUtil.deleteFolder(workDir.getNativesCacheDir());
 		for (MinecraftLibrary lib : minecraftVersion.getLibraries()) {
 			final File libPath = new File(workDir.getLibsDir(), lib.getArtifactPath());
@@ -325,10 +340,9 @@ public class GameUpdater {
 
 		this.jarsExecutor.shutdown();
 		try { this.jarsExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
-		return true;
 	}
 	
-	private boolean downloadJavaManifest() {
+	private void downloadJavaManifest() {
 		if (minecraftVersion.getJavaVersion() != null) {
 			String json = null;
 			String manifestUrl = "https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json";
@@ -346,9 +360,7 @@ public class GameUpdater {
 					}
 				}
 			}
-			return true;
 		}
-		return false;
 	}
 	
 	private void indexJava(String url) {

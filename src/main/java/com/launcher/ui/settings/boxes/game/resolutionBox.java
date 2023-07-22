@@ -1,8 +1,11 @@
 package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
+import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
+import com.photon.util.os.FileLocation;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -19,8 +22,6 @@ public class resolutionBox extends TextFieldElement{
     TextField[] textFields;
 
     final static String maskedColor = "#ffff00";
-
-    
     final GridPane content = new GridPane();
 
     public resolutionBox(int boxWidth) {
@@ -65,13 +66,21 @@ public class resolutionBox extends TextFieldElement{
      * @param isActivated : true if the resolution is activated, false if not
      * @return Pane : resolution custom zone
      */
-    private Pane loadResolutionCustome(int width, int height, boolean isActivated){
+    private Pane loadResolutionCustom(int width, int height, boolean isActivated){
         Pane pane = new Pane();
 
-        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField(Integer.toString(width), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);  
+        Pair<StackPane,TextField> widthResolution = JFXUtils.loadTextField(Integer.toString(width), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText, (o, e) -> {
+            FileLocation.playSound("sounds/key_typing", 0);
+            LauncherConfig.getConfig().screenWidth = ((TextField)o).getText();
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        });
         StackPane widthResolutionBox = widthResolution.getKey();
 
-        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText);
+        Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText, (o, e) -> {
+            FileLocation.playSound("sounds/key_typing", 0);
+            LauncherConfig.getConfig().screenHeight = ((TextField)o).getText();
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        });
         StackPane heightResolutionBox = heightResolution.getKey();
         this.textFields = new TextField[]{widthResolution.getValue(), heightResolution.getValue()};
 
@@ -98,7 +107,6 @@ public class resolutionBox extends TextFieldElement{
         for (TextField textField : this.textFields) {
             textField.setDisable(!Activate);
         }
-
     }
 
 
@@ -123,7 +131,6 @@ public class resolutionBox extends TextFieldElement{
 
     @Override
     protected void fillBox() {
-        
         CheckBox standard = new CheckBox("Standard");
         standard.setFont(JFXUtils.getFont("regular", lineTextSize));
         standard.setSelected(true);
@@ -133,9 +140,16 @@ public class resolutionBox extends TextFieldElement{
 
         setLinkCheckbox(new CheckBox[]{standard, custom});
 
-        Pane resolutionCustom = this.loadResolutionCustome(1920, 1080, false);
+        Pane resolutionCustom = this.loadResolutionCustom(Integer.valueOf(LauncherConfig.getConfig().screenWidth), Integer.valueOf(LauncherConfig.getConfig().screenHeight), false);
+        this.setMask(resolutionCustom, LauncherConfig.getConfig().useCustomSize);
+        if(LauncherConfig.getConfig().useCustomSize) {
+            custom.setSelected(true);
+            standard.setSelected(false);
+        }
         custom.selectedProperty().addListener((observable, oldValue, newValue) -> {
-             this.setMask(resolutionCustom, newValue);
+            this.setMask(resolutionCustom, newValue);
+            LauncherConfig.getConfig().useCustomSize = newValue;
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         });
 
         this.content.add(standard, 0, 0);
@@ -143,5 +157,4 @@ public class resolutionBox extends TextFieldElement{
         custom.setTranslateX(20);
         this.content.add(resolutionCustom, 2, 0);
     }
-    
 }

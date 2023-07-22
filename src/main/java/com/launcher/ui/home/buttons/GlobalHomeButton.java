@@ -37,7 +37,7 @@ public class GlobalHomeButton {
         scaleTransition.setCycleCount(1);
         
         selectZone.setOnMouseEntered(e -> {
-            FileLocation.playSound("sounds/hover_btn");
+            FileLocation.playSound("sounds/hover_btn", 0);
             scaleTransition.setFromX(1);
             scaleTransition.setFromY(1);
             scaleTransition.setToX(1.1);
@@ -94,28 +94,28 @@ public class GlobalHomeButton {
     }
 
     /**
-     * 
+     * @param color : Color of the logo in hex format
      * @return ImageView : Settings logo
      */
-    private static ImageView loadSettingsLogo(){
-        return JFXUtils.loadImageView("logos/settings.png", 25, 25, "f2f2f2");
+    private static ImageView loadSettingsLogo(String color){
+        return JFXUtils.loadImageView("logos/settings.png", 25, 25, color);
     }
 
     /**
      * 
      * @return Text : Charge the texte for Settings button ("Settings")
      */
-    private static Text loadTextSettings() {
-        return JFXUtils.loadText(TranslationManager.format("btn.settings"), 20, "#f2f2f2", "light");  
+    private static Text loadTextSettings(String color) {
+        return JFXUtils.loadText(TranslationManager.format("btn.settings"), 20, color, "light");  
     }
 
     /**
      * 
      * @return AnchorPane : Pane from Settings button
      */
-    private static AnchorPane setttingPane(){
-        final ImageView logoSettings = loadSettingsLogo();
-        final Text textSettings = loadTextSettings();
+    private static AnchorPane setttingPane(boolean disabled) {
+        final ImageView logoSettings = loadSettingsLogo(disabled ? "#7b7b7b" : "#f2f2f2");
+        final Text textSettings = loadTextSettings(disabled ? "#7b7b7b" : "#f2f2f2");
 
         AnchorPane button = new AnchorPane();
         button.setPrefSize(150, 20);
@@ -131,17 +131,20 @@ public class GlobalHomeButton {
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(0.6), logoSettings);
         
         button.setOnMouseEntered(e -> {
+            if(disabled) return;
             FileLocation.playSound("sounds/settings_gear", -20f);
             rotateTransition.setByAngle(-100);
             rotateTransition.play();
         });
 
         button.setOnMouseExited(e -> {
+            if(disabled) return;
             rotateTransition.setByAngle(100);
             rotateTransition.play();
         });
 
         button.setOnMouseClicked(e -> {
+            if(disabled) return;
             MainStage.setScene("SETTINGS");
         });
 
@@ -152,21 +155,21 @@ public class GlobalHomeButton {
      * 
      * @return AnchorPane : Pane from Home button
      */
-    public static AnchorPane printBackgroundHomeButton(){
+    public static AnchorPane printBackgroundHomeButton(boolean disabled){
 
         final ObjectInfos infos = PhotonInfosManager.getInfos();
         final Pane logoYoutube = loadYoutubeLogo();
         final Pane logoDiscord = loadDiscordLogo();
         final Pane logoTwitch = loadTwitchLogo();
         final Rectangle line = loadHorizontalLine();
-        final AnchorPane settingsPane = setttingPane();
+        final AnchorPane settingsPane = setttingPane(disabled);
 
         AnchorPane canvas = new AnchorPane();
         canvas.setPrefSize(70, 300);
 
         logoYoutube.setOnMouseReleased(event -> {
             OperatingSystem.openLink(infos.youtube_url);
-            FileLocation.playSound("sounds/click_btn");
+            FileLocation.playSound("sounds/click_btn", 0);
         });
         canvas.getChildren().add(logoYoutube);
         AnchorPane.setTopAnchor(logoYoutube, 45.0);
@@ -174,7 +177,7 @@ public class GlobalHomeButton {
 
         logoDiscord.setOnMouseReleased(event -> {
             OperatingSystem.openLink(infos.discord_url);
-            FileLocation.playSound("sounds/click_btn");
+            FileLocation.playSound("sounds/click_btn", 0);
         });
         canvas.getChildren().add(logoDiscord);
         AnchorPane.setTopAnchor(logoDiscord, 95.0);
@@ -182,7 +185,7 @@ public class GlobalHomeButton {
 
         logoTwitch.setOnMouseReleased(event -> {
             OperatingSystem.openLink(infos.twitch_url);
-            FileLocation.playSound("sounds/click_btn");
+            FileLocation.playSound("sounds/click_btn", 0);
         });
         canvas.getChildren().add(logoTwitch);
         AnchorPane.setTopAnchor(logoTwitch, 145.0);
@@ -192,7 +195,7 @@ public class GlobalHomeButton {
         AnchorPane.setTopAnchor(line, 205.0);
         AnchorPane.setLeftAnchor(line, 20.0);
 
-        settingsPane.setOnMouseReleased(event -> FileLocation.playSound("sounds/click_btn"));
+        settingsPane.setOnMouseReleased(event -> FileLocation.playSound("sounds/click_btn", 0));
         canvas.getChildren().add(settingsPane);
         AnchorPane.setTopAnchor(settingsPane, 225.0);
         AnchorPane.setLeftAnchor(settingsPane, 25.0);
