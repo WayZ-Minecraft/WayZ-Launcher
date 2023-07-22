@@ -2,6 +2,7 @@ package com.launcher.ui;
 
 import java.io.InputStream;
 
+import com.launcher.utils.LauncherConfig;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
 
@@ -274,7 +275,7 @@ public class JFXUtils {
      */
     private static Pair<StackPane,Slider> generateSlider(int maxValue ,int width, int height, Color BackgroundColorPreThumb, Color BackgroundColorPostThumb ,Color thumbColor){
                 
-        final Slider slider = new Slider(0,maxValue,(int)(maxValue/2));
+        final Slider slider = new Slider(0,maxValue,LauncherConfig.getConfig().allocatedram);
         slider.setMinWidth(width);
         slider.setMaxWidth(width);
         slider.setPrefSize(width, height);
@@ -283,6 +284,7 @@ public class JFXUtils {
         pb.setArcHeight(height/1.5);
         pb.setArcWidth(height/1.5);
         pb.setFill(BackgroundColorPreThumb);
+        pb.setWidth(slider.getValue() * width/maxValue);
         pb.setDisable(true);
 
         final Rectangle track = new Rectangle(0, 0, width, height);
@@ -334,6 +336,7 @@ public class JFXUtils {
         final Slider slider = sliderPair.getValue();
         Pair<StackPane,TextField> valuePair = loadTextField(Double.toString(maxValue/2), textSize, textColor, textSize * 4, textSize * 2, BackgroundColorPostThumb, actionText);
         TextField valueText = valuePair.getValue();
+        valueText.setText(Double.toString(Math.round(slider.getValue() * 10) / 10.0));
         StackPane value = valuePair.getKey();
         
         slider.valueProperty().addListener(new ChangeListener<Number>() {
