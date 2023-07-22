@@ -1,6 +1,5 @@
 package com.launcher.ui.home;
 
-
 import com.launcher.LauncherEngine;
 import com.launcher.LauncherEngine.MainStage;
 import com.launcher.ui.JFXUtils;
@@ -97,39 +96,77 @@ public class GlobalHome {
      * load a cross
      * @param width : width of the cross
      * @param height : height of the cross
+     * @crossReduction : reduction of the cross (ex : 2 = 1/2 of the width and height)
      * @return Pane : white cross
      */
-    private static Pane loadCross(int width,int height){
-        Pane pane = new Pane();
-        pane.setPrefSize(width, height);
+    private static Pane loadCross(int width,int height, double crossReduction){
+        Pane cross = new Pane();
+        cross.setPrefSize(width, height);
 
-        Line line1 = new Line(width/4,height/4,width * 3/4,height *3/4);
+        Rectangle background = JFXUtils.loadBackground(width, height, Color.web("#2a2b2c00"), 2);
+        cross.getChildren().add(background);
+
+        int crossWith = (int)(width/(crossReduction * 1.5));
+        int crossHeight = (int)(height/crossReduction);
+
+        int[] crossPoint1 = new int[]{width/2 - crossWith/2, height/2 - crossHeight/2};
+        int[] crossPoint2 = new int[]{width/2 + crossWith/2, height/2 + crossHeight/2};
+
+        Line line1 = new Line(crossPoint1[0],crossPoint1[1],crossPoint2[0],crossPoint2[1]);
         line1.setStrokeWidth(1);
-        line1.setStyle("-fx-stroke: #ffffff");
+        line1.setStroke(Color.web("#ffffff"));
         
-        Line line2 = new Line(width/4,height * 3/4,width *3/4, height/4);
+        Line line2 = new Line(crossPoint1[0],crossPoint2[1],crossPoint2[0],crossPoint1[1]);
         line2.setStrokeWidth(1);
-        line2.setStyle("-fx-stroke: #ffffff");
+        line2.setStroke(Color.web("#ffffff"));
+        
+        cross.getChildren().addAll(line1,line2);
+        
+        cross.setOnMouseClicked(event -> {
+            LauncherEngine.MainStage.closeLauncher();
+            
+        });
 
-        pane.getChildren().addAll(line1,line2);
+        cross.setOnMouseEntered(e -> {
+            line1.setStroke(Color.web("#8b2628"));
+            line2.setStroke(Color.web("#8b2628"));
+            background.setFill(Color.web("#2a2b2cff"));
+        });
 
-        return pane;
+        cross.setOnMouseExited(e -> {
+            line1.setStroke(Color.web("#ffffff"));
+            line2.setStroke(Color.web("#ffffff"));
+            background.setFill(Color.web("#1a1b1c00"));
+        });
+
+        return cross;
     }
 
     /**
      * A Line Centered in the middle of the Pane
-     * @param Size : size of the Pane (width and height) (Line size = Size/2)
+     * @param size : size of the Pane (width and height) (Line size = Size/2)
      * @return StackPane : Line
      */
-    private static StackPane loadLine(int Size){
+    private static StackPane loadLine(int size){
         StackPane pane = new StackPane();
-        pane.setPrefSize(Size, Size);
+        pane.setPrefSize(size, size);
 
-        Line line = new Line(-Size/4,0,Size/4,0);
+        Rectangle background = JFXUtils.loadBackground(size, size, Color.web("#2a2b2c00"), 2);
+        pane.getChildren().add(background);
+
+        Line line = new Line(-size/4,0,size/4,0);
         line.setStrokeWidth(1);
         line.setStyle("-fx-stroke: #ffffff");
 
         pane.getChildren().add(line);
+
+        pane.setOnMouseEntered(e -> {
+            background.setFill(Color.web("#2a2b2cff"));
+        });
+
+        pane.setOnMouseExited(e -> {
+            background.setFill(Color.web("#1a1b1c00"));
+        });
 
         return pane;
     }
@@ -153,19 +190,17 @@ public class GlobalHome {
         AnchorPane.setTopAnchor(version, height/2 - version.getLayoutBounds().getHeight()/2);
 
         // Close button (corner top right)
-        Pane cross = loadCross(height ,height);
+        Pane cross = loadCross((int)(height * 1.5),height,3);
         Bar.getChildren().add(cross);
-        AnchorPane.setRightAnchor(cross, 10.0);
+        AnchorPane.setRightAnchor(cross, 0.0);
         AnchorPane.setTopAnchor(cross, height/2 - cross.getPrefHeight()/2);
 
-        cross.setOnMouseClicked(event -> {
-            LauncherEngine.MainStage.closeLauncher();
-        });
+
 
         // Minimize Line (top right)
         StackPane line = loadLine(height);
         Bar.getChildren().add(line);
-        AnchorPane.setRightAnchor(line, 40.0);
+        AnchorPane.setRightAnchor(line, height * 1.5);
         AnchorPane.setTopAnchor(line, height/2 - line.getPrefHeight()/2);
 
         line.setOnMouseClicked(e -> {
