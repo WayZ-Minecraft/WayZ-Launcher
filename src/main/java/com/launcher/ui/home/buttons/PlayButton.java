@@ -3,7 +3,7 @@ package com.launcher.ui.home.buttons;
 import java.util.StringJoiner;
 
 import com.launcher.LauncherEngine;
-import com.launcher.LauncherEngine.MainStage;
+import com.launcher.MainStage;
 import com.launcher.ui.AlertPopup;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.GlobalHome;
@@ -238,7 +238,7 @@ public class PlayButton {
                                 break;
                             }
                             
-                            GlobalHome.pb.setProgress(updater.downloadedFiles/(double)updater.filesToDownload);
+                            GlobalHome.pb.setProgress(MainStage.progress = (updater.downloadedFiles/(double)updater.filesToDownload));
                             // status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
                         }
                     }

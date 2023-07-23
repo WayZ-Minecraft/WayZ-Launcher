@@ -2,7 +2,7 @@ package com.launcher.ui.home;
 
 
 import com.launcher.LauncherEngine;
-import com.launcher.LauncherEngine.MainStage;
+import com.launcher.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
@@ -159,7 +159,7 @@ public class GlobalHome {
         AnchorPane.setTopAnchor(cross, height/2 - cross.getPrefHeight()/2);
 
         cross.setOnMouseClicked(event -> {
-            LauncherEngine.MainStage.closeLauncher();
+            MainStage.closeLauncher();
         });
 
         // Minimize Line (top right)
@@ -169,7 +169,7 @@ public class GlobalHome {
         AnchorPane.setTopAnchor(line, height/2 - line.getPrefHeight()/2);
 
         line.setOnMouseClicked(e -> {
-            LauncherEngine.MainStage.minimizeLauncher();
+            MainStage.minimizeLauncher();
         });
         return Bar;
 

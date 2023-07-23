@@ -1,6 +1,6 @@
 package com.launcher.ui.settings;
 
-import com.launcher.LauncherEngine.MainStage;
+import com.launcher.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.FrameSettings;
 import com.launcher.ui.settings.boxes.game.JvmBox;
