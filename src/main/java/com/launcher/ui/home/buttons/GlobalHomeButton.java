@@ -1,8 +1,7 @@
 package com.launcher.ui.home.buttons;
 
+import com.launcher.MainStage;
 import java.time.Instant;
-
-import com.launcher.LauncherEngine.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.photon.informations.ObjectInfos;
 import com.photon.informations.PhotonInfosManager;

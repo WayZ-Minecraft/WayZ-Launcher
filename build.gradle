@@ -1,10 +1,6 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.3.2'
-    }
+    repositories { mavenCentral() }
+    dependencies { classpath 'com.guardsquare:proguard-gradle:7.3.2' }
 }
 
 plugins {
@@ -24,20 +20,23 @@ dependencies {
 	implementation(project(':photon')) {
     	exclude group: 'com.sun.mail'
     	exclude group: 'net.dv8tion'
-	} /* Add Photon */
-
+	}
+    
+    shadow 'org.apache.logging.log4j:log4j-api:2.14.1'
 	shadow(fileTree(dir: 'libs', include: ['*.jar']))
 	shadow(project(':photon')) {
-		exclude group: 'com.sun.mail'
+        exclude group: 'com.sun.mail'
     	exclude group: 'net.dv8tion'
-	}
+    }
 }
 
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+compileJava.options.encoding = 'UTF-8'
 
 version = '1.0.2'
-archivesBaseName = 'launcher-unobfuscated'
+archivesBaseName = 'launcher'
 
 /* Create basic JAR */
 jar {
@@ -47,17 +46,18 @@ jar {
 
 /* Add required dependencies */
 shadowJar {
-	archiveClassifier.set('')
+	archiveClassifier.set('unobfuscated')
    	configurations = [project.configurations.shadow]
    	duplicatesStrategy 'exclude'
 }
 
 tasks.register('proguard', proguard.gradle.ProGuardTask) {
+    dependsOn jar
     dependsOn shadowJar
     configuration file('obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
-    outjars(layout.buildDirectory.file("libs/hey-minified.jar"))
-    libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+    outjars(layout.buildDirectory.file("libs/${archivesBaseName}-${version}.jar"))
+    libraryjars(configurations.shadow.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
 
@@ -70,7 +70,7 @@ tasks.jpackage {
 	appDescription = "Install our launcher for our servers"
     vendor = ""
 
-    mainJar = tasks.shadowJar.outputs.files.singleFile
+    mainJar = tasks.proguard.outputs.files.singleFile
     mainClass = "com.launcher.LauncherEngine"
     appVersion = "${version}";
     fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
@@ -96,4 +96,4 @@ tasks.jpackage {
     }
 }
 
-tasks.build.dependsOn shadowJar
+tasks.build.dependsOn proguard
