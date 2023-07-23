@@ -144,17 +144,19 @@ public class GlobalHome {
 
     /**
      * A Line Centered in the middle of the Pane
-     * @param size : size of the Pane (width and height) (Line size = Size/2)
+     * @param width : width of the pane
+     * @param height : height of the pane
+     * @param lineReduction : reduction of the line (ex : 2 = 1/2 of the width of the pane)
      * @return StackPane : Line
      */
-    private static StackPane loadLine(int size){
+    private static StackPane loadLine(int width, int height, double lineReduction){
         StackPane pane = new StackPane();
-        pane.setPrefSize(size, size);
+        pane.setPrefSize(width, height);
 
-        Rectangle background = JFXUtils.loadBackground(size, size, Color.web("#2a2b2c00"), 2);
+        Rectangle background = JFXUtils.loadBackground(width, height, Color.web("#2a2b2c00"), 2);
         pane.getChildren().add(background);
 
-        Line line = new Line(-size/4,0,size/4,0);
+        Line line = new Line(width/2-width/(2*lineReduction),0,width/2+width/(2*lineReduction),0);
         line.setStrokeWidth(1);
         line.setStyle("-fx-stroke: #ffffff");
 
@@ -198,7 +200,7 @@ public class GlobalHome {
 
 
         // Minimize Line (top right)
-        StackPane line = loadLine(height);
+        StackPane line = loadLine((int)(height*1.4), height, 4);
         Bar.getChildren().add(line);
         AnchorPane.setRightAnchor(line, height * 1.5);
         AnchorPane.setTopAnchor(line, height/2 - line.getPrefHeight()/2);
