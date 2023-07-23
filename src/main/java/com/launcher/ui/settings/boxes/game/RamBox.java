@@ -27,11 +27,13 @@ public class RamBox extends TextFieldElement{
     final static int boxHeight = 170;
     final String ramDefinition = TranslationManager.format("settings.game.ram.def");
 
+    static int physicalMemorySize;
+
     public RamBox(int boxWidth) {
         super(title, boxWidth, boxHeight);
         
         final OperatingSystemMXBean os = (OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-        final int physicalMemorySize = (int)(os.getTotalMemorySize() / 1024 / 1024 / 1024)+1;
+        physicalMemorySize = (int)(os.getTotalMemorySize() / 1024 / 1024 / 1024)+1;
         Text ramAllocable = getNumberRamAllocable(physicalMemorySize);
         this.box.getChildren().add(ramAllocable);
         AnchorPane.setRightAnchor(ramAllocable, (double)sidePadding);
@@ -61,7 +63,7 @@ public class RamBox extends TextFieldElement{
             LauncherConfig.getConfig().autoRAM = object;
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 0);
-        this.content.add(JFXUtils.loadSlider(20, this.contentWidth/2 - sidePadding, 12, sliderBackgroundColorPreThumb,
+        this.content.add(JFXUtils.loadSlider(physicalMemorySize, this.contentWidth/2 - sidePadding, 12, sliderBackgroundColorPreThumb,
         sliderBackgroundColorPostThumb, sliderThumbColor, TranslationManager.format("settings.game.ram.slider"), lineTextSize, lineTextColor, (object, value) -> {
             LauncherConfig.getConfig().allocatedram = value;
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");

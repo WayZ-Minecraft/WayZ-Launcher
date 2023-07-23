@@ -43,7 +43,6 @@ public class GameRunner {
 		processBuilder.redirectErrorStream(true);
 		updater.setCurrentInfoText("updater.launching");
 		
-		ConsoleManager.print("zeze");
 		/* Display configuration */
 		List<String> commandLine = processBuilder.command();
 		ConsoleManager.create(String.join(" ", commandLine)).end();
@@ -102,7 +101,7 @@ public class GameRunner {
 			commands.addAll(Arrays.asList(str2));
 		}
 
-		commands.add("-Xmx" + (LauncherConfig.getConfig().allocatedram*1024) + "M");
+		commands.add("-Xmx" + ((int)LauncherConfig.getConfig().allocatedram*1024) + "M");
 		commands.add("-Djava.library.path=" + engine.getGameFolder().getNativesDir().getAbsolutePath());
 		commands.add("-Dminecraft.launcher.brand=Minecraft");
 		commands.add("-Dminecraft.launcher.version=999");
