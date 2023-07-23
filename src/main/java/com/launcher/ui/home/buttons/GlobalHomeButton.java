@@ -1,6 +1,7 @@
 package com.launcher.ui.home.buttons;
 
 import com.launcher.MainStage;
+import java.time.Instant;
 import com.launcher.ui.JFXUtils;
 import com.photon.informations.ObjectInfos;
 import com.photon.informations.PhotonInfosManager;
@@ -19,6 +20,10 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class GlobalHomeButton {
+
+    static long gearSoundDelay = 1;
+    static double gearSoundVolume = -20f;
+    static long lastGearSound = Instant.now().getEpochSecond();
 
     /**
      * 
@@ -132,9 +137,12 @@ public class GlobalHomeButton {
         
         button.setOnMouseEntered(e -> {
             if(disabled) return;
-            FileLocation.playSound("sounds/settings_gear", -20f);
-            rotateTransition.setByAngle(-100);
-            rotateTransition.play();
+            if((Instant.now().getEpochSecond() - lastGearSound) >= gearSoundDelay) {
+                FileLocation.playSound("sounds/settings_gear", -20f); 
+                lastGearSound = Instant.now().getEpochSecond();
+                rotateTransition.setByAngle(-100);
+                rotateTransition.play();
+            }
         });
 
         button.setOnMouseExited(e -> {
