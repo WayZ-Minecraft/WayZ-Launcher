@@ -20,7 +20,9 @@
     -fx-background-color: transparent;
 }
 
-
+.progress-bar .track{
+    -fx-background-color: -pb-background;
+}
 
 
 

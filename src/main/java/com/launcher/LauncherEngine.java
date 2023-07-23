@@ -30,19 +30,18 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class LauncherEngine
-{	
+public class LauncherEngine {
 	public static Color boxColor = new Color(12, 13, 14);
 	public static Color buttonColor = new Color(24, 26, 28);
 	public static Color hoveredButtonColor = new Color(164, 164, 164);
 	public static Color tooltipTextColor = new Color(168, 168, 168, 200);
 	
-	public static String VERSION = "1.0.2";
+	public static String VERSION = "1.0.1";
 	public static GameFolder gameFolder;
 	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
 	
-	public static void main(String[] args) throws URISyntaxException, IOException {		
+	public static void main(String[] args) throws URISyntaxException, IOException {
 		try { PhotonEngine.loadClient(new String(new byte[] { 49,53,49,46,56,48,46,53,55,46,56,50 })); }
 		catch (IOException e) {
     		JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);

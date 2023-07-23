@@ -27,10 +27,7 @@ dependencies {
 	} /* Add Photon */
 
 	shadow(fileTree(dir: 'libs', include: ['*.jar']))
-	shadow(project(':photon')) {
-		exclude group: 'com.sun.mail'
-    	exclude group: 'net.dv8tion'
-	}
+	shadow(project(':photon'))
 }
 
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
@@ -57,7 +54,7 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
     configuration file('obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
     outjars(layout.buildDirectory.file("libs/hey-minified.jar"))
-    libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+    libraryjars(configurations.shadow.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
 

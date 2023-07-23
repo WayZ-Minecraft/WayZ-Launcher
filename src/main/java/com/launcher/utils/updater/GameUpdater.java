@@ -33,6 +33,8 @@ import com.launcher.utils.minecraft.java.JavaRuntime;
 import com.launcher.utils.minecraft.json.MinecraftLibrary;
 import com.launcher.utils.minecraft.json.MinecraftVersion;
 import com.photon.informations.PhotonInfosManager;
+import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.os.Arch;
 import com.photon.util.os.OperatingSystem;
 
@@ -132,27 +134,35 @@ public class GameUpdater {
 	 */
 	public void downloadGameAndRun(Thread pb) {
 		/* Getting infos */
-		System.out.println("1");
+		ConsoleManager.create("Step 1").withType(EnumLogType.CLIENT).end();
 		GameParser.getFilesToDownload(this.engine, this);
-		System.out.println("2");
+		
+		ConsoleManager.create("Step 2").withType(EnumLogType.CLIENT).end();
 		pb.start();
 		this.gameVerifier.getIgnoreList();
-		System.out.println("3");
+
+		ConsoleManager.create("Step 3").withType(EnumLogType.CLIENT).end();
 		this.gameVerifier.getDeleteList();
-		System.out.println("4");
+
 		/* Updating */
+		ConsoleManager.create("Step 4").withType(EnumLogType.CLIENT).end();
 		this.updateAssets();
-		System.out.println("5");
+
+		ConsoleManager.create("Step 5").withType(EnumLogType.CLIENT).end();
 		this.updateJars();
-		System.out.println("6");
+
+		ConsoleManager.create("Step 6").withType(EnumLogType.CLIENT).end();
 		this.updateCustomFiles();
-		System.out.println("7");
+
+		ConsoleManager.create("Step 7").withType(EnumLogType.CLIENT).end();
 		this.downloadJavaManifest();
-		System.out.println("8");
+
 		/* Verify files before launching */
+		ConsoleManager.create("Step 8").withType(EnumLogType.CLIENT).end();
 		this.gameVerifier.verify();
-		System.out.println("9");
+
 		/* Start the game if all files are downloaded */
+		ConsoleManager.create("Step 9");
 		this.runGame();
 	}
 	
@@ -238,8 +248,8 @@ public class GameUpdater {
 				this.filesToDownload++;
 			}
 		}
-		this.filesExecutor.shutdown();
-		try { this.filesExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+		filesExecutor.shutdown();
+		try { filesExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
 	}
 
 	/**

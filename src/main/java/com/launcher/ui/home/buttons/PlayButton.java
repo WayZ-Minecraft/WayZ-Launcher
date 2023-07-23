@@ -238,7 +238,6 @@ public class PlayButton {
                                 break;
                             }
                             
-                            System.out.println(updater.downloadedFiles + " / " + updater.filesToDownload);
                             GlobalHome.pb.setProgress(updater.downloadedFiles/(double)updater.filesToDownload);
                             // status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
                         }
