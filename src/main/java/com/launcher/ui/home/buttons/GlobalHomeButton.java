@@ -208,8 +208,6 @@ public class GlobalHomeButton {
         AnchorPane.setTopAnchor(settingsPane, 225.0);
         AnchorPane.setLeftAnchor(settingsPane, 25.0);
 
-
-
         return canvas;
     }
 }

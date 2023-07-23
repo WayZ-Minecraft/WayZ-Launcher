@@ -77,7 +77,7 @@ public class LauncherEngine {
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
-
+        
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
 	}

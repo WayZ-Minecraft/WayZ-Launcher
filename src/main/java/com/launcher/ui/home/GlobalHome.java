@@ -7,6 +7,7 @@ import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
 import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
+import com.photon.util.os.FileLocation;
 
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
@@ -123,14 +124,15 @@ public class GlobalHome {
         cross.getChildren().addAll(line1,line2);
         
         cross.setOnMouseClicked(event -> {
-            LauncherEngine.MainStage.closeLauncher();
-            
+            FileLocation.playSound("sounds/click_btn", 0);
+            MainStage.closeLauncher();
         });
 
         cross.setOnMouseEntered(e -> {
             line1.setStroke(Color.web("#8b2628"));
             line2.setStroke(Color.web("#8b2628"));
             background.setFill(Color.web("#2a2b2cff"));
+            FileLocation.playSound("sounds/hover_btn", 0);
         });
 
         cross.setOnMouseExited(e -> {
@@ -164,6 +166,7 @@ public class GlobalHome {
 
         pane.setOnMouseEntered(e -> {
             background.setFill(Color.web("#2a2b2cff"));
+            FileLocation.playSound("sounds/hover_btn", 0);
         });
 
         pane.setOnMouseExited(e -> {
@@ -204,6 +207,7 @@ public class GlobalHome {
         AnchorPane.setTopAnchor(line, height/2 - line.getPrefHeight()/2);
 
         line.setOnMouseClicked(e -> {
+            FileLocation.playSound("sounds/click_btn", 0);
             MainStage.minimizeLauncher();
         });
         return Bar;
