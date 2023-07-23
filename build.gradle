@@ -56,14 +56,14 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
     dependsOn shadowJar
     configuration file('obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
-    outjars(layout.buildDirectory.file("libs/${archivesBaseName}-${version}.jar"))
+    outjars(layout.buildDirectory.file("libs/obfuscated/${archivesBaseName}.jar"))
     libraryjars(configurations.shadow.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
 
 /* Create a native executable */
 tasks.jpackage {
-    input  = "$buildDir/libs/${archivesBaseName}-${version}.jar"
+    input = "$buildDir/libs/obfuscated/"
     destination = "$buildDir/libs"
 
     appName = "WayZ Launcher"
@@ -74,7 +74,7 @@ tasks.jpackage {
     mainClass = "com.launcher.LauncherEngine"
     appVersion = "${version}";
     fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
-
+    
     windows {
 		icon = "$projectDir/assets/launcher.ico"
         winConsole = false
@@ -96,4 +96,5 @@ tasks.jpackage {
     }
 }
 
+/* Main build task */
 tasks.build.dependsOn proguard
