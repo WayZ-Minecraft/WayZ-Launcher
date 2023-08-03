@@ -66,8 +66,8 @@ public class GameParser {
 				}
 			}.run();
 			final long delta = System.nanoTime() - start;
-			ConsoleManager.print(EnumLogType.LAUNCHER, "Time (delta) to compare resources: " + delta / 1000000L + " ms");
-			ConsoleManager.print(EnumLogType.LAUNCHER, filesAnalysed + " files analysed");
+			ConsoleManager.create("Time (delta) to compare resources: " + delta / 1000000L + " ms").withType(EnumLogType.LAUNCHER).end();;
+			ConsoleManager.create(filesAnalysed + " files analysed").withType(EnumLogType.LAUNCHER).end();
 		} catch (final Exception ex) { ex.printStackTrace(); }
 	}
 
@@ -131,6 +131,6 @@ public class GameParser {
 		} catch (Exception e) { e.printStackTrace(); }
 
 		final long delta = System.nanoTime() - start;
-		ConsoleManager.print(EnumLogType.LAUNCHER, "Time (delta) to get XML file: " + delta / 1000000L + " ms");
+		ConsoleManager.create("Time (delta) to get XML file: " + delta / 1000000L + " ms").withType(EnumLogType.LAUNCHER).end();
 	}
 }

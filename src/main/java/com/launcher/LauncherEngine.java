@@ -65,7 +65,7 @@ public class LauncherEngine {
 			/* Download the file */
 			PhotonInfosManager.updateLauncherFromDir(currentExecutionFolder);
 			while(PhotonInfosManager.isUpdating) {
-				ConsoleManager.print("Update "+PhotonInfosManager.updateSizeDownloaded+"Mb on "+PhotonInfosManager.updateSize+"Mb");
+				ConsoleManager.create("Update "+PhotonInfosManager.updateSizeDownloaded+"Mb on "+PhotonInfosManager.updateSize+"Mb").end();
 				panel.progressBar.setValue((int)PhotonInfosManager.updateSizeDownloaded);
 				panel.progressBar.setMaximum((int)PhotonInfosManager.updateSize);
 			}

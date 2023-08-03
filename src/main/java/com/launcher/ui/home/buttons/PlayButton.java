@@ -177,7 +177,6 @@ public class PlayButton {
                         AnchorPane.setLeftAnchor(textPlay, 50.0);
                     });
                 } catch (InterruptedException e) {
-                    ConsoleManager.print(EnumLogType.LAUNCHER, "Loading text interrupted");
                     return; // Stop the thread
                 }
             }
@@ -195,7 +194,6 @@ public class PlayButton {
         loadingThread.interrupt();
         try {
             Platform.runLater(() -> {
-                ConsoleManager.print("Relaunching launcher");
                 MainStage.globalPane.setVisible(true);
                 GlobalHome.pb.setVisible(false);
                 GlobalHome.pb.setProgress(0);
@@ -205,7 +203,7 @@ public class PlayButton {
                 updateThread.interrupt();
             });
         } catch (RuntimeException e) {
-            ConsoleManager.print(EnumLogType.LAUNCHER,"Error on relaunch " + e);
+            ConsoleManager.create("Error on relaunch " + e).error().withType(EnumLogType.LAUNCHER).end();
         }
     }
 
@@ -235,7 +233,7 @@ public class PlayButton {
                         try {
                             Thread.sleep(300);
                             } catch (InterruptedException e) {
-                                ConsoleManager.print(EnumLogType.LAUNCHER, "download interrupted");
+                                ConsoleManager.create("download interrupted").withType(EnumLogType.LAUNCHER).error().end();
                                 break;
                             }
                             

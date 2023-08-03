@@ -28,7 +28,7 @@ public class GameRunner {
 	public GameRunner(GameEngine gameEngine, GameUpdater updater) {
 		this.engine = gameEngine;
 		this.updater = updater;
-		ConsoleManager.print(EnumLogType.LAUNCHER, "Cleaning and unpacking natives...");
+		ConsoleManager.create("Cleaning and unpacking natives...").withType(EnumLogType.LAUNCHER).end();
 		this.unpackNatives();
 		LauncherConfig.load(gameEngine);
 	}
