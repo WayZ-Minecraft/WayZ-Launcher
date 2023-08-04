@@ -115,7 +115,7 @@ public class GlobalSettings {
 
         Pane buttonSave = getSaveButton();
         template.getChildren().add(buttonSave);
-        buttonSave.setLayoutX(30 + buttonSave.getPrefWidth() + 15);
+        buttonSave.setLayoutX(30 + buttonBack.getPrefWidth() + 15);
         buttonSave.setLayoutY(MainStage.launcherHeight - 70);
 
         Pane buttonReset = getResetButton();

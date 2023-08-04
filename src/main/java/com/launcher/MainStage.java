@@ -3,6 +3,7 @@ package com.launcher;
 import com.launcher.ui.home.GlobalHome;
 import com.launcher.ui.settings.GlobalSettings;
 import com.photon.network.NetworkDirectories;
+import com.photon.util.os.FileLocation;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -50,9 +51,12 @@ public class MainStage extends Application {
             });
 
             scene.setOnMouseDragged(event -> {
+                FileLocation.muteSound(true);
                 stage.setX(event.getScreenX() + Offset[0]);
                 stage.setY(event.getScreenY() + Offset[1]);
             });
+
+            scene.setOnMouseReleased(event -> FileLocation.muteSound(false));
 
             // Set stage properties
 			globalShape.requestFocus();

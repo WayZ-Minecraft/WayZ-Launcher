@@ -43,6 +43,9 @@ public class PlayButton {
     private static int progress = 0;
 
     private static final Color backgroundColor = Color.web("#0c0d0e");
+    private static Timeline timelineEntered;
+    private static Timeline timelineExited;
+    private static Timeline timelineClicked;
 
     private static Thread updateThread;
     private static GameUpdater updater;
@@ -77,34 +80,14 @@ public class PlayButton {
                 .toString(), 20, "#f2f2f2", "regular");     
     }
 
-
-    /**
-     * Use to get the background for Play button with animation
-     * @return AnchorPane : Background for Play button
-     */
-    private static AnchorPane printBackgroundPlay(){
-        Rectangle shape = new Rectangle(270, 70);
-        shape.setArcHeight(36);
-        shape.setArcWidth(36);
-        shape.setFill(backgroundColor);
-
-        Rectangle shape2 = new Rectangle(270, 70);
-        shape2.setArcHeight(36);
-        shape2.setArcWidth(36);
-        shape2.setFill(Color.web("#1a1b1c00"));         
-        
-        AnchorPane buttonCanvas = new AnchorPane();
-        buttonCanvas.setPrefSize(270, 70);
-        buttonCanvas.getChildren().add(shape);
-        buttonCanvas.getChildren().add(shape2);
-
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.4), shape2);
+    private static void loadTimelines(Rectangle forground){
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.4), forground);
         scaleTransition.setCycleCount(1);
         
-        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.4), shape2);
+        TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(0.4), forground);
         translateTransition.setCycleCount(1);
         
-        FillTransition fillTransition = new FillTransition(Duration.seconds(0.2), shape2);
+        FillTransition fillTransition = new FillTransition(Duration.seconds(0.2), forground);
         
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(
@@ -113,7 +96,7 @@ public class PlayButton {
             fillTransition
         );
 
-        Timeline timelineEntered = new Timeline(
+        timelineEntered = new Timeline(
             new KeyFrame(Duration.seconds(0.1), e -> {
                 parallelTransition.stop();
                 fillTransition.setFromValue(Color.web("#1a1b1c00"));
@@ -127,29 +110,62 @@ public class PlayButton {
             new KeyFrame(Duration.seconds(0.4), e -> {})
         );
 
-        Timeline timelineExited = new Timeline(
+        timelineExited = new Timeline(
             new KeyFrame(Duration.ZERO, e -> {
                 parallelTransition.stop();
                 fillTransition.setFromValue(Color.web("#1a1b1cff"));
-                if (shape2.getScaleX() == 1){
+                if (forground.getScaleX() == 1){
                     scaleTransition.setFromX(1);
                     scaleTransition.setToX(0);
                     translateTransition.setFromX(0);
                     translateTransition.setToX(135);
                 } else {
-                    scaleTransition.setFromX(shape2.getScaleX());
+                    scaleTransition.setFromX(forground.getScaleX());
                     scaleTransition.setToX(0);
-                    translateTransition.setFromX(shape2.getTranslateX());
+                    translateTransition.setFromX(forground.getTranslateX());
                     translateTransition.setToX(-135);
                 }
                 parallelTransition.play();
             }),
-            new KeyFrame(Duration.seconds(0.2), e -> {
+            new KeyFrame(Duration.seconds(0.4), e -> {})
+        );
+
+        timelineClicked = new Timeline(
+            new KeyFrame(Duration.ZERO, e -> {
+                parallelTransition.stop();
                 fillTransition.setFromValue(Color.web("#1a1b1cff"));
-                fillTransition.setToValue(Color.web("#1a1b1c00"));       
+                fillTransition.setToValue(Color.web("#1a1b1caa"));
+                scaleTransition.setFromX(1);
+                translateTransition.setFromX(0);
+                parallelTransition.play();
+                scaleTransition.setFromY(1);
             }),
             new KeyFrame(Duration.seconds(0.4), e -> {})
         );
+    }
+
+
+    /**
+     * Use to get the background for Play button with animation
+     * @return AnchorPane : Background for Play button
+     */
+    private static AnchorPane printBackgroundPlay(){
+        Rectangle background = new Rectangle(270, 70);
+        background.setArcHeight(36);
+        background.setArcWidth(36);
+        background.setFill(backgroundColor);
+
+        Rectangle forground = new Rectangle(270, 70);
+        forground.setArcHeight(36);
+        forground.setArcWidth(36);
+        forground.setFill(Color.web("#1a1b1c00"));         
+        
+        AnchorPane buttonCanvas = new AnchorPane();
+        buttonCanvas.setPrefSize(270, 70);
+        buttonCanvas.getChildren().add(background);
+        buttonCanvas.getChildren().add(forground);
+
+        loadTimelines(forground);
 
         buttonCanvas.setOnMouseEntered(e -> {
             timelineExited.stop();
@@ -230,7 +246,11 @@ public class PlayButton {
             MainStage.homePane = GlobalHome.getHomeMenu(true);
             loadingText();
             MainStage.setScene("LAUNCHER");
-
+            
+            timelineExited.stop();
+            timelineEntered.stop();
+            timelineClicked.play();
+            
             
             final Thread t = new Thread(() -> {
                 if(updater.filesToDownload > nbFilesToBeUpdating) {
