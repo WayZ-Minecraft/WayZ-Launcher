@@ -37,7 +37,7 @@ tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 compileJava.options.encoding = 'UTF-8'
 
-version = '1.0.2'
+version = '1.0.3'
 archivesBaseName = 'launcher'
 
 /* Create basic JAR */
@@ -58,7 +58,7 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
     dependsOn shadowJar
     configuration file('obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
-    outjars(layout.buildDirectory.file("libs/${archivesBaseName}-${version}.jar"))
+    outjars(layout.buildDirectory.file("libs/${archivesBaseName}.jar"))
     libraryjars(configurations.shadow.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
