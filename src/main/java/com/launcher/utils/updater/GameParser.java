@@ -21,7 +21,6 @@ import org.w3c.dom.NodeList;
 
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.file.FileUtil;
-import com.photon.informations.PhotonInfosManager;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.ProtectorManager;
@@ -80,7 +79,6 @@ public class GameParser {
 			File localFile = new File(engine.getGameFolder().getGameDir(), key);
 			
 			GameVerifier.addToFileList(localFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
-			if (key.toLowerCase().contains(PhotonInfosManager.getInfos().project_id) && key.endsWith(".jar")) updater.hasModJar = true;
 			if (!localFile.isDirectory()) {
 				if (etag.length() > 1) {
 					etag = FileUtil.getEtag(etag);

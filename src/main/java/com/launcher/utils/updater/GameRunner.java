@@ -48,8 +48,8 @@ public class GameRunner {
 		ConsoleManager.create(String.join(" ", commandLine)).end();
 
 		try {
-			this.engine.startRunnable.run();
 			final Process process = processBuilder.start();
+            this.engine.startRunnable.run();
 			final int exitVal = process.waitFor();
 			if (exitVal != 0) {
 				/* Show the frames and active buttons */
@@ -59,11 +59,8 @@ public class GameRunner {
 				/* Log the error */
 				ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
 			} else {
-				if(!LauncherConfig.getConfig().keep_open) System.exit(0);
-				else {
-					this.engine.exitRunnable.run();
-					this.updater.reset();
-				}
+                this.updater.reset();
+                this.engine.exitRunnable.run();
 			}
 		} catch (IOException e) { throw new Exception("Cannot launch !", e); }
 	}

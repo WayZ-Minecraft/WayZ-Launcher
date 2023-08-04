@@ -11,6 +11,9 @@
 -dontwarn com.photon.discord.**
 -dontwarn com.photon.util.EmailManager
 -dontwarn com.photon.util.EmailManager$*
+-dontwarn com.photon.**
+-dontwarn com.google.gson.**
+-dontwarn com.launcher.utils.updater.GameParser
 
 # Gson
 -keepattributes Signature

@@ -7,6 +7,7 @@ import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameFolder;
 import com.launcher.utils.minecraft.json.MinecraftLibrary;
 import com.launcher.utils.minecraft.json.MinecraftVersion;
+import com.photon.informations.PhotonInfosManager;
 import com.photon.util.os.OperatingSystem;
 
 public class GameUtils {
@@ -54,7 +55,7 @@ public class GameUtils {
 		}
 		final File versionFolder = new File(workDir.getVersionsDir(), engine.getMinecraftVersion().getId());
 		result += new File(workDir.getLibsDir(), "opus/opus-jni-java-1.0.3.jar").getAbsolutePath()+separator;
-		result += new File(workDir.getLibsDir(), "com/photon/photon.jar").getAbsolutePath()+separator;
+		result += new File(workDir.getLibsDir(), "com/photon/"+PhotonInfosManager.getLatestAPIUpdate()+".jar").getAbsolutePath()+separator;
 		result += new File(workDir.getLibsDir(), "me/rich-presence/discord-rich-presence.jar").getAbsolutePath()+separator;
 		result += new File(versionFolder, engine.getMinecraftVersion().getId() + ".jar").getAbsolutePath();
 		return result;

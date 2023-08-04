@@ -20,14 +20,16 @@ dependencies {
 	implementation(project(':photon')) {
     	exclude group: 'com.sun.mail'
     	exclude group: 'net.dv8tion'
+    	exclude group: 'ch.qos.logback'
 	}
     
     shadow 'org.apache.logging.log4j:log4j-api:2.14.1'
 	shadow(fileTree(dir: 'libs', include: ['*.jar']))
-	shadow(project(':photon')) {
-        exclude group: 'com.sun.mail'
+    shadow(project(':photon')) {
+    	exclude group: 'com.sun.mail'
     	exclude group: 'net.dv8tion'
-    }
+    	exclude group: 'ch.qos.logback'
+	}
 }
 
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
@@ -46,7 +48,7 @@ jar {
 
 /* Add required dependencies */
 shadowJar {
-	archiveClassifier.set('unobfuscated')
+	archiveClassifier.set('')
    	configurations = [project.configurations.shadow]
    	duplicatesStrategy 'exclude'
 }
@@ -56,14 +58,14 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
     dependsOn shadowJar
     configuration file('obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
-    outjars(layout.buildDirectory.file("libs/obfuscated/${archivesBaseName}.jar"))
+    outjars(layout.buildDirectory.file("libs/${archivesBaseName}-${version}.jar"))
     libraryjars(configurations.shadow.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
 
 /* Create a native executable */
 tasks.jpackage {
-    input = "$buildDir/libs/obfuscated/"
+    input = "$buildDir/libs/"
     destination = "$buildDir/libs"
 
     appName = "WayZ Launcher"
@@ -98,3 +100,4 @@ tasks.jpackage {
 
 /* Main build task */
 tasks.build.dependsOn proguard
+tasks.jpackage.dependsOn build

@@ -57,10 +57,13 @@ public class Downloader extends Thread {
 	 */
 	public void download(GameUpdater updater) throws IOException {
 		System.out.println("Acquiring file '" + this.file.getName() + "'");
-		updater.setCurrentFile(this.file.getName());
-		if (this.file.getAbsolutePath().contains("assets")) updater.setCurrentInfoText("Downloading resource.");
-		else if (this.file.getAbsolutePath().contains("jre-legacy") || this.file.getAbsolutePath().contains("java-runtime-alpha")) updater.setCurrentInfoText("Telechargement de java.");
-		else updater.setCurrentInfoText("Downloading library.");
+		if(updater != null) {
+            updater.setCurrentFile(this.file.getName());
+            if (this.file.getAbsolutePath().contains("assets")) updater.setCurrentInfoText("Downloading resource.");
+            else if (this.file.getAbsolutePath().contains("jre-legacy") || this.file.getAbsolutePath().contains("java-runtime-alpha")) updater.setCurrentInfoText("Telechargement de java.");
+            else updater.setCurrentInfoText("Downloading library.");
+        }
+
 		BufferedInputStream bufferedInputStream = null;
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -74,7 +77,7 @@ public class Downloader extends Thread {
 			int read;
 
 			while ((read = bufferedInputStream.read(data, 0, 1024)) != -1) fileOutputStream.write(data, 0, read);
-			updater.downloadedFiles++;
+			if(updater != null) updater.downloadedFiles++;
 		} finally {
 			if (bufferedInputStream != null) bufferedInputStream.close();
 			if (fileOutputStream != null) fileOutputStream.close();

@@ -1,8 +1,13 @@
 package com.launcher.ui.home.buttons;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FileUtils;
 
 import com.launcher.LauncherEngine;
 import com.launcher.MainStage;
@@ -10,6 +15,8 @@ import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.GlobalHome;
 import com.launcher.utils.LauncherConfig;
 import com.launcher.utils.updater.GameUpdater;
+import com.photon.network.NetworkConnectionClient;
+import com.photon.network.messages.requests.ClientRequestCrashReport;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.TranslationManager;
@@ -40,7 +47,7 @@ public class PlayButton {
     private static Thread updateThread;
     private static GameUpdater updater;
     private static int nbFilesToBeUpdating = 3; // This is the number of files that is needed to consider the game as updated
-
+    
     private static boolean onUpdating = false;
 
 
@@ -252,12 +259,30 @@ public class PlayButton {
             updateThread.start();
             
             /* Set executables for every type of exit and launch */
-            LauncherEngine.gameEngine.startRunnable = () -> { MainStage.globalPane.setVisible(false); };
+            LauncherEngine.gameEngine.startRunnable = () -> {
+                if(!LauncherConfig.getConfig().keep_open) Platform.runLater(() -> System.exit(0));
+                else MainStage.globalPane.setVisible(false);
+            };
             LauncherEngine.gameEngine.exitRunnable = () -> {
                 reLaunchLauncher();
             };
             LauncherEngine.gameEngine.crashRunnable = () -> {
                 reLaunchLauncher();
+                final File crashDir = new File(LauncherEngine.gameEngine.getGameFolder().getBinDir(), "crash-reports/");
+                if(!crashDir.exists()) crashDir.mkdirs();
+                if(LauncherConfig.getConfig().send_reports) {
+                    for(File crashFile : crashDir.listFiles()) {
+                        if(crashFile.exists() && !crashFile.isDirectory()) {
+                            final ClientRequestCrashReport request = new ClientRequestCrashReport();
+                            request.fileName = crashFile.getName();
+                            request.userUUID = "launcher-starting-crashes";                        
+                            try {
+                                request.fileMessage = FileUtils.readFileToString(crashFile, StandardCharsets.UTF_8);
+                                NetworkConnectionClient.sendTCP(request);
+                            } catch (IOException e) { e.printStackTrace(); }
+                        }
+                    }
+                }
                 JOptionPane.showMessageDialog(null, TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")), TranslationManager.format("popup.error.title"), JOptionPane.ERROR_MESSAGE);
             };
         });

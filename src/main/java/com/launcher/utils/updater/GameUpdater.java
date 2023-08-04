@@ -106,8 +106,6 @@ public class GameUpdater {
 	 * The game files verifier
 	 */
 	private final GameVerifier gameVerifier;
-
-	protected boolean hasModJar;
 	
 	public GameUpdater(MinecraftVersion mcVersion, GameEngine engine) {
 		this.minecraftVersion = mcVersion;
@@ -337,16 +335,27 @@ public class GameUpdater {
 				mod.delete();
 			}
 		}
-
-		final Downloader downloadModTask = new Downloader(modFile, PhotonInfosManager.getLatestModURL(), PhotonInfosManager.getLatestModSHA1(), this);
-		GameVerifier.addToFileList(modFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
-				
-		if (downloadModTask.requireUpdate()) {
-			if (!this.hasModJar) {
-				this.jarsExecutor.submit(downloadModTask);
-				this.filesToDownload++;
+        final Downloader downloadModTask = new Downloader(modFile, PhotonInfosManager.getLatestModURL(), PhotonInfosManager.getLatestModSHA1(), this);
+        GameVerifier.addToFileList(modFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
+        if (downloadModTask.requireUpdate()) {
+            this.jarsExecutor.submit(downloadModTask);
+            this.filesToDownload++;
+        }
+        
+		final File photonFile = new File(engine.getGameFolder().getLibsDir(), "com/photon/"+PhotonInfosManager.getLatestAPIUpdate()+".jar");
+		if(!photonFile.exists()) photonFile.getParentFile().mkdirs();
+		for(File f : photonFile.getParentFile().listFiles()) {
+            if(!f.getName().contains(PhotonInfosManager.getLatestAPIUpdate())) {
+                this.gameVerifier.deleteList.add(f.getAbsolutePath().replace('/', File.separatorChar));
+				f.delete();
 			}
 		}
+        final Downloader downloadAPITask = new Downloader(photonFile, PhotonInfosManager.getLatestAPIURL("api"), PhotonInfosManager.getLatestAPISHA1("api"), this);
+        GameVerifier.addToFileList(photonFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
+        if (downloadAPITask.requireUpdate()) {
+            this.jarsExecutor.submit(downloadAPITask);
+            this.filesToDownload++;
+        }
 
 		this.jarsExecutor.shutdown();
 		try { this.jarsExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
