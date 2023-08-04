@@ -24,11 +24,11 @@ public class LineButton extends NavigateButton {
     public LineButton(String text, String imagePath, String pictureColor) {
         super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight,
         marginSide, TextFieldElement.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
-        this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 3 + 3 * TextFieldElement.lineTextSize + 2 * marginSide);
+        this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 1.7 + 20 + 2 * marginSide); // 20 : size of the image
         this.buttonRadius = 15;
     }
 
-    @Override protected void setTextPosition(Text textPlay) { AnchorPane.setRightAnchor(textPlay, marginSide); }
+    @Override protected void setTextPosition(Text textPlay) { AnchorPane.setLeftAnchor(textPlay, marginSide + 25); }
 
     /**
      * Function to set the fill animation of the button
