@@ -6,7 +6,6 @@ buildscript {
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-	id("org.panteleyev.jpackageplugin") version "1.5.2"
 }
 
 repositories {
@@ -22,14 +21,7 @@ dependencies {
     	exclude group: 'net.dv8tion'
     	exclude group: 'ch.qos.logback'
 	}
-    
     shadow 'org.apache.logging.log4j:log4j-api:2.14.1'
-	shadow(fileTree(dir: 'libs', include: ['*.jar']))
-    shadow(project(':photon')) {
-    	exclude group: 'com.sun.mail'
-    	exclude group: 'net.dv8tion'
-    	exclude group: 'ch.qos.logback'
-	}
 }
 
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
@@ -37,7 +29,7 @@ tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 compileJava.options.encoding = 'UTF-8'
 
-version = '1.0.3'
+version = '1.0.0'
 archivesBaseName = 'launcher'
 
 /* Create basic JAR */
@@ -63,41 +55,5 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
 }
 proguard.shouldRunAfter shadowJar
 
-/* Create a native executable */
-tasks.jpackage {
-    input = "$buildDir/libs/"
-    destination = "$buildDir/libs"
-
-    appName = "WayZ Launcher"
-	appDescription = "Install our launcher for our servers"
-    vendor = ""
-
-    mainJar = tasks.proguard.outputs.files.singleFile
-    mainClass = "com.launcher.LauncherEngine"
-    appVersion = "${version}";
-    fileAssociations = [ "assets/nebulae.properties", "assets/nebulae-image.properties", "assets/nebulae-anim.properties" ]
-    
-    windows {
-		icon = "$projectDir/assets/launcher.ico"
-        winConsole = false
-
-        winShortcut = true
-        winShortcutPrompt = true
-        
-        winMenu = true
-        winMenuGroup = "Minecraft Launcher"
-
-        winPerUserInstall = true
-    }
-    mac {
-        icon = "$projectDir/assets/launcher.icns"
-    }
-    linux {
-        icon = "$projectDir/assets/launcher.png"
-        linuxShortcut = true
-    }
-}
-
 /* Main build task */
 tasks.build.dependsOn proguard
-tasks.jpackage.dependsOn build

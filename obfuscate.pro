@@ -14,6 +14,8 @@
 -dontwarn com.photon.**
 -dontwarn com.google.gson.**
 -dontwarn com.launcher.utils.updater.GameParser
+-dontwarn javafx.**
+-dontwarn org.apache.**
 
 # Gson
 -keepattributes Signature

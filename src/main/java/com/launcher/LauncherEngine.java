@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 
 import javax.swing.JOptionPane;
 
-import com.launcher.SplashScreen.SplashPanel;
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameFolder;
 import com.launcher.utils.GameLinks;
@@ -16,9 +15,7 @@ import com.photon.PhotonEngine;
 import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
 import com.photon.util.ConsoleManager;
-import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.TranslationManager;
-import com.photon.util.os.ApplicationUtils;
 
 import javafx.application.Application;
 
@@ -28,7 +25,6 @@ public class LauncherEngine {
 	public static Color hoveredButtonColor = new Color(164, 164, 164);
 	public static Color tooltipTextColor = new Color(168, 168, 168, 200);
 	
-	public static String VERSION = "1.0.3";
 	public static GameFolder gameFolder;
 	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
@@ -53,27 +49,7 @@ public class LauncherEngine {
     	final File logsFolder = new File(gameFolder.gameDir, "/logs/");
     	if(!logsFolder.exists()) logsFolder.mkdirs();
     	ConsoleManager.registerFileHandler(new File(logsFolder, "launcher.log"));
-		
-		/* Check for updates */
-    	final File currentExecutionFile = new File(LauncherEngine.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-    	final File currentExecutionFolder = currentExecutionFile.getParentFile();
 
-        if(PhotonInfosManager.hasLauncherUpdate(LauncherEngine.VERSION)) {
-			ConsoleManager.create("Update avalible! Updating: "+currentExecutionFile+" in : "+currentExecutionFolder).withType(EnumLogType.LAUNCHER).end();
-    		final SplashScreen splash = new SplashScreen(PhotonInfosManager.getInfos().project_name, PhotonInfosManager.getGameLogo(), 250, 250);
-    		final SplashPanel panel = (SplashPanel)splash.getContentPane();
-			/* Download the file */
-			PhotonInfosManager.updateLauncherFromDir(currentExecutionFolder);
-			while(PhotonInfosManager.isUpdating) {
-				ConsoleManager.create("Update "+PhotonInfosManager.updateSizeDownloaded+"Mb on "+PhotonInfosManager.updateSize+"Mb").end();
-				panel.progressBar.setValue((int)PhotonInfosManager.updateSizeDownloaded);
-				panel.progressBar.setMaximum((int)PhotonInfosManager.updateSize);
-			}
-			/* Launch and exit */
-			ApplicationUtils.launch(new File(currentExecutionFolder, "/launcher.jar"), new String[] {}, true);
-    		return;
-    	}
-		
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
