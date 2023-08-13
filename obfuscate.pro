@@ -8,9 +8,6 @@
 -dontwarn okio.**
 -dontwarn org.slf4j.**
 -dontwarn com.neovisionaries.ws.client.**
--dontwarn com.photon.discord.**
--dontwarn com.photon.util.EmailManager
--dontwarn com.photon.util.EmailManager$*
 -dontwarn com.photon.**
 -dontwarn com.google.gson.**
 -dontwarn com.launcher.utils.updater.GameParser
@@ -31,14 +28,17 @@
 -keep class com.sun.** { *; }
 -keep class org.apache.logging.log4j.** { *; }
 
+-keep class com.launcher.MainStage {
+    <init>();
+    public void start(javafx.stage.Stage);
+}
+
+-keep class com.launcher.utils.file.JsonUtil { *; }
 -keep class com.launcher.utils.minecraft.json.** { <fields>; }
 -keep class com.launcher.utils.minecraft.json$* { <fields>; }
 -keep class com.launcher.utils.assets.** { <fields>; }
 -keep class com.launcher.utils.assets$* { <fields>; }
 -keep class com.launcher.utils.ConfigVersion { <fields>; }
--keep class com.photon.informations.ObjectInfos { <fields>; }
--keep class com.photon.network.objects.** { <fields>; }
--keep class com.photon.network.NetworkDirectories$* { <fields>; }
 
 -keepclassmembernames class * {
     java.lang.Class class$(java.lang.String);

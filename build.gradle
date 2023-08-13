@@ -8,6 +8,10 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
+configurations {
+    allImplementation { extendsFrom implementation }
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -21,7 +25,6 @@ dependencies {
     	exclude group: 'net.dv8tion'
     	exclude group: 'ch.qos.logback'
 	}
-    shadow 'org.apache.logging.log4j:log4j-api:2.14.1'
 }
 
 tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
@@ -52,6 +55,7 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
     outjars(layout.buildDirectory.file("libs/${archivesBaseName}.jar"))
     libraryjars(configurations.shadow.filter { it.exists() })
+    libraryjars(configurations.allImplementation.filter { it.exists() })
 }
 proguard.shouldRunAfter shadowJar
 

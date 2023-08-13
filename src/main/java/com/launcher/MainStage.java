@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MainStage extends Application {		
-		public static Pane globalPane = new Pane();
+		public static Pane globalPane;
 
         public static Pane homePane = GlobalHome.getHomeMenu(false);
         public final static Pane settingsPane = GlobalSettings.getSettingsMenu();
@@ -27,6 +27,10 @@ public class MainStage extends Application {
 		public static Stage classStage;
 
         public static double progress = 0.0;
+
+        public MainStage() {
+            globalPane = new Pane();
+        }
 
 		@Override
 		public void start(Stage stage) throws Exception {
