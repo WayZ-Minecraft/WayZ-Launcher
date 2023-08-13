@@ -133,35 +133,35 @@ public class GameUpdater {
 	 */
 	public void downloadGameAndRun(Thread pb) {
 		/* Getting infos */
-		ConsoleManager.create("Step 1").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("Start Download Files").withType(EnumLogType.CLIENT).end();
 		GameParser.getFilesToDownload(this.engine, this);
 		
-		ConsoleManager.create("Step 2").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("getting files to ignore").withType(EnumLogType.CLIENT).end();
 		pb.start();
 		this.gameVerifier.getIgnoreList();
 
-		ConsoleManager.create("Step 3").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("getting file to delete").withType(EnumLogType.CLIENT).end();
 		this.gameVerifier.getDeleteList();
 
 		/* Updating */
-		ConsoleManager.create("Step 4").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start assets updating").withType(EnumLogType.CLIENT).end();
 		this.updateAssets();
 
-		ConsoleManager.create("Step 5").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start jars updating").withType(EnumLogType.CLIENT).end();
 		this.updateJars();
 
-		ConsoleManager.create("Step 6").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start other files updating").withType(EnumLogType.CLIENT).end();
 		this.updateCustomFiles();
 
-		ConsoleManager.create("Step 7").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start java download").withType(EnumLogType.CLIENT).end();
 		this.downloadJavaManifest();
 
 		/* Verify files before launching */
-		ConsoleManager.create("Step 8").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("verify all change").withType(EnumLogType.CLIENT).end();
 		this.gameVerifier.verify();
 
 		/* Start the game if all files are downloaded */
-		ConsoleManager.create("Step 9");
+		ConsoleManager.create("start game").withType(EnumLogType.CLIENT).end();
 		this.runGame();
 	}
 	
