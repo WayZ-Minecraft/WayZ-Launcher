@@ -16,10 +16,10 @@
 
 # Gson
 -keepattributes Signature,*Annotation*
--keep class * extends com.google.gson.TypeAdapter
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
+-keep class * extends com.google.gson.TypeAdapter { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory { *; }
+-keep class * implements com.google.gson.JsonSerializer { *; }
+-keep class * implements com.google.gson.JsonDeserializer { *; }
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
@@ -34,9 +34,8 @@
 }
 
 -keep class com.launcher.utils.file.JsonUtil { *; }
--keep class com.launcher.utils.minecraft.json.** { <fields>; }
--keep class com.launcher.utils.minecraft.json$* { <fields>; }
--keep class com.launcher.utils.minecraft.java.** { <fields>; }
+-keep class com.launcher.utils.minecraft$* { <fields>; }
+-keep class com.launcher.utils.minecraft.** { <fields>; }
 -keep class com.launcher.utils.assets.** { <fields>; }
 -keep class com.launcher.utils.assets$* { <fields>; }
 -keep class com.launcher.utils.ConfigVersion { <fields>; }
