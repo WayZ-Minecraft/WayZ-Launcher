@@ -15,7 +15,7 @@
 -dontwarn org.apache.**
 
 # Gson
--keepattributes Signature
+-keepattributes Signature,*Annotation*
 -keep class * extends com.google.gson.TypeAdapter
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
@@ -36,6 +36,7 @@
 -keep class com.launcher.utils.file.JsonUtil { *; }
 -keep class com.launcher.utils.minecraft.json.** { <fields>; }
 -keep class com.launcher.utils.minecraft.json$* { <fields>; }
+-keep class com.launcher.utils.minecraft.java.** { <fields>; }
 -keep class com.launcher.utils.assets.** { <fields>; }
 -keep class com.launcher.utils.assets$* { <fields>; }
 -keep class com.launcher.utils.ConfigVersion { <fields>; }
