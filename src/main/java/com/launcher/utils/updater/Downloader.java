@@ -8,7 +8,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.launcher.utils.file.FileUtil;
+import com.photon.util.ConsoleManager;
 import com.photon.util.ProtectorManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 
 public class Downloader extends Thread {
 	/**
@@ -56,7 +58,7 @@ public class Downloader extends Thread {
 	 * @throws IOException
 	 */
 	public void download(GameUpdater updater) throws IOException {
-		System.out.println("Acquiring file '" + this.file.getName() + "'");
+		ConsoleManager.create("Acquiring file '" + this.file.getName() + "'").withType(EnumLogType.LAUNCHER).end();
 		if(updater != null) {
             updater.setCurrentFile(this.file.getName());
             if (this.file.getAbsolutePath().contains("assets")) updater.setCurrentInfoText("Downloading resource.");

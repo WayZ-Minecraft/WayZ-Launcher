@@ -133,35 +133,35 @@ public class GameUpdater {
 	 */
 	public void downloadGameAndRun(Thread pb) {
 		/* Getting infos */
-		ConsoleManager.create("Start Download Files").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("Start Download Files").withType(EnumLogType.LAUNCHER).end();
 		GameParser.getFilesToDownload(this.engine, this);
 		
-		ConsoleManager.create("getting files to ignore").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("getting files to ignore").withType(EnumLogType.LAUNCHER).end();
 		pb.start();
 		this.gameVerifier.getIgnoreList();
 
-		ConsoleManager.create("getting file to delete").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("getting file to delete").withType(EnumLogType.LAUNCHER).end();
 		this.gameVerifier.getDeleteList();
 
 		/* Updating */
-		ConsoleManager.create("start assets updating").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start assets updating").withType(EnumLogType.LAUNCHER).end();
 		this.updateAssets();
 
-		ConsoleManager.create("start jars updating").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start jars updating").withType(EnumLogType.LAUNCHER).end();
 		this.updateJars();
 
-		ConsoleManager.create("start other files updating").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start other files updating").withType(EnumLogType.LAUNCHER).end();
 		this.updateCustomFiles();
 
-		ConsoleManager.create("start java download").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start java download").withType(EnumLogType.LAUNCHER).end();
 		this.downloadJavaManifest();
 
 		/* Verify files before launching */
-		ConsoleManager.create("verify all change").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("verify all change").withType(EnumLogType.LAUNCHER).end();
 		this.gameVerifier.verify();
 
 		/* Start the game if all files are downloaded */
-		ConsoleManager.create("start game").withType(EnumLogType.CLIENT).end();
+		ConsoleManager.create("start game").withType(EnumLogType.LAUNCHER).end();
 		this.runGame();
 	}
 	
@@ -185,7 +185,7 @@ public class GameUpdater {
 				if (downloadTask.requireUpdate()) {
 					this.assetsExecutor.submit(downloadTask);
 					this.filesToDownload++;
-					System.out.println("Downloading asset " + local.getName());
+					ConsoleManager.create("Downloading asset " + local.getName()).withType(EnumLogType.LAUNCHER).end();
 				}
 			}
 		}
@@ -357,11 +357,11 @@ public class GameUpdater {
 			try { json = JsonUtil.loadJSON(manifestUrl); } catch (IOException e) { e.printStackTrace(); }
 			finally {
 				this.javaManifest = (JavaManifest) JsonUtil.getGson().fromJson(json, JavaManifest.class);
-				System.out.println("CurrentRuntime: " + this.javaManifest.getCurrentOS()); // windows-x64
+				ConsoleManager.create("CurrentRuntime: " + this.javaManifest.getCurrentOS()).withType(EnumLogType.LAUNCHER).end(); // windows-x64
 				Map<String, List<JavaRuntime>> r = this.javaManifest.getCurrentJava();
 				for (String run : r.keySet()) {
 					if (run.equals(minecraftVersion.getJavaVersion().getComponent())) {
-						System.out.println("Choosen: " + run);
+						ConsoleManager.create("Choosen: " + run).withType(EnumLogType.LAUNCHER).end();
 						ArrayList<JavaRuntime> s = (ArrayList<JavaRuntime>) r.get(run);
 						this.indexJava(s.get(0).getManifest().getUrl().toString());
 						break;
@@ -398,7 +398,6 @@ public class GameUpdater {
 		
 		this.javaExecutor.shutdown();
 		try { this.javaExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
-		System.out.println("Jre Update finished.");
 	}
 	
 	public void runGame() {
@@ -432,7 +431,6 @@ public class GameUpdater {
 		final String path = uri.getPath();
 		final String idStr = path.substring(path.lastIndexOf('/') + 1);
 		final File versionIdFolder = new File(engine.getGameFolder().getVersionsDir(), idStr.replace(".json", ""));
-		System.out.println("Trying to download " + idStr);
 		
 		versionIdFolder.mkdirs();
 		File theFile = new File(versionIdFolder, idStr);
