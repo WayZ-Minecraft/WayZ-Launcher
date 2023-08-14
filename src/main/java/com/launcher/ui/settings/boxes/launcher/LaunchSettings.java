@@ -50,16 +50,20 @@ public class LaunchSettings extends TextFieldElement {
 
         this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
                 FileLocation.playSound("sounds/click_btn", 0);
-                final File folder = LauncherEngine.gameEngine.getGameFolder().getGameDir();
-                for(File file : folder.listFiles()) {
-                    if(file.getName().equals("launcher_config.json")) continue;
-                    file.delete();
-                }
+                deleteFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
                 ApplicationUtils.exitProperly();
-            }), 0, 2);
+        }), 0, 2);
         this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.get_files"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e", (object, event) -> {
                 FileLocation.playSound("sounds/click_btn", 0);
                 OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
-            }), 0, 3);
+        }), 0, 3);
+    }
+
+    private static void deleteFolder(File folder) {
+        if(!folder.exists()) return;
+        if(folder.isDirectory()) {
+            for(File file : folder.listFiles()) deleteFolder(file);
+        }
+        folder.delete();
     }
 }
