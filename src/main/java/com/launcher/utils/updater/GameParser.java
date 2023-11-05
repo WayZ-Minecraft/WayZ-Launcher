@@ -50,20 +50,18 @@ public class GameParser {
 			final Iterator<Node> itr = nodes.iterator();
 
 			final long start = System.nanoTime();
-			new MultiThreadWorker() {
-				@Override protected boolean work() {
-					if(itr == null) return false;
-					if(itr.hasNext()) {
-						final Node node = itr.next();
-						synchronized(node) {
-							filesAnalysed++;
-							writeFile(engine, updater, node);
-							return true;
-						}
+			MultiThreadWorker.createWorker(() -> {
+				if(itr == null) return false;
+				if(itr.hasNext()) {
+					final Node node = itr.next();
+					synchronized(node) {
+						filesAnalysed++;
+						writeFile(engine, updater, node);
+						return true;
 					}
-					return false;
 				}
-			}.run();
+				return false;
+			}).run();
 			final long delta = System.nanoTime() - start;
 			ConsoleManager.create("Time (delta) to compare resources: " + delta / 1000000L + " ms").withType(EnumLogType.LAUNCHER).end();;
 			ConsoleManager.create(filesAnalysed + " files analysed").withType(EnumLogType.LAUNCHER).end();
