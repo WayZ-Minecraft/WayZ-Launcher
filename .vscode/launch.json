@@ -10,7 +10,7 @@
             "request": "launch",
             "console": "integratedTerminal",
             "mainClass": "com.launcher.LauncherEngine",
-            "projectName": "launcher"
+            "projectName": "WayZ-Launcher"
           }
     ]
 }

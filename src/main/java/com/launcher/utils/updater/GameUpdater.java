@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameFolder;
+import com.launcher.utils.LauncherConfig;
 import com.launcher.utils.assets.AssetIndex;
 import com.launcher.utils.assets.AssetObject;
 import com.launcher.utils.file.FileUtil;
@@ -89,7 +90,7 @@ public class GameUpdater {
 	 */
 	public AssetIndex assetsList;
 	private MinecraftVersion minecraftVersion;
-	private GameEngine engine;
+	protected GameEngine engine;
 	/**
 	 * The downloaded custom files
 	 */
@@ -106,7 +107,7 @@ public class GameUpdater {
 	/**
 	 * The game files verifier
 	 */
-	private final GameVerifier gameVerifier;
+	protected final GameVerifier gameVerifier;
 	
 	public GameUpdater(MinecraftVersion mcVersion, GameEngine engine) {
 		this.minecraftVersion = mcVersion;
@@ -330,7 +331,7 @@ public class GameUpdater {
 		final String modFileName = "mod.jar";
 		final File modFile = new File(engine.getGameFolder().getPlayDir(), "mods/"+modFileName);
 		if(!modFile.exists()) modFile.getParentFile().mkdirs();
-        final Downloader downloadModTask = new Downloader(modFile, PhotonUpdaterManager.getURL(UpdateFileType.MOD), PhotonUpdaterManager.getSHA1(UpdateFileType.MOD), this);
+        final Downloader downloadModTask = new Downloader(modFile, PhotonUpdaterManager.getURL(UpdateFileType.MOD, LauncherConfig.getConfig().versionChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.MOD), this);
         GameVerifier.addToFileList(modFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
         if (downloadModTask.requireUpdate()) {
             this.jarsExecutor.submit(downloadModTask);
@@ -339,7 +340,7 @@ public class GameUpdater {
         
 		final File photonFile = new File(engine.getGameFolder().getLibsDir(), "com/photon/api.jar");
 		if(!photonFile.exists()) photonFile.getParentFile().mkdirs();
-        final Downloader downloadAPITask = new Downloader(photonFile, PhotonUpdaterManager.getURL(UpdateFileType.API), PhotonUpdaterManager.getSHA1(UpdateFileType.API), this);
+        final Downloader downloadAPITask = new Downloader(photonFile, PhotonUpdaterManager.getURL(UpdateFileType.API, LauncherConfig.getConfig().versionChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.API), this);
         GameVerifier.addToFileList(photonFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
         if (downloadAPITask.requireUpdate()) {
             this.jarsExecutor.submit(downloadAPITask);

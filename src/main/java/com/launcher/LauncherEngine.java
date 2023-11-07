@@ -4,9 +4,16 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import javax.swing.JOptionPane;
 
+import com.launcher.utils.ConfigVersion.EnumLogAutoClearTimer;
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameFolder;
 import com.launcher.utils.GameLinks;
@@ -53,8 +60,27 @@ public class LauncherEngine {
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
+
+		LauncherEngine.clearLogs();
         
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
+	}
+
+	public static void clearLogs() throws IOException {
+		final File logsFolder = new File(gameFolder.gameDir, "/logs/");
+		if(!logsFolder.exists()) return;
+
+		for(File file : logsFolder.listFiles()) {
+			String name = file.getName();
+			if(name.endsWith(".log")) {
+				Path filePath = Paths.get(file.getAbsolutePath());
+				FileTime fileTime = Files.getLastModifiedTime(filePath);
+				LocalDateTime localDateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+				EnumLogAutoClearTimer timerConfig = LauncherConfig.getConfig().autoClearLogTimer;
+				LocalDateTime difference = LocalDateTime.now().minus(timerConfig.unit, timerConfig.chronoUnit);
+				if (localDateTime.isBefore(difference)) file.delete();
+			}
+		}
 	}
 }

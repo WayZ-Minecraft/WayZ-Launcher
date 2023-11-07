@@ -90,9 +90,8 @@ public class Downloader extends Thread {
 	 * @return If the file require a update
 	 */
 	public boolean requireUpdate() {
-		if ((this.file.exists()) && (FileUtil.matchSHA1(this.file, this.sha1))) {
-			return false;
-		}
-		return true;
+		if (this.file.exists() && FileUtil.matchSHA1(this.file, this.sha1)) return false;
+		return !this.updater.gameVerifier.existInIgnoreListFolder(file.getParent().replace(
+			this.updater.engine.getGameFolder().getGameDir().getAbsolutePath(), ""));
 	}
 }

@@ -1,11 +1,14 @@
 package com.launcher.ui.settings.boxes.launcher;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.launcher.LauncherEngine;
 import com.launcher.ui.settings.GlobalSettings;
 import com.launcher.ui.settings.boxes.TextFieldElement;
 import com.launcher.utils.LauncherConfig;
+import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.ApplicationUtils;
 import com.photon.util.os.FileLocation;
@@ -47,7 +50,6 @@ public class LaunchSettings extends TextFieldElement {
             LauncherConfig.getConfig().send_reports = object;
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
-
         this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
                 FileLocation.playSound("sounds/click_btn", 0);
                 deleteFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
@@ -57,6 +59,14 @@ public class LaunchSettings extends TextFieldElement {
                 FileLocation.playSound("sounds/click_btn", 0);
                 OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
         }), 0, 3);
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.clear_logs"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e", (object, event) -> {
+                FileLocation.playSound("sounds/click_btn", 0);
+                try {
+                    LauncherEngine.clearLogs();
+                } catch (IOException e) {
+                    ConsoleManager.create(ConsoleManager.of(e)).error().withType(EnumLogType.LAUNCHER).end();
+                }
+        }), 0, 4);
     }
 
     private static void deleteFolder(File folder) {
