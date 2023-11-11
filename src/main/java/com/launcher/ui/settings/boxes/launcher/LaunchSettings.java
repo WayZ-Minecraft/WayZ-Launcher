@@ -51,21 +51,21 @@ public class LaunchSettings extends TextFieldElement {
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
         this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
-                FileLocation.playSound("sounds/click_btn", 0);
-                deleteFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
-                ApplicationUtils.exitProperly();
+            FileLocation.playSound("sounds/click_btn", 0);
+            deleteFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
+            ApplicationUtils.exitProperly();
         }), 0, 2);
         this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.get_files"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e", (object, event) -> {
-                FileLocation.playSound("sounds/click_btn", 0);
-                OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
+            FileLocation.playSound("sounds/click_btn", 0);
+            OperatingSystem.openFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
         }), 0, 3);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.clear_logs"), TranslationManager.format("settings.launcher.properties.btn.get_files.inner"), "logos/folder.png", "#ffeb7e", (object, event) -> {
-                FileLocation.playSound("sounds/click_btn", 0);
-                try {
-                    LauncherEngine.clearLogs();
-                } catch (IOException e) {
-                    ConsoleManager.create(ConsoleManager.of(e)).error().withType(EnumLogType.LAUNCHER).end();
-                }
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.clear_logs"), TranslationManager.format("settings.launcher.properties.btn.clear_logs.inner"), "logos/delete.png", "#ffeb7e", (object, event) -> {
+            FileLocation.playSound("sounds/click_btn", 0);
+            try {
+                LauncherEngine.clearLogs();
+            } catch (IOException e) {
+                ConsoleManager.create(ConsoleManager.of(e)).error().withType(EnumLogType.LAUNCHER).end();
+            }
         }), 0, 4);
     }
 
