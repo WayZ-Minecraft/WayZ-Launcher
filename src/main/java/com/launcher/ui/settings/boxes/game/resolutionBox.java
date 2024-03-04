@@ -106,7 +106,10 @@ public class resolutionBox extends TextFieldElement{
      */
     private void setupCheckBoxes(CheckBox[] checkBoxs) {
         for (CheckBox checkBox : checkBoxs) {
-            checkBox.setOnMouseEntered(e -> checkBox.setCursor(Cursor.HAND));
+            checkBox.setOnMouseEntered(e -> {
+                FileLocation.playSound("sounds/hover_btn", 0);
+                checkBox.setCursor(Cursor.HAND);
+            });
             checkBox.setOnAction(e -> {
                 for (CheckBox checkBox2 : checkBoxs) checkBox2.setSelected(checkBox2 == checkBox);
             });

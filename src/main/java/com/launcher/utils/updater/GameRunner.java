@@ -52,7 +52,7 @@ public class GameRunner {
 						/* Show the frames and active buttons */
 						this.engine.crashRunnable.run();
 						this.updater.reset();
-		
+						
 						/* Log the error */
 						ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
 					} else {
@@ -63,8 +63,6 @@ public class GameRunner {
 			});
 			t.setDaemon(true);
 			t.start();
-
-			Thread.sleep(5 * 1000); // 5 seconds
 			this.engine.startRunnable.run();
 		} catch (Exception e) { throw new Exception("Cannot launch !", e); }
 	}

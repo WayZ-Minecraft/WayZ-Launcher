@@ -40,7 +40,6 @@ public class GameFolder {
 		this.getNativesDir().mkdirs();
 		this.getNativesCacheDir().mkdirs();
 		this.getPlayDir().mkdirs();
-		this.getRuntimeDir().mkdirs();
 		this.getVersionsDir().mkdirs();
 	}
 
@@ -49,6 +48,7 @@ public class GameFolder {
 	}
 
 	public File getRuntimeDir() {
+		this.getRuntimeDir().mkdirs();
 		return this.runtimeDir;
 	}
 

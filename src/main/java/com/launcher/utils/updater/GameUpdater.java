@@ -155,8 +155,12 @@ public class GameUpdater {
 		ConsoleManager.create("start other files updating").withType(EnumLogType.LAUNCHER).end();
 		this.updateCustomFiles();
 
-		ConsoleManager.create("start java download").withType(EnumLogType.LAUNCHER).end();
-		this.downloadJavaManifest();
+		if(checkJavaInstallation(minecraftVersion))
+			ConsoleManager.create("Java " + System.getProperty("java.version") + " Installed. Skipping java installation").withType(EnumLogType.LAUNCHER).end();
+		else {
+			ConsoleManager.create("start java download").withType(EnumLogType.LAUNCHER).end();
+			this.downloadJavaManifest();
+		}
 
 		/* Verify files before launching */
 		ConsoleManager.create("verify all change").withType(EnumLogType.LAUNCHER).end();
@@ -167,6 +171,10 @@ public class GameUpdater {
 		this.runGame();
 	}
 	
+	public static boolean checkJavaInstallation(MinecraftVersion minecraftVersion) {
+		return minecraftVersion.getJavaVersion().getMajorVersion() <= Double.valueOf(System.getProperty("java.version").substring(0, 3));
+	}
+
 	/**
 	 * Update minecraft assets
 	 */

@@ -62,7 +62,6 @@ public class LauncherEngine {
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
 		
 		LauncherEngine.clearLogs();
-        
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
 	}
