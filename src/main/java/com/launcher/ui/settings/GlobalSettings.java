@@ -14,7 +14,6 @@ import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -80,9 +79,7 @@ public class GlobalSettings {
      */
     private static Pane getResetButton(){
         ActionButton button = new ActionButton(TranslationManager.format("btn.settings.reset"), "logos/refresh-arrow.png", "#8b2628");
-        button.setClick(()-> {
-            LauncherConfig.resetConfig();
-        });
+        button.setClick(()-> LauncherConfig.resetConfig());
         return button.loadNavigateButton();
     }
 
@@ -105,8 +102,7 @@ public class GlobalSettings {
     private static Pane getSettingsTemplate() {
         Pane template = new Pane();
 
-        ImageView backgroundPicture = JFXUtils.loadImageView("settingsBackground.jpg", MainStage.launcherWidth, MainStage.launcherHeight);
-        template.getChildren().add(backgroundPicture);
+        template.getChildren().add(JFXUtils.loadImageView("settingsBackground.jpg", MainStage.launcherWidth, MainStage.launcherHeight));
 
         Pane buttonBack = getBackButton();
         template.getChildren().add(buttonBack);

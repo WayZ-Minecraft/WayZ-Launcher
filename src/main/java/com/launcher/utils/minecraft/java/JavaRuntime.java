@@ -7,9 +7,7 @@ public class JavaRuntime {
 	public DownloadInfo manifest;
 	public JavaRuntimeVersion version;
 
-	public JavaRuntime() {
-
-	}
+	public JavaRuntime() {}
 
 	public JavaRuntime(JavaRuntime o) {
 		this.availability = o.availability;

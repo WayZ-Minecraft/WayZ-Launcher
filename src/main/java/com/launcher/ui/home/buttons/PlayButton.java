@@ -29,6 +29,7 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -171,6 +172,7 @@ public class PlayButton {
             timelineExited.stop();
             timelineEntered.play();
             FileLocation.playSound("sounds/hover_btn", 0);
+            buttonCanvas.setCursor(Cursor.HAND);
         });
             
         buttonCanvas.setOnMouseExited(e -> {
@@ -218,8 +220,15 @@ public class PlayButton {
         try {
             Platform.runLater(() -> {
                 MainStage.globalPane.setVisible(true);
+
+                /* Hide progress bar */
                 GlobalHome.pb.setVisible(false);
                 GlobalHome.pb.setProgress(0);
+
+                /* Hide status text */
+                GlobalHome.status.setVisible(false);
+                GlobalHome.setStatus(0, 0);
+
                 generatePlayButton();
                 MainStage.homePane = GlobalHome.getHomeMenu(false);
                 MainStage.setScene("LAUNCHER");
@@ -249,33 +258,28 @@ public class PlayButton {
             
             timelineExited.stop();
             timelineEntered.stop();
-            timelineClicked.play();
-            
+            timelineClicked.play(); 
             
             final Thread t = new Thread(() -> {
                 if(updater.filesToDownload > nbFilesToBeUpdating) {
                     onUpdating = true;
                     GlobalHome.pb.setVisible(true); 
+                    GlobalHome.status.setVisible(true); 
                     while(updateThread.isAlive()) {
-                        try {
-                            Thread.sleep(300);
-                            } catch (InterruptedException e) {
-                                ConsoleManager.create("download interrupted").withType(EnumLogType.LAUNCHER).error().end();
-                                break;
-                            }
-                            
-                            GlobalHome.pb.setProgress(MainStage.progress = (updater.downloadedFiles/(double)updater.filesToDownload));
-                            // status.setText(TranslationManager.format("updater.count", updater.downloadedFiles, updater.filesToDownload));
+                        try { Thread.sleep(300); }
+                        catch (InterruptedException e) {
+                            ConsoleManager.create("download interrupted").withType(EnumLogType.LAUNCHER).error().end();
+                            break;
                         }
+                        GlobalHome.pb.setProgress(MainStage.progress = updater.downloadedFiles / (double) updater.filesToDownload);
+                        GlobalHome.setStatus(updater.downloadedFiles, updater.filesToDownload);
                     }
-
-                });
-                
-                t.setDaemon(true);
-                
-                /* Start updating */
-                updateThread = new Thread(() -> { updater.downloadGameAndRun(t); });
-
+                }
+            });
+            t.setDaemon(true);
+            
+            /* Start updating */
+            updateThread = new Thread(() -> { updater.downloadGameAndRun(t); });
             updateThread.start();
             
             /* Set executables for every type of exit and launch */
@@ -283,12 +287,10 @@ public class PlayButton {
                 if(!LauncherConfig.getConfig().keep_open) Platform.runLater(() -> System.exit(0));
                 else MainStage.globalPane.setVisible(false);
             };
-            LauncherEngine.gameEngine.exitRunnable = () -> {
-                reLaunchLauncher();
-            };
+            LauncherEngine.gameEngine.exitRunnable = () -> reLaunchLauncher();
             LauncherEngine.gameEngine.crashRunnable = () -> {
                 reLaunchLauncher();
-                final File crashDir = new File(LauncherEngine.gameEngine.getGameFolder().getBinDir(), "crash-reports/");
+                final File crashDir = new File(LauncherEngine.gameEngine.getGameFolder().getPlayDir(), "crash-reports/");
                 if(!crashDir.exists()) crashDir.mkdirs();
                 if(LauncherConfig.getConfig().send_reports) {
                     for(File crashFile : crashDir.listFiles()) {

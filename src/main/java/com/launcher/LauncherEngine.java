@@ -5,15 +5,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Date;
+import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
-import com.launcher.utils.ConfigVersion.EnumLogAutoClearTimer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.AgeFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+
 import com.launcher.utils.GameEngine;
 import com.launcher.utils.GameFolder;
 import com.launcher.utils.GameLinks;
@@ -48,39 +48,32 @@ public class LauncherEngine {
 		}
 		
 		/* Init launcher folders and infos */
-    	gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
+		gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
 		gameFolder = new GameFolder(PhotonInfosManager.getInfos().project_id+"-launcher");
     	gameEngine = new GameEngine(gameFolder, gameLinks, PhotonInfosManager.getInfos().project_name);
 		
 		/* Init logging */
-    	final File logsFolder = new File(gameFolder.gameDir, "/logs/");
+    	final File logsFolder = new File(gameFolder.playDir, "/logs/");
     	if(!logsFolder.exists()) logsFolder.mkdirs();
     	ConsoleManager.registerFileHandler(new File(logsFolder, "launcher.log"));
-
+		
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
-
+		
 		LauncherEngine.clearLogs();
-        
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
 	}
 
 	public static void clearLogs() throws IOException {
-		final File logsFolder = new File(gameFolder.gameDir, "/logs/");
+		final File logsFolder = new File(gameFolder.playDir, "/logs/");
 		if(!logsFolder.exists()) return;
 
-		for(File file : logsFolder.listFiles()) {
-			String name = file.getName();
-			if(name.endsWith(".log")) {
-				Path filePath = Paths.get(file.getAbsolutePath());
-				FileTime fileTime = Files.getLastModifiedTime(filePath);
-				LocalDateTime localDateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
-				EnumLogAutoClearTimer timerConfig = LauncherConfig.getConfig().autoClearLogTimer;
-				LocalDateTime difference = LocalDateTime.now().minus(timerConfig.unit, timerConfig.chronoUnit);
-				if (localDateTime.isBefore(difference)) file.delete();
-			}
+		Iterator<File> filesToDelete = FileUtils.iterateFiles(logsFolder, new AgeFileFilter(new Date()), TrueFileFilter.TRUE);
+		while(filesToDelete.hasNext()) {
+			File file = filesToDelete.next();
+			if(!file.getName().equals("launcher.log") && (file.getName().endsWith(".log") || file.getName().endsWith(".log.gz"))) Files.delete(file.toPath());
 		}
 	}
 }

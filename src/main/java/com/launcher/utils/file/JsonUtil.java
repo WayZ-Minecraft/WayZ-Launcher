@@ -23,7 +23,6 @@ public class JsonUtil {
 		gsonBuilder.registerTypeAdapter(Date.class, new DateTypeAdapter());
 		gsonBuilder.registerTypeAdapter(Argument.class, new Argument.Serializer());
 		gsonBuilder.enableComplexMapKeySerialization();
-		gsonBuilder.setPrettyPrinting();
 		return gsonBuilder.create();
 	}
 

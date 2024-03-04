@@ -13,6 +13,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -117,6 +118,7 @@ public class LanguageBox extends TextFieldElement {
             fillTransition.setFromValue(UnActiveColor);
             fillTransition.setToValue(ActiveColor);
             fillTransition.playFromStart();
+            languageBox.setCursor(Cursor.HAND);
         });
     
         languageBox.setOnMouseExited(e -> {

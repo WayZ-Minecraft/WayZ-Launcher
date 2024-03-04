@@ -50,7 +50,7 @@ public class LaunchSettings extends TextFieldElement {
             LauncherConfig.getConfig().send_reports = object;
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
-        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"),  TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
+        this.content.add(this.getButtonLine(TranslationManager.format("settings.launcher.properties.btn.reset_files"), TranslationManager.format("settings.launcher.properties.btn.reset_files.inner"), "logos/delete.png", "#ffffff", (object, event) -> {
             FileLocation.playSound("sounds/click_btn", 0);
             deleteFolder(LauncherEngine.gameEngine.getGameFolder().getGameDir());
             ApplicationUtils.exitProperly();

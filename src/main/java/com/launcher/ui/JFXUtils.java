@@ -2,9 +2,11 @@ package com.launcher.ui;
 
 import java.io.InputStream;
 
+import com.launcher.ui.settings.boxes.TextFieldElement;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
+import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
 import javafx.animation.ParallelTransition;
@@ -13,6 +15,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -37,7 +40,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 
 public class JFXUtils {
-
+    
     /**
      * to get a custom font
      * @param fontWeight : Weight of the font (light, bold, regular)
@@ -71,7 +74,7 @@ public class JFXUtils {
      */
     public static Text loadText(String text, int size, String color, String fontWeight){
         final Text textPlay = new Text(text);
-
+        
         final Font customFont = getFont(fontWeight, size);
         textPlay.setFont(customFont);
         textPlay.setStyle("-fx-fill: " + color + ";");
@@ -91,7 +94,7 @@ public class JFXUtils {
      * @param backgroundColor : Color of the box
      * @return Pane : The box with the text
      */
-    public static Pane loadTextBox(String text, int textSize, int with, int height, Color backgroundColor, boolean justify ,boolean editable, boolean mouseSelection, RunnableTask<TextArea, ? super KeyEvent> action){
+    public static Pane loadTextBox(String text, int textSize, int with, int height, Color backgroundColor, boolean justify, boolean editable, boolean mouseSelection, RunnableTask<TextArea, ? super KeyEvent> action){
         Pane textBox = new Pane();
         textBox.setPrefWidth(with);
         textBox.setPrefHeight(height);
@@ -121,6 +124,21 @@ public class JFXUtils {
         textArea.setLayoutY(10);
         textBox.getChildren().add(textArea);
 
+        FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), background);
+        fillTransition.setCycleCount(1);
+        textArea.setOnMouseEntered(e -> {
+            fillTransition.setFromValue(backgroundColor);
+            fillTransition.setToValue(TextFieldElement.switchColorHover);
+            fillTransition.playFromStart();
+            FileLocation.playSound("sounds/hover_btn", 0);
+        });
+    
+        textArea.setOnMouseExited(e -> {
+            fillTransition.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition.setToValue(backgroundColor);
+            fillTransition.playFromStart();
+        });
+
         return textBox;
     }
 
@@ -133,7 +151,7 @@ public class JFXUtils {
      * @param backgroundColor : Color of the box
      * @return Pane : The box with the text
      */
-    public static Pair<StackPane,TextField> loadTextField(String text, int textSize, Color textColor ,int with, int height, Color backgroundColor, RunnableTask<TextField, ? super KeyEvent> action){
+    public static Pair<StackPane,TextField> loadTextField(String text, int textSize, Color textColor, int with, int height, Color backgroundColor, RunnableTask<TextField, ? super KeyEvent> action){
         StackPane textBox = new StackPane();
         textBox.setPrefSize(with, height);
         textBox.setMaxWidth(with);
@@ -144,6 +162,22 @@ public class JFXUtils {
         final TextField valueText = new TextField(text);
         valueText.setFont(getFont("light", textSize));
         valueText.setStyle("-fx-background-color: transparent; -fx-text-fill: " + textColor.toString().replace("0x", "#") + ";");
+        
+        FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), background);
+        fillTransition.setCycleCount(1);
+        valueText.setOnMouseEntered(e -> {
+            fillTransition.setFromValue(backgroundColor);
+            fillTransition.setToValue(TextFieldElement.switchColorHover);
+            fillTransition.playFromStart();
+            FileLocation.playSound("sounds/hover_btn", 0);
+        });
+    
+        valueText.setOnMouseExited(e -> {
+            fillTransition.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition.setToValue(backgroundColor);
+            fillTransition.playFromStart();
+        });
+
         valueText.setAlignment(Pos.CENTER);
         valueText.selectRange(0, 0);
         if(action !=null) valueText.setOnKeyTyped(event -> action.run(valueText, event));
@@ -245,7 +279,7 @@ public class JFXUtils {
             fillTransition.setToValue(TriggerColorCheck);
             parallelTransition.play();
         }
-
+        
         switchedOn.addListener((obs, oldState, newState) -> {
             boolean isOn = newState.booleanValue();
             translateTransition.setToX(isOn ? width - height : 1);
@@ -259,6 +293,21 @@ public class JFXUtils {
             action.run(switchedOn.get(), e);
         });
 
+        FillTransition fillTransition2 = new FillTransition(Duration.millis(100), background);
+        boxCheck.setOnMouseEntered(e -> {
+            FileLocation.playSound("sounds/hover_btn", 0);
+            fillTransition2.setFromValue(backgroundColor);
+            fillTransition2.setToValue(TextFieldElement.switchColorHover);
+            fillTransition2.play();
+            boxCheck.setCursor(Cursor.HAND);
+        });
+
+        boxCheck.setOnMouseExited(e -> {
+            fillTransition2.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition2.setToValue(backgroundColor);
+            fillTransition2.play();
+        });
+        
         return boxCheck;
     }
 
@@ -307,6 +356,23 @@ public class JFXUtils {
             }
         });
 
+        FillTransition fillTransition = new FillTransition(Duration.seconds(0.3), track);
+        fillTransition.setCycleCount(1);
+
+        track.setOnMouseEntered(e -> {
+            ConsoleManager.debug("hey");
+            fillTransition.setFromValue(BackgroundColorPreThumb);
+            fillTransition.setToValue(Color.RED);
+            fillTransition.playFromStart();
+            FileLocation.playSound("sounds/hover_btn", 0);
+        });
+    
+        track.setOnMouseExited(e -> {
+            fillTransition.setFromValue(Color.RED);
+            fillTransition.setToValue(BackgroundColorPreThumb);
+            fillTransition.playFromStart();
+        });
+
         StackPane pane = new StackPane();
         pane.setPrefSize(width, height);
         pane.setAlignment(Pos.CENTER_LEFT);
@@ -351,7 +417,6 @@ public class JFXUtils {
                 slider.setValue(Double.parseDouble(valueText.getText()));
             }
         });
-
 
         StackPane valuePane = new StackPane();
         valuePane.getChildren().add(value);

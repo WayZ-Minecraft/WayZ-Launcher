@@ -8,11 +8,9 @@ import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
 import javafx.scene.control.TextArea;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class JvmBox extends TextFieldElement {
     
@@ -39,13 +37,8 @@ public class JvmBox extends TextFieldElement {
 
     private Pane getIconBox() {
         StackPane iconBox = new StackPane();
-        
-        Rectangle background = JFXUtils.loadBackground(30, contentHeight, iconBackgroundColor, 20);
-        iconBox.getChildren().add(background);
-
-        ImageView icon = JFXUtils.loadImageView("logos/java.png", 200, iconSize, "#ffffff");
-        iconBox.getChildren().add(icon);
-
+        iconBox.getChildren().add(JFXUtils.loadBackground(30, contentHeight, iconBackgroundColor, 20));
+        iconBox.getChildren().add(JFXUtils.loadImageView("logos/java.png", 200, iconSize, "#ffffff"));
         return iconBox;
     }
 
@@ -63,11 +56,7 @@ public class JvmBox extends TextFieldElement {
 
     @Override
     protected void fillBox() {
-        Pane jvmInfoPane = this.getJvmInfoPane();
-        this.content.getChildren().add(jvmInfoPane);
-
-        Pane iconBox = this.getIconBox();
-        this.content.getChildren().add(iconBox);
+        this.content.getChildren().add(this.getJvmInfoPane());
+        this.content.getChildren().add(this.getIconBox());
     }
-    
 }

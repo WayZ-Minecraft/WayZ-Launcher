@@ -35,6 +35,7 @@ public abstract class TextFieldElement {
     protected final static Color switchColorNotCheck = Color.web("#f2f2f2");
     protected final static Color switchColorCheck = Color.web("#82a77d");
     protected final static Color switchColorBackground = Color.web("#181a1c");
+    public final static Color switchColorHover = Color.web("#282a2c");
 
     protected final static Color backgroundColorZoneText = Color.web("#181a1c");
     protected final static int textSizeZoneText = 14;

@@ -6,6 +6,7 @@ import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
 import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
+import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
 import javafx.scene.control.ProgressBar;
@@ -20,17 +21,14 @@ import javafx.scene.text.Text;
 
 public class GlobalHome {
 
-
+    public static Text status;
     public static ProgressBar pb = new ProgressBar(0);
 
     /**
-     * 
      * @return Pane : The home menu
      */
     public static Pane getHomeMenu(boolean disabled) {
         Pane globalPane = new Pane();
-
-
 
         // Background
         ImageView backgroundPicture = JFXUtils.loadImageView("homeBackground.jpg", MainStage.launcherWidth, MainStage.launcherHeight);
@@ -52,12 +50,12 @@ public class GlobalHome {
         "#8b2628", "#0c0d0e", "none"));
         globalPane.getChildren().add(pb);
         
-        // // Status bar
-        // final Text status = JFXUtils.loadText("", 15, "ffffff", "light");
-        // status.setLayoutX(MainStage.launcherWidth-15-status.getLayoutBounds().getWidth());
-        // status.setLayoutY(MainStage.launcherHeight-25);
-        // status.setVisible(disabled);
-        // globalPane.getChildren().add(status);
+        // Status text
+        status = JFXUtils.loadText("", 15, "ffffff", "light");
+        status.setLayoutX(MainStage.launcherWidth - 15 - status.getLayoutBounds().getWidth());
+        status.setLayoutY(MainStage.launcherHeight - 25);
+        status.setVisible(false);
+        globalPane.getChildren().add(status);
 
         // Play button
         AnchorPane playButton = PlayButton.getPlayButton();
@@ -65,7 +63,6 @@ public class GlobalHome {
         playButton.setLayoutX(680);
         playButton.setLayoutY(500);
         playButton.setDisable(disabled);
-        
 
         // Logo
         ImageView iconImage = getIconImage();
@@ -175,7 +172,6 @@ public class GlobalHome {
         return pane;
     }
 
-
     /**
      * Create the top bar of the launcher
      * @param height : height of the bar
@@ -210,6 +206,10 @@ public class GlobalHome {
             MainStage.minimizeLauncher();
         });
         return Bar;
+    }
 
+    public static void setStatus(int min, int max) {
+        status.setText(TranslationManager.format("updater.count", min, max));
+        status.setLayoutX(MainStage.launcherWidth - 15 - status.getLayoutBounds().getWidth());
     }
 }

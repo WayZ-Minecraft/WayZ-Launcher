@@ -90,11 +90,8 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static void forceDeleteOnExit(File file) throws IOException {
-		if (file.isDirectory()) {
-			deleteDirectoryOnExit(file);
-		} else {
-			file.deleteOnExit();
-		}
+		if (file.isDirectory()) deleteDirectoryOnExit(file);
+		else file.deleteOnExit();
 	}
 
 	/**
@@ -115,13 +112,9 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static boolean isSymlink(File file) throws IOException {
-		if (file == null) {
-			throw new NullPointerException("File must not be null");
-		}
+		if (file == null) throw new NullPointerException("File must not be null");
 		char WINDOWS_SEPARATOR = '\\';
-		if (File.separatorChar == WINDOWS_SEPARATOR) {
-			return false;
-		}
+		if (File.separatorChar == WINDOWS_SEPARATOR) return false;
 		File fileInCanonicalDir = null;
 		if (file.getParent() == null) fileInCanonicalDir = file;
 		else {
@@ -147,9 +140,7 @@ public class FileUtil {
 			throw new IllegalArgumentException(message);
 		}
 		File[] files = directory.listFiles();
-		if (files == null) {
-			throw new IOException("Failed to list contents of " + directory);
-		}
+		if (files == null) throw new IOException("Failed to list contents of " + directory);
 		IOException exception = null;
 		for (File file : files) {
 			try { forceDeleteOnExit(file); } catch (IOException ioe) { exception = ioe; }
