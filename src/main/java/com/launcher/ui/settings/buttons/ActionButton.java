@@ -3,6 +3,7 @@ package com.launcher.ui.settings.buttons;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
+import javafx.scene.Cursor;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -10,7 +11,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class ActionButton extends NavigateButton {
-
+    
     Color animationColor = Color.web("#1a1b1c");
 
     /**
@@ -34,7 +35,6 @@ public class ActionButton extends NavigateButton {
         });
     }
 
-
     /**
      * 
      * @param background Rectangle : Background of the button
@@ -51,6 +51,7 @@ public class ActionButton extends NavigateButton {
             fillTransition.setFromValue(this.backgroundColor);
             fillTransition.setToValue(this.animationColor);
             fillTransition.playFromStart();
+            this.button.setCursor(Cursor.HAND);
         });
     
         this.button.setOnMouseExited(e -> {
@@ -58,8 +59,5 @@ public class ActionButton extends NavigateButton {
             fillTransition.setToValue(this.backgroundColor);
             fillTransition.playFromStart();
         });
-        
     }
-
-
 }

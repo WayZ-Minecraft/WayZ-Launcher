@@ -70,15 +70,17 @@ public class RamBox extends TextFieldElement{
         },
         (o, e) -> {
             FileLocation.playSound("sounds/key_typing", 0);
-            LauncherConfig.getConfig().allocatedram = Double.valueOf(o.getText());
+            String text = o.getText();
+            LauncherConfig.getConfig().allocatedram = Double.valueOf(text.isEmpty() ? "2" : text);
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         }), 0, 1);
         this.content.add(JFXUtils.loadTextBox(
-                ramDefinition, textSizeZoneText, this.contentWidth/2 - sidePadding, 100,
-                backgroundColorZoneText, true ,false, false, (o, e) -> {
-                FileLocation.playSound("sounds/key_typing", 0);
-                LauncherConfig.getConfig().allocatedram = Double.valueOf(o.getText());
-                GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
-            }), 1, 0, 1, 2);
+            ramDefinition, textSizeZoneText, this.contentWidth/2 - sidePadding, 100,
+            backgroundColorZoneText, true ,false, false, (o, e) -> {
+            FileLocation.playSound("sounds/key_typing", 0);
+            String text = o.getText();
+            LauncherConfig.getConfig().allocatedram = Double.valueOf(text.isEmpty() ? "2" : text);
+            GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
+        }), 1, 0, 1, 2);
     }
 }

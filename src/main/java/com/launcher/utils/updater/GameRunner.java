@@ -34,35 +34,39 @@ public class GameRunner {
 	}
 
     public void launch() throws Exception {
-    	final ArrayList<String> commands = this.getLaunchCommand();
-        final ProcessBuilder processBuilder = new ProcessBuilder(commands);
-        processBuilder.redirectInput(Redirect.INHERIT);
-        processBuilder.redirectOutput(Redirect.INHERIT);
-        processBuilder.redirectError(Redirect.INHERIT);
+        final ProcessBuilder processBuilder = new ProcessBuilder(this.getLaunchCommand());
+		processBuilder.redirectInput(Redirect.INHERIT).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT);
 		processBuilder.directory(engine.getGameFolder().getGameDir());
 		processBuilder.redirectErrorStream(true);
 		updater.setCurrentInfoText("updater.launching");
 		
 		/* Display configuration */
-		List<String> commandLine = processBuilder.command();
-		ConsoleManager.create(String.join(" ", commandLine)).end();
-
+		// ConsoleManager.create(String.join(" ", processBuilder.command() )).end();
+		
 		try {
 			final Process process = processBuilder.start();
-            this.engine.startRunnable.run();
-			final int exitVal = process.waitFor();
-			if (exitVal != 0) {
-				/* Show the frames and active buttons */
-				try { process.waitFor(); } catch (InterruptedException e) { e.printStackTrace(); }
-				this.engine.crashRunnable.run();
-				this.updater.reset();
-				/* Log the error */
-				ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
-			} else {
-                this.updater.reset();
-                this.engine.exitRunnable.run();
-			}
-		} catch (IOException e) { throw new Exception("Cannot launch !", e); }
+			final Thread t = new Thread(() -> {
+				try {
+					final int exitVal = process.waitFor();
+					if (exitVal != 0) {
+						/* Show the frames and active buttons */
+						this.engine.crashRunnable.run();
+						this.updater.reset();
+		
+						/* Log the error */
+						ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
+					} else {
+						this.updater.reset();
+						this.engine.exitRunnable.run();
+					}
+				} catch (Exception e) { e.printStackTrace(); }
+			});
+			t.setDaemon(true);
+			t.start();
+
+			Thread.sleep(5 * 1000); // 5 seconds
+			this.engine.startRunnable.run();
+		} catch (Exception e) { throw new Exception("Cannot launch !", e); }
 	}
 
 	private ArrayList<String> getLaunchCommand() {
@@ -130,7 +134,6 @@ public class GameRunner {
 			commands.add("--height");
 			commands.add(LauncherConfig.getConfig().screenHeight);
 		}
-		
 		return commands;
 	}
 	

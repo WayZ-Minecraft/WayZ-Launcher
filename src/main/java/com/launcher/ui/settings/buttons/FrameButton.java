@@ -6,6 +6,7 @@ import com.launcher.ui.settings.GlobalSettings;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
+import javafx.scene.Cursor;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -85,6 +86,7 @@ public class FrameButton extends NavigateButton {
             fillTransition.setFromValue(backgroundColor);
             fillTransition.setToValue(animationColor);
             fillTransition.playFromStart();
+            this.button.setCursor(Cursor.HAND);
         });
 
         this.button.setOnMouseExited(e -> {

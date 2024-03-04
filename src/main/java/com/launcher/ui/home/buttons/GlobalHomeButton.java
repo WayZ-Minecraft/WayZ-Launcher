@@ -1,7 +1,8 @@
 package com.launcher.ui.home.buttons;
 
-import com.launcher.MainStage;
 import java.time.Instant;
+
+import com.launcher.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.photon.informations.ObjectInfos;
 import com.photon.informations.PhotonInfosManager;
@@ -11,6 +12,7 @@ import com.photon.util.os.OperatingSystem;
 
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
+import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -48,6 +50,7 @@ public class GlobalHomeButton {
             scaleTransition.setToX(1.1);
             scaleTransition.setToY(1.1);
             scaleTransition.play();
+            selectZone.setCursor(Cursor.HAND);
         });
         
         selectZone.setOnMouseExited(e -> {
@@ -143,6 +146,7 @@ public class GlobalHomeButton {
                 rotateTransition.setByAngle(-100);
                 rotateTransition.play();
             }
+            button.setCursor(Cursor.HAND);
         });
 
         button.setOnMouseExited(e -> {

@@ -34,8 +34,7 @@ public class FrameSettings {
     }
     
     private void asyncLoop(int count, double deltaY){
-        CompletableFuture.delayedExecutor(15, TimeUnit.MILLISECONDS)
-        .execute(() -> {
+        CompletableFuture.delayedExecutor(15, TimeUnit.MILLISECONDS).execute(() -> {
             // Perform asynchronous task here
             scrollPane.setVvalue(scrollPane.getVvalue() - deltaY);
             

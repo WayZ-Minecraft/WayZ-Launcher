@@ -7,6 +7,7 @@ import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
 
+import javafx.scene.Cursor;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -26,15 +27,11 @@ public class resolutionBox extends TextFieldElement{
 
     public resolutionBox(int boxWidth) {
         super(title, boxWidth, boxHeight);
-
         this.box.getChildren().add(content);
         this.content.setLayoutX(sidePadding);
         this.content.setLayoutY(50);
-
         this.content.setHgap(40);
-
         this.fillBox();
-
     }
 
     /**
@@ -55,7 +52,6 @@ public class resolutionBox extends TextFieldElement{
         line2.setStyle("-fx-stroke: #ffffff");
 
         pane.getChildren().addAll(line1,line2);
-
         return pane;
     }
 
@@ -74,8 +70,7 @@ public class resolutionBox extends TextFieldElement{
             LauncherConfig.getConfig().screenWidth = ((TextField)o).getText();
             GlobalSettings.saveButton.setIcon("logos/"+(!LauncherConfig.isSaved()?"not_":"")+"saved.png");
         });
-        StackPane widthResolutionBox = widthResolution.getKey();
-
+        
         Pair<StackPane,TextField> heightResolution = JFXUtils.loadTextField(Integer.toString(height), lineTextSize, lineTextColor, 100, lineHeight, backgroundColorZoneText, (o, e) -> {
             FileLocation.playSound("sounds/key_typing", 0);
             LauncherConfig.getConfig().screenHeight = ((TextField)o).getText();
@@ -86,15 +81,12 @@ public class resolutionBox extends TextFieldElement{
 
         Pane cross = this.loadCross((int)(lineTextSize*0.8), (int)(lineTextSize * 0.8));
 
-        pane.getChildren().addAll(widthResolutionBox, heightResolutionBox, cross);
+        pane.getChildren().addAll(widthResolution.getKey(), heightResolutionBox, cross);
         cross.setLayoutX(95);
         cross.setLayoutY((lineHeight - lineTextSize*0.8)/2);
         heightResolutionBox.setLayoutX(105);
 
-        if (!isActivated) {
-            this.setMask(pane, false);
-        }
-
+        if (!isActivated) this.setMask(pane, false);
         return pane;
     }
 
@@ -103,10 +95,8 @@ public class resolutionBox extends TextFieldElement{
      * @param Box : box to mask
      * @param Activate : true to activate the mask, false to desactivate
      */
-    private void setMask(Pane Box,boolean Activate){
-        for (TextField textField : this.textFields) {
-            textField.setDisable(!Activate);
-        }
+    private void setMask(Pane Box,boolean Activate) {
+        for (TextField textField : this.textFields) textField.setDisable(!Activate);
     }
 
 
@@ -114,17 +104,11 @@ public class resolutionBox extends TextFieldElement{
      * set the link between the checkboxs
      * @param checkBoxs : checkboxs to link
      */
-    private void setLinkCheckbox(CheckBox[] checkBoxs){
+    private void setupCheckBoxes(CheckBox[] checkBoxs) {
         for (CheckBox checkBox : checkBoxs) {
+            checkBox.setOnMouseEntered(e -> checkBox.setCursor(Cursor.HAND));
             checkBox.setOnAction(e -> {
-                checkBox.setSelected(true);
-                if (checkBox.isSelected()) {
-                    for (CheckBox checkBox2 : checkBoxs) {
-                        if (checkBox2 != checkBox) {
-                            checkBox2.setSelected(false);
-                        }
-                    }
-                }
+                for (CheckBox checkBox2 : checkBoxs) checkBox2.setSelected(checkBox2 == checkBox);
             });
         }
     }
@@ -138,8 +122,8 @@ public class resolutionBox extends TextFieldElement{
         CheckBox custom = new CheckBox("Custom");
         custom.setFont(JFXUtils.getFont("regular", lineTextSize));
 
-        setLinkCheckbox(new CheckBox[]{standard, custom});
-
+        setupCheckBoxes(new CheckBox[]{standard, custom});
+        
         Pane resolutionCustom = this.loadResolutionCustom(Integer.valueOf(LauncherConfig.getConfig().screenWidth), Integer.valueOf(LauncherConfig.getConfig().screenHeight), false);
         this.setMask(resolutionCustom, LauncherConfig.getConfig().useCustomSize);
         if(LauncherConfig.getConfig().useCustomSize) {

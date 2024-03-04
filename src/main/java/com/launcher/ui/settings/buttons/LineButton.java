@@ -4,6 +4,7 @@ import com.launcher.ui.settings.boxes.TextFieldElement;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
+import javafx.scene.Cursor;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -24,12 +25,13 @@ public class LineButton extends NavigateButton {
     public LineButton(String text, String imagePath, String pictureColor) {
         super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight,
         marginSide, TextFieldElement.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
-        this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 1.7 + 20 + 2 * marginSide); // 20 : size of the image
+        // this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 1.7 + 20 + 2 * marginSide); // 20 : size of the image
+        this.buttonWidth = 125;
         this.buttonRadius = 15;
     }
-
+    
     @Override protected void setTextPosition(Text textPlay) { AnchorPane.setLeftAnchor(textPlay, marginSide + 25); }
-
+    
     /**
      * Function to set the fill animation of the button
      * @param background Rectangle : Background of the button
@@ -45,6 +47,7 @@ public class LineButton extends NavigateButton {
             fillTransition.setToValue(this.animationColor);
             fillTransition.playFromStart();
             FileLocation.playSound("sounds/hover_btn", 0);
+            this.button.setCursor(Cursor.HAND);
         });
     
         this.button.setOnMouseExited(e -> {

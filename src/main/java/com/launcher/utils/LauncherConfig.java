@@ -11,7 +11,7 @@ public class LauncherConfig {
 
 	public static GameEngine gameEngine;
 	private static ConfigVersion config;
-	private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private final static Gson gson = new GsonBuilder().create();
 	private static File file;
 	
     public static void load(GameEngine engine) {

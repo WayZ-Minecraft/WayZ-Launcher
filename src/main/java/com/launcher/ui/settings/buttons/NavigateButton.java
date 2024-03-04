@@ -13,7 +13,7 @@ import javafx.scene.text.Text;
 abstract class NavigateButton {
 
     AnchorPane button = new AnchorPane();
-
+    
     String text;
     int textSize;
     String textColor;

@@ -54,10 +54,8 @@ public class Argument {
 	 * @author Trxyy
 	 */
 	public static class Serializer implements JsonDeserializer<Argument> {
-		public Argument deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-				throws JsonParseException {
-			if (json.isJsonPrimitive())
-				return new Argument(new String[] { json.getAsString() }, null);
+		public Argument deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			if (json.isJsonPrimitive()) return new Argument(new String[] { json.getAsString() }, null);
 			try {
 				if (json.isJsonObject()) {
 					String[] values;
@@ -74,8 +72,7 @@ public class Argument {
 					List<CompatibilityRule> rules = new ArrayList<CompatibilityRule>();
 					if (obj.has("compatibilityRules")) {
 						JsonArray array = obj.getAsJsonArray("compatibilityRules");
-						for (JsonElement element : array)
-							rules.add((CompatibilityRule) context.deserialize(element, CompatibilityRule.class));
+						for (JsonElement element : array) rules.add((CompatibilityRule) context.deserialize(element, CompatibilityRule.class));
 					}
 					return new Argument(values, rules);
 				}
@@ -84,9 +81,8 @@ public class Argument {
 					String[] values;
 					JsonObject obj = json.getAsJsonObject();
 					JsonElement value = obj.get("value");
-					if (value.isJsonPrimitive()) {
-						values = new String[] { value.getAsString() };
-					} else {
+					if (value.isJsonPrimitive()) values = new String[] { value.getAsString() };
+					else {
 						JsonArray array = value.getAsJsonArray();
 						values = new String[array.size()];
 						for (int i = 0; i < array.size(); i++)
