@@ -5,5 +5,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+rootProject.name = 'WayZ-Launcher'
+include('launcher')
+include('bootstrap')
 include('photon')
 project(':photon').projectDir = new File('../photon')

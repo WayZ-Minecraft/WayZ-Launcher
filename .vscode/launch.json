@@ -10,7 +10,15 @@
             "request": "launch",
             "console": "integratedTerminal",
             "mainClass": "com.launcher.LauncherEngine",
-            "projectName": "WayZ-Launcher"
-          }
+            "projectName": "launcher"
+        },
+        {
+            "type": "java",
+            "name": "Bootstrap",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "mainClass": "com.bootstrap.BootstrapEngine",
+            "projectName": "bootstrap"
+        }
     ]
 }

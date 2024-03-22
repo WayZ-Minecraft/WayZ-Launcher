@@ -1,10 +1,11 @@
-bin
 .vscode
 .classpath
 .project
 .settings
 .vscode
-build/
 .gradle
-logs/
+
 out.map
+logs/
+build/
+bin/

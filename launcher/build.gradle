@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	implementation fileTree(dir: 'libs', include: ['*.jar', '*.zip'])
+	implementation fileTree(dir: '../libs', include: ['*.jar', '*.zip'])
 	implementation(project(':photon')) {
     	exclude group: 'com.sun.mail'
     	exclude group: 'net.dv8tion'
@@ -51,7 +51,7 @@ shadowJar {
 tasks.register('proguard', proguard.gradle.ProGuardTask) {
     dependsOn jar
     dependsOn shadowJar
-    configuration file('obfuscate.pro')
+    configuration file('../obfuscate.pro')
     injars(tasks.named("shadowJar").flatMap { it.archiveFile })
     outjars(layout.buildDirectory.file("libs/${archivesBaseName}.jar"))
     libraryjars(configurations.shadow.filter { it.exists() })
