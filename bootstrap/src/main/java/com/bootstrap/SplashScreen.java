@@ -17,4 +17,8 @@ public class SplashScreen extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
+
+    public SplashPanel getPane() {
+        return (SplashPanel)this.getContentPane();
+    }
 }

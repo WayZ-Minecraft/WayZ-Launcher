@@ -30,4 +30,14 @@ public class SplashPanel extends JPanel {
         super.paintComponents(g);
         g.drawImage(this.image, this.getWidth()/5, this.getHeight()/5, 155, 155, this);
     }
+
+    public void setProgressBarVisibility(boolean visible) {
+        this.setProgressBarVisibility(visible, 0, 0);
+    }
+
+    public void setProgressBarVisibility(boolean visible, int progress, int maxProgress) {
+        this.progressBar.setVisible(visible);
+        this.progressBar.setValue(progress);
+        this.progressBar.setMaximum(maxProgress);
+    }
 }
