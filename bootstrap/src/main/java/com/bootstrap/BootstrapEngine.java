@@ -47,11 +47,12 @@ public class BootstrapEngine {
         splash.setVisible(true);
         panel.setProgressBarVisibility(false);
         
-        final File launcher = new File("launcher.jar");
+        final File workingDirectory = FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_id+"-bootstrap");
+        final File launcher = new File(workingDirectory, "launcher.jar");
+        final File jrePath = new File(workingDirectory, "runtime/bootstrap/").getAbsoluteFile();
         final File API = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/com/photon/api.jar");
         final File FX = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/jfx/");
         final File FXNATIVES = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/jfx/");
-        final File jrePath = new File("runtime/bootstrap/").getAbsoluteFile();
         String path = launcher.getAbsolutePath()+";"+API.getAbsolutePath()+";";
         String pathNatives = "";
 
