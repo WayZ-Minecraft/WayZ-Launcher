@@ -9,3 +9,7 @@ out.map
 logs/
 build/
 bin/
+*.exe
+*.pdb
+/bootstrap_v2/target/
+bootstrap_v2/Cargo.lock

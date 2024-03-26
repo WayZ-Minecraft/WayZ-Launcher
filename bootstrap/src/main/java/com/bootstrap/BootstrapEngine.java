@@ -52,14 +52,12 @@ public class BootstrapEngine {
         final File jrePath = new File(workingDirectory, "runtime/bootstrap/").getAbsoluteFile();
         final File API = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/com/photon/api.jar");
         final File FX = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/jfx/");
-        final File FXNATIVES = new File(FileLocation.getWorkingDirectory(PhotonInfosManager.getInfos().project_name+"-Launcher"), "/libraries/jfx/");
         String path = launcher.getAbsolutePath()+";"+API.getAbsolutePath()+";";
         String pathNatives = "";
 
         /* Check if the directories exist */
         checkExistOrCreate(API.getParentFile());
         checkExistOrCreate(FX);
-        checkExistOrCreate(FXNATIVES);
         checkExistOrCreate(jrePath);
         
         /* Update API */
@@ -67,7 +65,7 @@ public class BootstrapEngine {
 
         /* Update JFX */
         for(JFXFileType type : JFXFileType.values()) JFXUpdateManager.update(type, new File(FX, "javafx."+type.name().toLowerCase()+".jar"));
-
+        
         /* Update JVM */
         if(!checkJavaInstallation()) // If JAVA is not installed
             JVMUpdateManager.update(new File(jrePath, "jvm.zip"));
@@ -86,7 +84,7 @@ public class BootstrapEngine {
             }
             try {
                 final String java = checkJavaInstallation() ? OperatingSystem.getJavaPath() : jrePath.getAbsolutePath()+"\\bin\\java";
-                final ProcessBuilder builder = new ProcessBuilder(java, "-cp", path, "com.launcher.LauncherEngine", "-Djava.library.path="+pathNatives);
+                final ProcessBuilder builder = new ProcessBuilder(java, "-cp", "\""+path+"\"", "com.launcher.LauncherEngine", "-Djava.library.path="+pathNatives);
                 ConsoleManager.create(String.join(" ",  builder.command())).end();
                 builder.start();
                 System.exit(0);
