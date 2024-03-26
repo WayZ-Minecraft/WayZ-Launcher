@@ -1,99 +1,99 @@
-use std::{convert::TryInto, fmt::{format, Result}, net::TcpStream};
-use core::time::Duration;
-use std::error::Error;
+use std::net::TcpStream;
 use serde::Deserialize;
-use base64;
-use std::io::{Write, Read};
+use std::io::{Read, Write};
 
 use crate::network::Network;
 
 pub struct PhotonInfosManager;
 
 impl PhotonInfosManager {
-    pub async fn get_infos(fetch_url: &str, password: &str, user: &str, exceptions: &[String]) {
-        // // Construct the URL
-        // let response = Self::get_file("infos.json", fetch_url, password, user, exceptions).await?;
-        
-        // // Handle non-exception case
-        // if response.status().is_success() {
-        //     let response_text = response.text().await?;
-        //     if response_text.trim().is_empty() {
-        //         return Err("Empty response from server".into());
-        //     }
-        //     return Ok(serde_json::from_str(&response_text)?);
-        // } else {
-        //     // Handle non-success status code
-        //     return Err(format!("Server returned non-success status code: {}", response.status()).into());
-        // }
+    pub fn get_infos(fetch_url: &str, password: &str, user: &str, exceptions: &[String]) -> ObjectInfos {
+        // Get the infos from the server
+        let response = Self::get_file("files/services_update/infos.json", fetch_url, password, user, exceptions);
+        println!("{:?}", String::from_utf8_lossy(&response));
+        let object_infos: ObjectInfos = match serde_json::from_slice(String::from_utf8_lossy(&response).as_bytes()) {
+            Ok(data) => data,
+            Err(e) => {
+                println!("Failed to parse the response : {}", e);
+                std::process::exit(1); // Quit the app with exit code 1
+            }
+        };
+        object_infos
     }
 
-    pub fn get_file(file: &str, fetch_url: &str, password: &str, user: &str, exceptions: &[String]) -> Result<()> {
+    pub fn get_file(file: &str, fetch_url: &str, password: &str, user: &str, exceptions: &[String]) -> Vec<u8> {
         let web_url = format!("{}{}", fetch_url, file);
-        let mut stream = TcpStream::connect(web_url)?;
-    
-        Network::set_connect_timeout(&mut stream)?;
-        Network::set_user_agent(&mut stream)?;
-
-        if Network::check_exceptions(&web_url, &exceptions) {
-            return Ok(());
+        // let mut stream = match TcpStream::connect(web_url.clone()+":80") {
+        let mut stream = match TcpStream::connect("151.80.57.82:80") {
+            Ok(stream) => stream,
+            Err(_e) => {
+                println!("Failed to connect to the server : {}", _e);
+                return Vec::new(); // Return empty buffer if error occurs
+            }
+        };
+        
+        match Network::set_connect_timeout(&mut stream) {
+            Ok(_) => (),
+            Err(_e) => {
+                println!("Failed to set the connection timeout : {}", _e);
+                return Vec::new(); // Return empty buffer if error occurs
+            }
+        }
+        match Network::set_user_agent(&mut stream) {
+            Ok(_) => (),
+            Err(_e) => {
+                println!("Failed to set the user agent : {}", _e);
+                return Vec::new(); // Return empty buffer if error occurs
+            }
         }
 
-        Network::authenticate(&mut stream, &user, &password)?;
+        if Network::check_exceptions(&web_url, &exceptions) {
+            println!("Exception occurred");
+            return Vec::new(); // Return empty buffer if error occurs
+        }
 
-        // // Construct the URL
-        // let web_url = format!("{}{}", fetch_url, file);
-        // let url = Url::parse(&web_url).await?;
-    
-        // // Create a new Reqwest client
-        // let client = Client::builder()
-        //     .timeout(Duration::from_secs(TIME_OUT))
-        //     .user_agent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11")
-        //     .build()?;
-    
-        // // Set basic authentication
-        // let auth: String = format!("{}:{}", user, password);
-        // let auth_base64 = base64::encode(&auth);
-        // let auth_final = "Basic ".to_string() + (&auth_base64);
-        // let mut headers = reqwest::header::HeaderMap::new();
-        // headers.insert(
-        //     reqwest::header::AUTHORIZATION,
-        //     reqwest::header::HeaderValue::from_str(&auth_final).unwrap(),
-        // );
-        
-        // // Perform the HTTP request
-        // return client.get(url.clone()).headers(headers.clone()).send();
+        match Network::authenticate(&mut stream, &user, &password){
+            Ok(_) => (),
+            Err(_e) => {
+                println!("Failed to authenticate : {}", _e);
+                return Vec::new(); // Return empty buffer if error occurs
+            }
+        }
+
+        let mut buffer = Vec::new();
+        if let Err(_e) = stream.read_to_end(&mut buffer) {
+            println!("Failed to read the response : {}", _e);
+            return Vec::new(); // Return empty buffer if error occurs
+        }
+
+        return buffer;
     }
 
-    pub fn fetch_infos() -> [&str; 3] {
-        let mut response = ["", "", ""];
-        
+    pub fn fetch_infos() -> Result<Vec<Vec<String>>, String> {        
         // Connect to the server
         let mut stream = match std::net::TcpStream::connect("151.80.57.82:49554") {
             Ok(stream) => stream,
             Err(e) => {
-                eprintln!("Failed to connect: {}", e);
-                return response;
+                return Err(format!("Failed to connect: {}", e));
             }
         };
     
         // Write request
         if let Err(e) = stream.write_all(b"getInfos\n") {
-            eprintln!("Failed to send data: {}", e);
-            return response;
+            return Err(format!("Failed to send data: {}", e));
         }
     
         // Read response
         let mut buffer = String::new();
         if let Err(e) = stream.read_to_string(&mut buffer) {
-            eprintln!("Failed to receive data: {}", e);
-            return response;
+            return Err(format!("Failed to receive data: {}", e));
         }
     
         // Close the connection
         drop(stream);
         
-        response = buffer.trim().split(';').collect::<Vec<&str>>().try_into().unwrap(); // Split response by ';';
-        return response;
+        let split: Vec<Vec<String>> = buffer.trim().split(';').map(|s| s.split(',').map(|s| s.to_string()).collect()).collect();
+        Ok(split)
     }
 }
 

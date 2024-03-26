@@ -1,9 +1,8 @@
 use core::str;
 use std::time::Duration;
-use std::io::Read;
-use std::net::{TcpStream, ToSocketAddrs};
-use std::io::{Result, Error};
-use std::collections::HashSet;
+use std::io::Write;
+use std::net::TcpStream;
+use std::io::Result;
 
 const TIME_OUT: u64 = 5000; // milliseconds
 
