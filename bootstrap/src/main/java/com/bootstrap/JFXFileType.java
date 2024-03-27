@@ -1,3 +1,0 @@
-package com.bootstrap;
-
-public enum JFXFileType { GSON, LOG4J, BASE, CONTROLS, GRAPHICS, SWING, NATIVES_WINDOWS, NATIVES_LINUX, NATIVES_OSX; }

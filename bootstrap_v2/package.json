@@ -1,12 +1,27 @@
 {
-  "name": "bootstrap_v2",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "bootstrap_v2",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"bin": "index.js",
+	"scripts": {
+		"build_with_pkg": "pkg --verbose npm-shrinkwrap.json -t node18-macos-x64,node18-linux-x64,node18-win-x64 -o ./dist/ -C Brotli index.js --icon=./assets/icon.ico"
+	},
+	"pkg": {
+		"scripts": "*.js",
+		"assets": "views/**/*",
+		"targets": [
+			"node18-linux-x64",
+			"node18-linux-arm64",
+			"node14-win-x64",
+			"node18-macos-x64"
+		],
+		"outputPath": "dist"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"decompress": "^4.2.1"
+	}
 }

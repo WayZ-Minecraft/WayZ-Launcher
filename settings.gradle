@@ -8,6 +8,6 @@ pluginManagement {
 
 rootProject.name = 'WayZ-Launcher'
 include('launcher')
-include('bootstrap')
+// include('bootstrap')
 include('photon')
 project(':photon').projectDir = new File('../photon')

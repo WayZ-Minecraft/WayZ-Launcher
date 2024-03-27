@@ -11,18 +11,13 @@ module.exports = {
             try {
                 let client = net.connect(49554, '151.80.57.82', () => {
                     client.write("getInfos\n");
-                    console.log("connected.");
                 });
 
                 client.on('data', (data)=> {
                     response = data.toString().replace("\n", "").split(";");
-                    console.log('Received data:', response);
+                    //console.log('Received data:', response); // Debug
                     client.end();
                     resolve(response);
-                });
-
-                client.on('end', ()=> {
-                    console.log("Disconnected.");
                 });
             } catch (error) {
                 console.error(error);
@@ -32,23 +27,26 @@ module.exports = {
     },
 
     getInfos(url, password, username) {
-        (async () => {
+        return this.getFile(url, "infos.json", password, username).then(res => res.json());
+    },
+
+    getFile(url, fileName, password, username) {
+        return new Promise(async (resolve, reject) => {
             try {
                 let headers = new Headers();
-                headers.append('Authorization', 'Basic ' + Buffer.from(`${password}:${username}`).toString('base64'));
+                headers.append('Authorization', 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'));
+                headers.append('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11');
                 let options = {
                     method: 'GET',
                     headers: headers
                 };
-                let res = await fetch(url, options);
-                console.log('Status Code:', res.status);
-          
-                // let users = await res.json();
-                
+                console.log('Fetching:', url + fileName);
+                let res = await fetch(url + fileName, options);
+                resolve(res);
             } catch (err) {
-              console.log(err.message); //can be console.error
+                console.log(err.message);
+                reject(err);
             }
-          })();
+        });
     }
-
 };

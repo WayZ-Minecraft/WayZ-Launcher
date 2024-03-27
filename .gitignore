@@ -12,4 +12,8 @@ bin/
 *.exe
 *.pdb
 /bootstrap_v2/target/
+/bootstrap_v2/node_modules/
+/bootstrap_v2/dist/
 bootstrap_v2/Cargo.lock
+bootstrap_v2/dist-linux
+bootstrap_v2/dist-macos
