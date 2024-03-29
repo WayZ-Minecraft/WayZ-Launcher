@@ -12,7 +12,7 @@
 				"decompress": "^4.2.1"
 			},
 			"bin": {
-				"bootstrap_v2": "index.js"
+				"bootstrap_v2": "app/index.js"
 			}
 		},
 		"node_modules/base64-js": {

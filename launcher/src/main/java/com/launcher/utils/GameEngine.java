@@ -45,6 +45,7 @@ public class GameEngine {
 		final String component = mcVersion.getJavaVersion().getComponent();
 		final File javaPath = new File(engine.getGameFolder().getRuntimeDir(), component);
 		if (OperatingSystem.getCurrentPlatform() == OperatingSystem.WINDOWS && new File(javaPath + "/bin/javaw.exe").isFile()) return javaPath + "/bin/javaw.exe";
+		if (OperatingSystem.getCurrentPlatform() == OperatingSystem.OSX && new File(javaPath + "/Contents/Home/bin/java").isFile()) return javaPath + "/Contents/Home/bin/java";
 		return javaPath + "/bin/java";
 	}
 }

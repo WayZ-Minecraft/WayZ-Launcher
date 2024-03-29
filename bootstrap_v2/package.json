@@ -2,12 +2,12 @@
 	"name": "bootstrap_v2",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
-	"bin": "index.js",
+	"main": "app/index.js",
+	"bin": "app/index.js",
 	"scripts": {
 		"prune": "npm prune",
-		"start": "node index.js",
-		"build_with_pkg": "pkg --verbose npm-shrinkwrap.json -t node18-macos-x64,node18-linux-x64,node18-win-x64 -o ./dist/ -C Brotli index.js --icon=./assets/icon.ico"
+		"start": "node app/index.js",
+		"build_with_pkg": "pkg --verbose npm-shrinkwrap.json -t node18-macos-x64,node18-linux-x64,node18-win-x64 -o ./dist/ -C Brotli app/index.js --icon=./assets/icon.ico"
 	},
 	"pkg": {
 		"scripts": "*.js",

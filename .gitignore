@@ -11,6 +11,7 @@ build/
 bin/
 *.exe
 *.pdb
+*.zip
 /bootstrap_v2/target/
 /bootstrap_v2/node_modules/
 /bootstrap_v2/dist/
