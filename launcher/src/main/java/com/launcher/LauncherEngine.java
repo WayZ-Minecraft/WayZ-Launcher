@@ -55,7 +55,7 @@ public class LauncherEngine {
 		/* Init logging */
     	final File logsFolder = new File(gameFolder.playDir, "/logs/");
     	if(!logsFolder.exists()) logsFolder.mkdirs();
-    	ConsoleManager.registerFileHandler(new File(logsFolder, "launcher.log"));
+    	ConsoleManager.registerFileHandler(new File(logsFolder, "launcher.log"), "launcher");
 		
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
