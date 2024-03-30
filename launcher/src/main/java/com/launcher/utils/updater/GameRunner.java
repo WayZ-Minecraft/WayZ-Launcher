@@ -41,7 +41,7 @@ public class GameRunner {
 		updater.setCurrentInfoText("updater.launching");
 		
 		/* Display configuration */
-		// ConsoleManager.create(String.join(" ", processBuilder.command() )).end();
+		ConsoleManager.create(String.join(" ", processBuilder.command() )).end();
 		
 		try {
 			final Process process = processBuilder.start();

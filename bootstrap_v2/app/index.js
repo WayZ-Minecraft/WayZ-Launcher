@@ -19,11 +19,12 @@ function main(url, password, user, infos) {
 	const bootstrapWorkingDirectory = os.getWorkingDirectory(infos.project_id + "-bootstrap");
 	const launcher = bootstrapWorkingDirectory+"/launcher.jar";
 	const jrePath = bootstrapWorkingDirectory+"/runtime/";
+	const iconPath = bootstrapWorkingDirectory+"/icon.icns";
 
 	/* Main data */
 	const launcherWorkingDirectory = os.getWorkingDirectory(infos.project_name + "-Launcher");
 	const API = launcherWorkingDirectory+"/libraries/com/photon/";
-	const FX = launcherWorkingDirectory+"/libraries/jfx/";
+	const FX = launcherWorkingDirectory+"/libraries/jfx/"+jfx_downloader.getJfxName()+"/";
 
 	/* Check if the directories exists */
 	checkExistOrCreate(API);
@@ -31,9 +32,9 @@ function main(url, password, user, infos) {
 	checkExistOrCreate(jrePath);
 
 	// Create a new promise
-	const prom = new Promise((resolve, reject) => {
+	const prom = new Promise(async (resolve, reject) => {
 		// Call the download function
-		download(url, password, user, launcher, jrePath, API, FX);
+		await download(url, password, user, launcher, jrePath, API, FX, iconPath);
 		// Resolve the promise after download completes
 		resolve();
 	});
@@ -41,29 +42,31 @@ function main(url, password, user, infos) {
 	// Wait for the promise to resolve
 	prom.then(() => {
 		// Call the start function
-		start(launcher, jrePath, API, FX);
+		start(launcher, jrePath, API, FX, iconPath);
 	});
 }
 
-async function start(launcher, jrePath, API, FX) {
+async function start(launcher, jrePath, API, FX, iconPath) {
 	/* Start the launcher */
-	let path = launcher + ";" + API + "api.jar;";
-	let pathNatives = "";
+	let separator = os.getCurrentOS().includes("windows") ? ";" : ":";
+	let path = launcher + separator + API + "api.jar"+separator;
+	// let pathNatives = "";
 
 	const files = fs.readdirSync(FX);
 	for(let i = 0; i < files.length; i++) {
 		const f = files[i];
-		path = path.concat(FX+f + (i == files.length - 1 ? "" : ";"));
-		if(f.includes("native")) pathNatives = pathNatives.concat(FX+f + (i == files.length - 1 ? "" : ";"));
+		path = path.concat(FX+f + (i == files.length - 1 ? "" : separator));
+		// if(f.includes("native")) pathNatives = pathNatives.concat(FX+f + (i == files.length - 1 ? "" : ";"));
 	}
 	
 	/* Fix the path for the OS */
 	path = os.fixPath(path);
-	pathNatives = os.fixPath(pathNatives);
+	// pathNatives = os.fixPath(pathNatives);
 	
 	/* Start the launcher */
 	try {
-		let command = jrePath+os.getJvmPath()+' -cp "'+path+'" com.launcher.LauncherEngine -Djava.library.path="'+pathNatives+'"';
+		let command = jrePath+jvm_downloader.getJVMName()+"/"+os.getJvmPath()+' -cp "'+path+'" com.launcher.LauncherEngine -Djava.library.path="'+path+'"';
+		if(os.getCurrentOS().includes("mac")) command = command +' -Xdock:name=Bootstrap -Xdock:icon="'+iconPath+'"'; // Add the icon for the mac
 		console.log("Starting the launcher with command :\n", command, "\n\n");
 		exec(command);
 	} catch (error) {
@@ -71,22 +74,28 @@ async function start(launcher, jrePath, API, FX) {
 	}
 }
 
-function download(url, password, user, launcher, jrePath, API, FX) {
+async function download(url, password, user, launcher, jrePath, API, FX, iconPath) {
+	if(os.getCurrentOS().includes("mac")) {
+		informations.getFile(url, "project-logo.icns", password, user).then(data => data.arrayBuffer()).then(buffer => {
+			fs.writeFileSync(iconPath, Buffer.from(buffer));
+			fs.chmodSync(iconPath, '777');
+		});
+	}
+
 	/* Update API */
-	downloader.update(url, downloader.UpdateFileType.API, downloader.UpdateChannel.STABLE, API+"api.jar", () => {}, password, user);
+	await downloader.update(url, downloader.UpdateFileType.API, downloader.UpdateChannel.STABLE, API+"api.jar", () => {}, password, user);
 
 	/* Update JavaFX */
 	for (const type in jfx_downloader.JFXTypes) {
 		const file = "javafx." + jfx_downloader.JFXTypes[type] + ".jar";
-		jfx_downloader.update(url, FX, file, password, user);
+		await jfx_downloader.update(url, FX, file, password, user);
 	}
 	
 	/* Update JVM */
-	// jvm_downloader.update(url, jrePath, jrePath+getJVMName(), password, user);
-	jvm_downloader.update(jrePath + jvm_downloader.getJVMName());
+	await jvm_downloader.update(jrePath + jvm_downloader.getJVMName());
 
 	/* Update the launcher */
-	downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
+	await downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
 }
 
 function checkExistOrCreate(workingDirectory) {

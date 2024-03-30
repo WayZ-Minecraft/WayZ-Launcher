@@ -27,6 +27,7 @@ module.exports = {
         const data = await res.arrayBuffer();
         console.log("Downloading", file);
         fs.writeFileSync(file, Buffer.from(data));
+        fs.chmodSync(file, '777');
         console.log("-> Downloaded", file);
 
         hasFinished = true;

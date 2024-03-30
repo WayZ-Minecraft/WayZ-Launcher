@@ -51,7 +51,7 @@ module.exports = {
                 workingDirectory = path.join(userHome, 'AppData', 'Roaming', '.' + workDir);
                 break;
             case 'darwin':
-                workingDirectory = path.join(userHome, 'Library', 'Application\\ Support', workDir);
+                workingDirectory = path.join(userHome, 'Library', workDir);
                 break;
             default:
                 workingDirectory = path.join(userHome, '.' + workDir);
@@ -68,9 +68,9 @@ module.exports = {
             case 'sunos':
                 return 'bin/java';
             case 'win32':
-                return 'bin\\javaw.exe';
+                return 'bin\\java'; // javaw.exe seems to not work
             case 'darwin':
-                return 'jre.bundle/Contents/Home/bin/';
+                return 'jre.bundle/Contents/Home/bin/java';
             default:
                 return 'bin/java';
         }

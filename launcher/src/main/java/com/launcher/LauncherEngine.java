@@ -19,6 +19,7 @@ import com.launcher.utils.GameFolder;
 import com.launcher.utils.GameLinks;
 import com.launcher.utils.LauncherConfig;
 import com.photon.PhotonEngine;
+import com.photon.informations.ObjectInfos;
 import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
 import com.photon.util.ConsoleManager;
@@ -42,15 +43,17 @@ public class LauncherEngine {
     		JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
-		if(PhotonInfosManager.getInfos() == null) {
+
+		ObjectInfos infos = PhotonInfosManager.getInfos();
+		if(infos == null) {
 			JOptionPane.showMessageDialog(null, "Unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
 		/* Init launcher folders and infos */
 		gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
-		gameFolder = new GameFolder(PhotonInfosManager.getInfos().project_id+"-launcher");
-    	gameEngine = new GameEngine(gameFolder, gameLinks, PhotonInfosManager.getInfos().project_name);
+		gameFolder = new GameFolder(infos.project_id+"-launcher");
+    	gameEngine = new GameEngine(gameFolder, gameLinks, infos.project_name);
 		
 		/* Init logging */
     	final File logsFolder = new File(gameFolder.playDir, "/logs/");

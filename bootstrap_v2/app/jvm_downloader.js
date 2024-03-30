@@ -15,32 +15,13 @@ const JVM_17 = new JavaVersion("java-runtime-gamma", 17);
 
 module.exports = {
 
-    /**
-     * @deprecated Use update(file) instead
-     */
-    update(url, path, file, password, user) {
-        if (fs.existsSync(file)) {
-            console.log("JVM already avalible:", file);
-            return;
-        }
-        
-        informations.getFile(url, "services_updates/" + path, password, user)
-            .then(data => data.arrayBuffer())
-            .then(data => {
-                console.log("Downloading", file);
-                fs.writeFileSync(file, Buffer.from(data));
-                console.log("-> Downloaded", file);
-                decompress(file, path);
-            });
-    },
-
-    update(file) {
+    async update(file) {
         // if (fs.existsSync(file)) {
         //     console.log("JVM already avalible:", file);
         //     return;
         // }
 
-        downloadJavaManifest(file);
+        await downloadJavaManifest(file);
     },
 
     /**
@@ -76,7 +57,7 @@ function getManifest() {
  * @param {*} file The file in which the JVM should be downloaded
  */
 async function downloadJavaManifest(file) {
-    getManifest().then(manifest => {
+    await getManifest().then(manifest => {
         console.log("CurrentRuntime: " + os.getCurrentOS());
         const r = manifest[os.getCurrentOS()];
         for (const run in r) {
@@ -113,7 +94,7 @@ async function updateJava(manifest, file) {
     for (const file of Object.entries(manifest.files)) { // TODO: Check if this is correct
         let fileName = file[0];
         let fileData = file[1];
-
+        
         if(fileData.type === "directory") { // Create directory if it does not exist
             if (!fs.existsSync(path + fileName)) 
                 fs.mkdirSync(path + fileName + "/", { recursive: true });
@@ -129,7 +110,10 @@ async function updateJava(manifest, file) {
         if(downloads !=null && rawData !=null && rawData.sha1 != downloader.getDigest(path+fileName)) {
             informations.getFile(rawData.url, "", null, null)
                 .then(data => data.arrayBuffer())
-                .then(data => fs.writeFileSync(path+fileName, Buffer.from(data)));
+                .then(data => {
+                    fs.writeFileSync(path+fileName, Buffer.from(data));
+                    fs.chmodSync(path+fileName, '777');
+                });
         }
     }
 }
