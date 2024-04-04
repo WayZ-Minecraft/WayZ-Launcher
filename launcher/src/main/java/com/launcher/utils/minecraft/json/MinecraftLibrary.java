@@ -30,7 +30,7 @@ public class MinecraftLibrary {
 	/*
 	 * The natives in a Map
 	 */
-	protected Map<OperatingSystem, String> natives; // fais un bug. LibraryOS
+	protected Map<OperatingSystem, String> natives;
 	/**
 	 * The Minecraft extract rules
 	 */

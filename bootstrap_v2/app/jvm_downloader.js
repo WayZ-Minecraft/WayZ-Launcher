@@ -112,7 +112,11 @@ async function updateJava(manifest, file) {
                 .then(data => data.arrayBuffer())
                 .then(data => {
                     fs.writeFileSync(path+fileName, Buffer.from(data));
-                    fs.chmodSync(path+fileName, '777');
+                    const currentPermissions = fs.statSync(path+fileName).mode;
+                    const desiredPermissions = parseInt('777', 8);
+                    if (currentPermissions !== desiredPermissions) {
+                        fs.chmodSync(path+fileName, desiredPermissions);
+                    }
                 });
         }
     }

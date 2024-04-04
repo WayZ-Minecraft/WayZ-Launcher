@@ -51,7 +51,7 @@ async function start(launcher, jrePath, API, FX, iconPath) {
 	let separator = os.getCurrentOS().includes("windows") ? ";" : ":";
 	let path = launcher + separator + API + "api.jar"+separator;
 	// let pathNatives = "";
-
+	
 	const files = fs.readdirSync(FX);
 	for(let i = 0; i < files.length; i++) {
 		const f = files[i];
@@ -65,20 +65,31 @@ async function start(launcher, jrePath, API, FX, iconPath) {
 	
 	/* Start the launcher */
 	try {
+		process.title = "Boostrap";
 		let command = jrePath+jvm_downloader.getJVMName()+"/"+os.getJvmPath()+' -cp "'+path+'" com.launcher.LauncherEngine -Djava.library.path="'+path+'"';
 		if(os.getCurrentOS().includes("mac")) command = command +' -Xdock:name=Bootstrap -Xdock:icon="'+iconPath+'"'; // Add the icon for the mac
 		console.log("Starting the launcher with command :\n", command, "\n\n");
-		exec(command);
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				console.error("Error starting the launcher", error);
+				return;
+			}
+			console.log("Launcher process output:\n", stdout);
+		});
 	} catch (error) {
 		console.error("Error starting the launcher", error);
 	}
 }
 
 async function download(url, password, user, launcher, jrePath, API, FX, iconPath) {
-	if(os.getCurrentOS().includes("mac")) {
+	if(os.getCurrentOS().includes("mac") && !fs.existsSync(iconPath)) {
 		informations.getFile(url, "project-logo.icns", password, user).then(data => data.arrayBuffer()).then(buffer => {
 			fs.writeFileSync(iconPath, Buffer.from(buffer));
-			fs.chmodSync(iconPath, '777');
+			const currentPermissions = fs.statSync(iconPath).mode;
+			const desiredPermissions = parseInt('777', 8);
+			if (currentPermissions !== desiredPermissions) {
+				fs.chmodSync(iconPath, desiredPermissions);
+			}
 		});
 	}
 

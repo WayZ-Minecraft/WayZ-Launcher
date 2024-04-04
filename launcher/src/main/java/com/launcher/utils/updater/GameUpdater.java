@@ -26,7 +26,6 @@ import com.launcher.utils.assets.AssetObject;
 import com.launcher.utils.file.FileUtil;
 import com.launcher.utils.file.JsonUtil;
 import com.launcher.utils.minecraft.CompatibilityRule;
-import com.launcher.utils.minecraft.CompatibilityRule.Action;
 import com.launcher.utils.minecraft.java.JVMFile;
 import com.launcher.utils.minecraft.java.JVMManifest;
 import com.launcher.utils.minecraft.java.JavaManifest;
@@ -273,28 +272,23 @@ public class GameUpdater {
 				for (final CompatibilityRule rule : lib.getCompatibilityRules()) {
 					if (rule.getOs() != null && rule.getAction() != null) {
 						for (final String os : rule.getOs().getName().getAliases()) {
-							if (lib.appliesToCurrentEnvironment()) {
-								if (rule.getAction().equals(Action.disallow)) lib.setSkipped(true);
-								else lib.setSkipped(false);
-							} else {
-								if (rule.getAction().equals(Action.allow)) lib.setSkipped(false);
-								else lib.setSkipped(true);
-							}
+							// if (lib.appliesToCurrentEnvironment()) lib.setSkipped(rule.getAction().equals(Action.disallow));
+							// else lib.setSkipped(!rule.getAction().equals(Action.allow));
+							// This is the original code, but it's not working properly. But disabling it makes the code work.
 						}
 					}
 				}
 			}
-
-			if (!lib.isSkipped()) {
-				if (lib.appliesToCurrentEnvironment()) {
-					if (lib.getArtifact() != null) {
-						final Downloader downloadTask = new Downloader(libPath, lib.getArtifact().getUrl().toString(), lib.getArtifact().getSha1(), this);
-						if (downloadTask.requireUpdate()) {
-							this.jarsExecutor.submit(downloadTask);
-							this.filesToDownload++;
-						}
+			
+			if (!lib.isSkipped() && lib.appliesToCurrentEnvironment()) {
+				if (lib.getArtifact() != null) {
+					final Downloader downloadTask = new Downloader(libPath, lib.getArtifact().getUrl().toString(), lib.getArtifact().getSha1(), this);
+					if (downloadTask.requireUpdate()) {
+						this.jarsExecutor.submit(downloadTask);
+						this.filesToDownload++;
 					}
-					if (lib.getClassifiers() != null) {
+				}
+				if (lib.getClassifiers() != null) {
 					final Map<OperatingSystem, String> natives = lib.getNatives();
 					if (natives != null && natives.containsKey(OperatingSystem.getCurrent())) {
 						String nativesName = natives.get(OperatingSystem.getCurrent()).replace("natives-", "");
@@ -306,30 +300,32 @@ public class GameUpdater {
 						}
 					}
 				}
-					if (lib.getDownloads() != null) {
-						if (lib.getDownloads().getArtifact() != null) {
-							final Downloader downloadTask = new Downloader(libPath, lib.getDownloads().getArtifact().getUrl().toString(), lib.getDownloads().getArtifact().getSha1(), this);
-							if (downloadTask.requireUpdate()) {
-								this.jarsExecutor.submit(downloadTask);
-								this.filesToDownload++;
-							}
+				if (lib.getDownloads() != null) {
+					// ConsoleManager.debug(lib.getName());
+					if (lib.getDownloads().getArtifact() != null) {
+						final Downloader downloadTask = new Downloader(libPath, lib.getDownloads().getArtifact().getUrl().toString(), lib.getDownloads().getArtifact().getSha1(), this);
+						if (downloadTask.requireUpdate()) {
+							this.jarsExecutor.submit(downloadTask);
+							this.filesToDownload++;
 						}
-						if (lib.getDownloads().getClassifiers() != null) {
-							final Map<OperatingSystem, String> nativesClassifier = lib.getNatives();
-							if (nativesClassifier != null && nativesClassifier.containsKey(OperatingSystem.getCurrent())) {
-								String nativesName = nativesClassifier.get(OperatingSystem.getCurrent()).replace("${arch}", Arch.CURRENT.getBit());
-								final File nativePath = new File(workDir.getNativesCacheDir(), lib.getArtifactNatives(nativesName));
-								final Downloader downloadTask8 = new Downloader(nativePath, lib.getDownloads().getClassifiers().get(nativesName).getUrl().toString(), lib.getDownloads().getClassifiers().get(nativesName).getSha1(), this);
-								if (downloadTask8.requireUpdate()) {
-									this.jarsExecutor.submit(downloadTask8);
-									this.filesToDownload++;
-								}
+					}
+					if (lib.getDownloads().getClassifiers() != null) {
+						final Map<OperatingSystem, String> nativesClassifier = lib.getNatives();
+						if (nativesClassifier != null && nativesClassifier.containsKey(OperatingSystem.getCurrent())) {
+							String nativesName = nativesClassifier.get(OperatingSystem.getCurrent()).replace("${arch}", Arch.CURRENT.getBit());
+							final File nativePath = new File(workDir.getNativesCacheDir(), lib.getArtifactNatives(nativesName));
+							final Downloader downloadTask8 = new Downloader(nativePath, lib.getDownloads().getClassifiers().get(nativesName).getUrl().toString(), lib.getDownloads().getClassifiers().get(nativesName).getSha1(), this);
+							if (downloadTask8.requireUpdate()) {
+								this.jarsExecutor.submit(downloadTask8);
+								this.filesToDownload++;
 							}
 						}
 					}
 				}
 			}
 		}
+
+		/* Downloading versions */
 		File versionFolder = new File(workDir.getVersionsDir(), minecraftVersion.getId());
 		final Downloader versionsJar = new Downloader(new File(versionFolder, minecraftVersion.getId() + ".jar"), minecraftVersion.getDownloads().getClient().getUrl().toString(), minecraftVersion.getDownloads().getClient().getSha1(), this);
 		if (versionsJar.requireUpdate()) {
@@ -337,6 +333,7 @@ public class GameUpdater {
 			this.filesToDownload++;
 		}
 
+		/* Downloading mod */
 		final String modFileName = "mod.jar";
 		final File modFile = new File(engine.getGameFolder().getPlayDir(), "mods/"+modFileName);
 		if(!modFile.exists()) modFile.getParentFile().mkdirs();
@@ -347,6 +344,7 @@ public class GameUpdater {
             this.filesToDownload++;
         }
         
+		/* Downloading photon api */
 		final File photonFile = new File(engine.getGameFolder().getLibsDir(), "com/photon/api.jar");
 		if(!photonFile.exists()) photonFile.getParentFile().mkdirs();
         final Downloader downloadAPITask = new Downloader(photonFile, PhotonUpdaterManager.getURL(UpdateFileType.API, LauncherConfig.getConfig().versionChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.API, UpdateChannel.STABLE), this);

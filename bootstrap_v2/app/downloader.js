@@ -27,7 +27,11 @@ module.exports = {
         const data = await res.arrayBuffer();
         console.log("Downloading", file);
         fs.writeFileSync(file, Buffer.from(data));
-        fs.chmodSync(file, '777');
+        const currentPermissions = fs.statSync(file).mode;
+        const desiredPermissions = parseInt('777', 8);
+        if (currentPermissions !== desiredPermissions) {
+            fs.chmodSync(file, desiredPermissions);
+        }
         console.log("-> Downloaded", file);
 
         hasFinished = true;

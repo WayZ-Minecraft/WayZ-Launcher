@@ -45,42 +45,39 @@ public class FileUtil {
 	 */
 	public static void unpackNatives(File targetDir, GameEngine engine) throws IOException {
 		workDir = engine.getGameFolder();
-		if (workDir.getNativesCacheDir().exists()) {
-			File[] listOfFiles = workDir.getNativesCacheDir().listFiles();
-			for (int index = 0; index < listOfFiles.length; index++) {
-				if (listOfFiles[index].isFile()) {
-					ZipFile zip = new ZipFile(listOfFiles[index]);
-					try {
-						Enumeration<? extends ZipEntry> entries = zip.entries();
-						while (entries.hasMoreElements()) {
-							ZipEntry entry = (ZipEntry) entries.nextElement();
-							File targetFile = new File(targetDir, entry.getName());
-							if (targetFile.getParentFile() != null) {
-								targetFile.getParentFile().mkdirs();
-							}
-							if (!entry.isDirectory()) {
-								BufferedInputStream inputStream = new BufferedInputStream(zip.getInputStream(entry));
+		if (!workDir.getNativesCacheDir().exists()) return;
 
-								byte[] buffer = new byte[2048];
-								FileOutputStream outputStream = new FileOutputStream(targetFile);
-								BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-								try {
-									int length;
-									while ((length = inputStream.read(buffer, 0, buffer.length)) != -1) {
-										bufferedOutputStream.write(buffer, 0, length);
-									}
-								} finally {
-									closeSilently(bufferedOutputStream);
-									closeSilently(outputStream);
-									closeSilently(inputStream);
-								}
+		File[] listOfFiles = workDir.getNativesCacheDir().listFiles();
+		for (int index = 0; index < listOfFiles.length; index++) {
+			if (!listOfFiles[index].isFile()) continue;
+
+			ZipFile zip = new ZipFile(listOfFiles[index]);
+			try {
+				Enumeration<? extends ZipEntry> entries = zip.entries();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = (ZipEntry) entries.nextElement();
+					File targetFile = new File(targetDir, entry.getName());
+					if (targetFile.getParentFile() != null) targetFile.getParentFile().mkdirs();
+
+					if (!entry.isDirectory()) {
+						BufferedInputStream inputStream = new BufferedInputStream(zip.getInputStream(entry));
+						
+						byte[] buffer = new byte[2048];
+						FileOutputStream outputStream = new FileOutputStream(targetFile);
+						BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+						try {
+							int length;
+							while ((length = inputStream.read(buffer, 0, buffer.length)) != -1) {
+								bufferedOutputStream.write(buffer, 0, length);
 							}
+						} finally {
+							closeSilently(bufferedOutputStream);
+							closeSilently(outputStream);
+							closeSilently(inputStream);
 						}
-					} finally {
-						zip.close();
 					}
 				}
-			}
+			} finally { zip.close(); }
 		}
 	}
 

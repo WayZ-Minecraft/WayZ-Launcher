@@ -16,6 +16,7 @@ import com.launcher.utils.file.GameUtils;
 import com.launcher.utils.minecraft.json.Argument;
 import com.launcher.utils.minecraft.json.ArgumentType;
 import com.launcher.utils.minecraft.json.MinecraftVersion;
+import com.photon.network.objects.ProfileManager;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.os.OperatingSystem;
@@ -77,6 +78,7 @@ public class GameRunner {
 	 	else commands.add(OperatingSystem.getJavaPath());
 
 		if (os.equals(OperatingSystem.OSX)) {
+			commands.add("-XstartOnFirstThread");
 			commands.add("-Xdock:name=Minecraft");
 			commands.add("-Xdock:icon=" + engine.getGameFolder().getAssetsDir() + "icons/minecraft.icns");
 		} else if (os.equals(OperatingSystem.WINDOWS)) {
@@ -139,9 +141,10 @@ public class GameRunner {
 		final HashMap<String, String> map = new HashMap<String, String>();
 		final String[] split = engine.getMinecraftVersion().getMinecraftArguments().split(" ");
 		/* Creating RAND UUID -> IG account system */
-		map.put("auth_player_name", UUID.randomUUID().toString().substring(0, 16));
-		map.put("auth_uuid", UUID.randomUUID().toString());
-		map.put("auth_access_token", UUID.randomUUID().toString());
+		String name = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+		map.put("auth_player_name", name);
+		map.put("auth_uuid", UUID.randomUUID().toString().replace("-", ""));
+		map.put("auth_access_token", ProfileManager.getTokenFromEMail(name));
 		map.put("user_type", "legacy");
 		map.put("version_name", this.engine.getMinecraftVersion().getId());
 		map.put("version_type", "release");
@@ -157,15 +160,16 @@ public class GameRunner {
 		}
 		return split;
 	}
-
+	
 	private String[] getArgumentsNewer(List<Argument> args) {
 		final HashMap<String, String> map = new HashMap<String, String>();
 		final String[] split = new String[args.size()];
 		for (int i = 0; i < args.size(); i++) split[i] = args.get(i).getArguments();
 		/* Creating RAND UUID -> IG account system */
-		map.put("auth_player_name", UUID.randomUUID().toString().substring(0, 16));
-		map.put("auth_uuid", UUID.randomUUID().toString());
-		map.put("auth_access_token", UUID.randomUUID().toString());
+		String name = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+		map.put("auth_player_name", name);
+		map.put("auth_uuid", UUID.randomUUID().toString().replace("-", ""));
+		map.put("auth_access_token", ProfileManager.getTokenFromEMail(name));
 		map.put("user_type", "legacy");
 		map.put("version_name", this.engine.getMinecraftVersion().getId());
 		map.put("version_type", "release");

@@ -287,8 +287,8 @@ public class PlayButton {
                 if(!LauncherConfig.getConfig().keep_open) Platform.runLater(() -> System.exit(0));
                 else MainStage.globalPane.setVisible(false);
             };
-            LauncherEngine.gameEngine.exitRunnable = () -> reLaunchLauncher();
-            LauncherEngine.gameEngine.crashRunnable = () -> {
+            LauncherEngine.gameEngine.exitRunnable = () -> Platform.runLater(() -> reLaunchLauncher());
+            LauncherEngine.gameEngine.crashRunnable = () -> Platform.runLater(() -> {
                 reLaunchLauncher();
                 final File crashDir = new File(LauncherEngine.gameEngine.getGameFolder().getPlayDir(), "crash-reports/");
                 if(!crashDir.exists()) crashDir.mkdirs();
@@ -306,7 +306,7 @@ public class PlayButton {
                     }
                 }
                 JOptionPane.showMessageDialog(null, TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")), TranslationManager.format("popup.error.title"), JOptionPane.ERROR_MESSAGE);
-            };
+            });
         });
     }
 
