@@ -181,8 +181,16 @@ public class GameUpdater {
 		String json = null;
 		String assetUrl = minecraftVersion.getAssetIndex().getUrl().toString();
 		AssetIndex assetsList;
-		try { json = JsonUtil.loadJSON(assetUrl); } catch (IOException e) { e.printStackTrace(); }
-		finally { assetsList = (AssetIndex) JsonUtil.getGson().fromJson(json, AssetIndex.class); }
+		try {
+			json = JsonUtil.loadJSON(assetUrl);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			assetsList = (AssetIndex) JsonUtil.getGson().fromJson(json, AssetIndex.class);
+		}
+
+		/* Try downloading each asset */
+		if(assetsList == null) return; // Prevent going into an error if the assetsList is null
 		Map<String, AssetObject> objects = assetsList.getObjects();
 		for (String assetKey : objects.keySet()) {
 			AssetObject asset = (AssetObject) objects.get(assetKey);

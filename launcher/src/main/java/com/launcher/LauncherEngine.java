@@ -34,19 +34,19 @@ public class LauncherEngine {
 	public static Color tooltipTextColor = new Color(168, 168, 168, 200);
 	
 	public static GameFolder gameFolder;
-	private static GameLinks gameLinks;
 	public static GameEngine gameEngine;
+	private static GameLinks gameLinks;
 	
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		try { PhotonEngine.loadClient(new String(new byte[] { 49,53,49,46,56,48,46,53,55,46,56,50 })); }
 		catch (IOException e) {
-    		JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
-
+		
 		ObjectInfos infos = PhotonInfosManager.getInfos();
 		if(infos == null) {
-			JOptionPane.showMessageDialog(null, "Unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "THe launcher was unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
@@ -56,24 +56,25 @@ public class LauncherEngine {
     	gameEngine = new GameEngine(gameFolder, gameLinks, infos.project_name);
 		
 		/* Init logging */
-    	final File logsFolder = new File(gameFolder.playDir, "/logs/");
-    	if(!logsFolder.exists()) logsFolder.mkdirs();
-    	ConsoleManager.registerFileHandler(new File(logsFolder, "launcher.log"), "launcher");
+    	final File LOGS_FOLDER = new File(gameFolder.playDir, "/logs/");
+    	if(!LOGS_FOLDER.exists()) LOGS_FOLDER.mkdirs();
+    	ConsoleManager.registerFileHandler(new File(LOGS_FOLDER, "launcher.log"), "launcher");
 		
 		/* Load config and translations system */
     	LauncherConfig.load(gameEngine);
     	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
 		
 		LauncherEngine.clearLogs();
+		
 		/* Display the interface */
 		Application.launch(MainStage.class, args);
 	}
 
 	public static void clearLogs() throws IOException {
-		final File logsFolder = new File(gameFolder.playDir, "/logs/");
-		if(!logsFolder.exists()) return;
+		final File LOGS_FOLDER = new File(gameFolder.playDir, "/logs/");
+		if(!LOGS_FOLDER.exists()) return;
 
-		Iterator<File> filesToDelete = FileUtils.iterateFiles(logsFolder, new AgeFileFilter(new Date()), TrueFileFilter.TRUE);
+		Iterator<File> filesToDelete = FileUtils.iterateFiles(LOGS_FOLDER, new AgeFileFilter(new Date()), TrueFileFilter.TRUE);
 		while(filesToDelete.hasNext()) {
 			File file = filesToDelete.next();
 			if(!file.getName().equals("launcher.log") && (file.getName().endsWith(".log") || file.getName().endsWith(".log.gz"))) Files.delete(file.toPath());

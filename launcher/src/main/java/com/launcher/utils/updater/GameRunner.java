@@ -21,6 +21,8 @@ import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.os.OperatingSystem;
 
+import javafx.application.Platform;
+
 public class GameRunner {
 
 	private GameEngine engine;
@@ -35,6 +37,7 @@ public class GameRunner {
 	}
 
     public void launch() throws Exception {
+		ConsoleManager.startTime();
         final ProcessBuilder processBuilder = new ProcessBuilder(this.getLaunchCommand());
 		processBuilder.redirectInput(Redirect.INHERIT).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT);
 		processBuilder.directory(engine.getGameFolder().getGameDir());
@@ -51,14 +54,18 @@ public class GameRunner {
 					final int exitVal = process.waitFor();
 					if (exitVal != 0) {
 						/* Show the frames and active buttons */
-						this.engine.crashRunnable.run();
-						this.updater.reset();
+						Platform.runLater(() -> {
+							this.engine.crashRunnable.run();
+							this.updater.reset();
+						});
 						
 						/* Log the error */
 						ConsoleManager.create("Process exited with code '"+exitVal+"', game has crashed").withType(EnumLogType.LAUNCHER).error().end();
 					} else {
-						this.updater.reset();
-						this.engine.exitRunnable.run();
+						Platform.runLater(() -> {
+							this.updater.reset();
+							this.engine.exitRunnable.run();
+						});
 					}
 				} catch (Exception e) { e.printStackTrace(); }
 			});
@@ -66,6 +73,7 @@ public class GameRunner {
 			t.start();
 			this.engine.startRunnable.run();
 		} catch (Exception e) { throw new Exception("Cannot launch !", e); }
+		ConsoleManager.endTime("GameLaunchedin");
 	}
 
 	private ArrayList<String> getLaunchCommand() {

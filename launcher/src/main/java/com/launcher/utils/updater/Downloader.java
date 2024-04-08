@@ -54,7 +54,7 @@ public class Downloader extends Thread {
 	}
 
 	/**
-	 * Download the file ion question
+	 * Download the specified file
 	 * @throws IOException
 	 */
 	public void download(GameUpdater updater) throws IOException {

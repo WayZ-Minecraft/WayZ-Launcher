@@ -6,6 +6,7 @@ import com.photon.network.NetworkDirectories;
 import com.photon.util.os.FileLocation;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -13,7 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class MainStage extends Application {		
+public class MainStage extends Application {
     public static Pane globalPane;
 
     public static Pane homePane = GlobalHome.getHomeMenu(false);
@@ -88,7 +89,22 @@ public class MainStage extends Application {
         }
     }
 
-    public static void closeLauncher() { System.exit(0); }
+    public static void closeLauncher() {
+        Platform.runLater(() -> {
+            classStage.close();
+            System.exit(0);
+        });
+    }
 
-    public static void minimizeLauncher() { classStage.setIconified(true); }
+    public static void minimizeLauncher() {
+        minimizeLauncher(true);
+    }
+
+    public static void minimizeLauncher(boolean explicit) {
+        Platform.setImplicitExit(explicit);
+        Platform.runLater(() -> {
+            classStage.setIconified(true);
+            globalPane.setVisible(false);
+        });
+    }
 }

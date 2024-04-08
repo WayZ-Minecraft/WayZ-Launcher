@@ -284,8 +284,8 @@ public class PlayButton {
             
             /* Set executables for every type of exit and launch */
             LauncherEngine.gameEngine.startRunnable = () -> {
-                if(!LauncherConfig.getConfig().keep_open) Platform.runLater(() -> System.exit(0));
-                else MainStage.globalPane.setVisible(false);
+                if(!LauncherConfig.getConfig().keep_open) MainStage.closeLauncher();
+                else MainStage.minimizeLauncher(false);
             };
             LauncherEngine.gameEngine.exitRunnable = () -> Platform.runLater(() -> reLaunchLauncher());
             LauncherEngine.gameEngine.crashRunnable = () -> Platform.runLater(() -> {
