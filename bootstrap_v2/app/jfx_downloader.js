@@ -11,6 +11,7 @@ const JFXTypes = {
     CONTROLS: 'controls',
     GRAPHICS: 'graphics',
     SWING: 'swing',
+    PROGRESSBAR: 'progressbar',
     NATIVES_WINDOWS: 'natives_windows'
 };
 

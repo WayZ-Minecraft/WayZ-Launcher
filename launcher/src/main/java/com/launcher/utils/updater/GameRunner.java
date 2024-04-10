@@ -37,7 +37,6 @@ public class GameRunner {
 	}
 
     public void launch() throws Exception {
-		ConsoleManager.startTime();
         final ProcessBuilder processBuilder = new ProcessBuilder(this.getLaunchCommand());
 		processBuilder.redirectInput(Redirect.INHERIT).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT);
 		processBuilder.directory(engine.getGameFolder().getGameDir());
@@ -73,7 +72,6 @@ public class GameRunner {
 			t.start();
 			this.engine.startRunnable.run();
 		} catch (Exception e) { throw new Exception("Cannot launch !", e); }
-		ConsoleManager.endTime("GameLaunchedin");
 	}
 
 	private ArrayList<String> getLaunchCommand() {

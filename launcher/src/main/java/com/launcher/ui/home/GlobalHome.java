@@ -1,10 +1,10 @@
 package com.launcher.ui.home;
 
+import com.launcher.LauncherEngine;
 import com.launcher.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.buttons.GlobalHomeButton;
 import com.launcher.ui.home.buttons.PlayButton;
-import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
@@ -87,7 +87,7 @@ public class GlobalHome {
      * 
      * @return Text : Version du launcher
      */
-    public static Text loadVersion(int textSize) { return JFXUtils.loadText(PhotonInfosManager.getInfos().project_name, textSize,"ffff", "light"); }
+    public static Text loadVersion(int textSize) { return JFXUtils.loadText(LauncherEngine.gameEngine.getName(), textSize,"ffff", "light"); }
 
     /**
      * load a cross

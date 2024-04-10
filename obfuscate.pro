@@ -1,5 +1,7 @@
 -printmapping out.map
 -flattenpackagehierarchy ''
+# Allow building even if proguard finds warnings
+-ignorewarnings
 
 # Warns
 -dontwarn org.apache.logging.**
@@ -60,7 +62,7 @@
     static final long serialVersionUID;
     private static final java.io.ObjectStreamField[] serialPersistentFields;
     private void writeObject(java.io.ObjectOutputStream);
-    private void readObject(java.io.ObjectInputStream);
+    private void readObject(java.io.ObjectInputStream); 
     java.lang.Object writeReplace();
     java.lang.Object readResolve();
 }
@@ -140,3 +142,8 @@
 -libraryjars '<java.home>\jmods\jdk.unsupported.jmod'
 -libraryjars '<java.home>\jmods\jdk.xml.dom.jmod'
 -libraryjars '<java.home>\jmods\jdk.zipfs.jmod'
+
+# Dictionary
+-obfuscationdictionary '.\launcher\build\tmp\builddict.txt'
+-classobfuscationdictionary '.\launcher\build\tmp\builddict.txt'
+-packageobfuscationdictionary '.\launcher\build\tmp\builddict.txt'

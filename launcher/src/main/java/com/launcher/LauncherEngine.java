@@ -23,6 +23,7 @@ import com.photon.informations.ObjectInfos;
 import com.photon.informations.PhotonInfosManager;
 import com.photon.network.NetworkDirectories;
 import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.TranslationManager;
 
 import javafx.application.Application;
@@ -41,32 +42,47 @@ public class LauncherEngine {
 		try { PhotonEngine.loadClient(new String(new byte[] { 49,53,49,46,56,48,46,53,55,46,56,50 })); }
 		catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Unable to connect to our services. We'll be back in a moment", "Error", JOptionPane.ERROR_MESSAGE);
-    		return;
-    	}
-		
-		ObjectInfos infos = PhotonInfosManager.getInfos();
-		if(infos == null) {
-			JOptionPane.showMessageDialog(null, "THe launcher was unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		/* Init launcher folders and infos */
-		gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
-		gameFolder = new GameFolder(infos.project_id+"-launcher");
-    	gameEngine = new GameEngine(gameFolder, gameLinks, infos.project_name);
-		
+
+		if(args.length >= 3) {
+			ConsoleManager.create("Arguments found. Skipping server informations.").withType(EnumLogType.LAUNCHER).end();
+			final String PROJECT_ID = getArgByName(args, "arg0");
+			final String PROJECT_NAME = getArgByName(args, "arg1");
+			final String WEB_URL = getArgByName(args, "arg2");
+
+			/* Init launcher folders and infos */
+			gameLinks = new GameLinks(WEB_URL+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
+			gameFolder = new GameFolder(PROJECT_ID+"-launcher");
+			gameEngine = new GameEngine(gameFolder, gameLinks, PROJECT_NAME);
+		} else {
+			ConsoleManager.create("No arguments found, trying to get informations from the server.").withType(EnumLogType.LAUNCHER).end();
+			ObjectInfos infos = PhotonInfosManager.getInfos();
+			if(infos == null) {
+				JOptionPane.showMessageDialog(null, "THe launcher was unable to get services informations. Maybe check your connection", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			/* Init launcher folders and infos */
+			gameLinks = new GameLinks(NetworkDirectories.config.webUrl+"launcher/", "fabric-loader-0.14.21-1.16.5.json");
+			gameFolder = new GameFolder(infos.project_id+"-launcher");
+			gameEngine = new GameEngine(gameFolder, gameLinks, infos.project_name);
+		}
+
 		/* Init logging */
-    	final File LOGS_FOLDER = new File(gameFolder.playDir, "/logs/");
-    	if(!LOGS_FOLDER.exists()) LOGS_FOLDER.mkdirs();
-    	ConsoleManager.registerFileHandler(new File(LOGS_FOLDER, "launcher.log"), "launcher");
+		final File LOGS_FOLDER = new File(gameFolder.playDir, "/logs/");
+		if(!LOGS_FOLDER.exists()) LOGS_FOLDER.mkdirs();
+		ConsoleManager.registerFileHandler(new File(LOGS_FOLDER, "launcher.log"), "launcher");
 		
 		/* Load config and translations system */
-    	LauncherConfig.load(gameEngine);
-    	TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
+		LauncherConfig.load(gameEngine);
+		TranslationManager.load((String)LauncherConfig.getConfig().language, "lang");
 		
+		/* Clear logs */
 		LauncherEngine.clearLogs();
 		
 		/* Display the interface */
+		ConsoleManager.debug("JavaFX will create the main stage...");
 		Application.launch(MainStage.class, args);
 	}
 
@@ -79,5 +95,12 @@ public class LauncherEngine {
 			File file = filesToDelete.next();
 			if(!file.getName().equals("launcher.log") && (file.getName().endsWith(".log") || file.getName().endsWith(".log.gz"))) Files.delete(file.toPath());
 		}
+	}
+
+	private static String getArgByName(String[] args, String name) {
+		for(String arg : args) {
+			if(arg.startsWith(name)) return arg.substring(name.length()+1); // +1 to remove the '='
+		}
+		return null;
 	}
 }

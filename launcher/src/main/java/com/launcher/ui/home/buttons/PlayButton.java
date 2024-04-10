@@ -15,6 +15,8 @@ import com.launcher.ui.JFXUtils;
 import com.launcher.ui.home.GlobalHome;
 import com.launcher.utils.LauncherConfig;
 import com.launcher.utils.updater.GameUpdater;
+import com.nativejavafx.taskbar.TaskbarProgressbar;
+import com.nativejavafx.taskbar.TaskbarProgressbar.Type;
 import com.photon.network.NetworkConnectionClient;
 import com.photon.network.messages.requests.ClientRequestCrashReport;
 import com.photon.util.ConsoleManager;
@@ -263,16 +265,18 @@ public class PlayButton {
             final Thread t = new Thread(() -> {
                 if(updater.filesToDownload > nbFilesToBeUpdating) {
                     onUpdating = true;
-                    GlobalHome.pb.setVisible(true); 
+                    GlobalHome.pb.setVisible(true);
                     GlobalHome.status.setVisible(true); 
                     while(updateThread.isAlive()) {
                         try { Thread.sleep(300); }
                         catch (InterruptedException e) {
-                            ConsoleManager.create("download interrupted").withType(EnumLogType.LAUNCHER).error().end();
+                            ConsoleManager.create("Download interrupted").withType(EnumLogType.LAUNCHER).error().end();
                             break;
                         }
                         GlobalHome.pb.setProgress(MainStage.progress = updater.downloadedFiles / (double) updater.filesToDownload);
                         GlobalHome.setStatus(updater.downloadedFiles, updater.filesToDownload);
+                        
+                        updateProgressBar(updater);
                     }
                 }
             });
@@ -308,6 +312,17 @@ public class PlayButton {
                 JOptionPane.showMessageDialog(null, TranslationManager.format("popup.error.message.crash"+(LauncherConfig.getConfig().send_reports? "":".nosending")), TranslationManager.format("popup.error.title"), JOptionPane.ERROR_MESSAGE);
             });
         });
+    }
+
+    private static void updateProgressBar(GameUpdater updater) {
+        try {
+            if(Class.forName("com.nativejavafx.taskbar.TaskbarProgressbar") != null) {
+                Platform.runLater(() -> {
+                    if (TaskbarProgressbar.isSupported()) 
+                        TaskbarProgressbar.showCustomProgress(MainStage.classStage, (updater.downloadedFiles * 100 / (double) updater.filesToDownload) / 100, Type.NORMAL);
+                });
+            }
+        } catch (ClassNotFoundException e) {}
     }
 
     /**

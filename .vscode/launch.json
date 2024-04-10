@@ -10,6 +10,7 @@
             "request": "launch",
             "console": "integratedTerminal",
             "mainClass": "com.launcher.LauncherEngine",
+            "args": "arg0=wayz arg1=WayZ arg2=https://files.hunterz.fr/",
             "projectName": "launcher"
         }
     ]

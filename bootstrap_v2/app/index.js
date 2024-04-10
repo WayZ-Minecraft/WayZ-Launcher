@@ -5,7 +5,7 @@ const jvm_downloader = require('./jvm_downloader');
 const jfx_downloader = require('./jfx_downloader');
 const os = require('./operating_system');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 
 // ConsoleWindow.hideConsole();
 
@@ -42,41 +42,50 @@ function main(url, password, user, infos) {
 	// Wait for the promise to resolve
 	prom.then(() => {
 		// Call the start function
-		start(launcher, jrePath, API, FX, iconPath);
+		start(launcher, jrePath, API, FX, iconPath, infos.project_name, url);
 	});
 }
 
-async function start(launcher, jrePath, API, FX, iconPath) {
+async function start(launcher, jrePath, API, FX, iconPath, project_name, web_url) {
 	/* Start the launcher */
 	let separator = os.getCurrentOS().includes("windows") ? ";" : ":";
 	let path = launcher + separator + API + "api.jar"+separator;
-	// let pathNatives = "";
 	
 	const files = fs.readdirSync(FX);
 	for(let i = 0; i < files.length; i++) {
 		const f = files[i];
 		path = path.concat(FX+f + (i == files.length - 1 ? "" : separator));
-		// if(f.includes("native")) pathNatives = pathNatives.concat(FX+f + (i == files.length - 1 ? "" : ";"));
 	}
 	
 	/* Fix the path for the OS */
 	path = os.fixPath(path);
-	// pathNatives = os.fixPath(pathNatives);
 	
 	/* Start the launcher */
 	try {
 		process.title = "Boostrap";
-		let command = jrePath+jvm_downloader.getJVMName()+"/"+os.getJvmPath()+' -cp "'+path+'" com.launcher.LauncherEngine -Djava.library.path="'+path+'"';
-		if(os.getCurrentOS().includes("mac")) command = command +' -Xdock:name=Bootstrap -Xdock:icon="'+iconPath+'"'; // Add the icon for the mac
+
+		/* Create the command to start the launcher */
+		let command = jrePath+jvm_downloader.getJVMName()+"/"+os.getJvmPath()+' -cp "'+path+'" com.launcher.LauncherEngine';
+		command = command+' -Djava.library.path="'+path+'"';
+		command = command+' arg0='+project_name.toLowerCase()+' arg1='+project_name+' arg2='+web_url;
+
+		if(os.getCurrentOS().includes("mac")) command = command+' -Xdock:name=Bootstrap -Xdock:icon="'+iconPath+'"'; // Add the icon for the mac
+
 		console.log("Starting the launcher with command :\n", command, "\n\n");
-		exec(command, (error, stdout, stderr) => {
-			if (error) {
-				console.error("Error starting the launcher", error);
-				return;
-			}
-			console.log("Launcher process output:\n", stdout);
+		ls = spawn(command, { shell: true }); // Use shell option and pass command as a string
+		ls.stdout.on('data', function (data) {
+			console.log(data.toString());
 		});
-	} catch (error) {
+		
+		ls.stderr.on('data', function (data) {
+			console.log(data.toString());
+		});
+		
+		ls.on('exit', function (code) {
+			console.log('Child process exited with code ' + code.toString());
+		});
+
+	} catch (error) { //TODO : ~20s to start the launcher (3/4 for launcher itself)
 		console.error("Error starting the launcher", error);
 	}
 }
@@ -106,7 +115,7 @@ async function download(url, password, user, launcher, jrePath, API, FX, iconPat
 	await jvm_downloader.update(jrePath + jvm_downloader.getJVMName());
 
 	/* Update the launcher */
-	await downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
+	//await downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
 }
 
 function checkExistOrCreate(workingDirectory) {

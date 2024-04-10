@@ -3,6 +3,8 @@ package com.launcher;
 import com.launcher.ui.home.GlobalHome;
 import com.launcher.ui.settings.GlobalSettings;
 import com.photon.network.NetworkDirectories;
+import com.photon.util.ConsoleManager;
+import com.photon.util.ConsoleManager.EnumLogType;
 import com.photon.util.os.FileLocation;
 
 import javafx.application.Application;
@@ -33,6 +35,7 @@ public class MainStage extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        ConsoleManager.create("Creating frame(s)...").withType(EnumLogType.LAUNCHER).end();
         classStage = stage;
         
         final Rectangle globalShape = new Rectangle(0, 0, launcherWidth, launcherHeight);
@@ -61,12 +64,13 @@ public class MainStage extends Application {
 
         scene.setOnMouseReleased(event -> FileLocation.muteSound(false));
 
-        // Set stage properties
+        // Set stage properes
         globalShape.requestFocus();
         stage.getIcons().add(getIcon());
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
         stage.setScene(scene);
+        stage.setTitle(LauncherEngine.gameEngine.getName()+" - Launcher");
         stage.show();
     }
 
@@ -100,11 +104,11 @@ public class MainStage extends Application {
         minimizeLauncher(true);
     }
 
-    public static void minimizeLauncher(boolean explicit) {
-        Platform.setImplicitExit(explicit);
+    public static void minimizeLauncher(boolean fullHide) {
+        // Platform.setImplicitExit(explicit);
         Platform.runLater(() -> {
-            classStage.setIconified(true);
-            globalPane.setVisible(false);
+            if(fullHide) classStage.setIconified(true);
+            else globalPane.setVisible(false);
         });
     }
 }
