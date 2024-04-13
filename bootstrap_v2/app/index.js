@@ -5,9 +5,33 @@ const jvm_downloader = require('./jvm_downloader');
 const jfx_downloader = require('./jfx_downloader');
 const os = require('./operating_system');
 const fs = require('fs');
-const { exec, spawn } = require('child_process');
+const { spawn } = require('child_process');
+const { app, BrowserWindow } = require('electron/main');
+const { title } = require('process');
 
-// ConsoleWindow.hideConsole();
+const createWindow = () => {
+  	const win = new BrowserWindow({
+		width: 500,
+		height: 500,
+		frame: false,
+		transparent: true,
+		title: "Bootstrap",
+		iconPath: "assets/launcher.png",
+  	});
+  	win.loadFile('./app/index.html');
+}
+
+app.whenReady().then(() => {
+  	createWindow();
+
+  	app.on('activate', () => {
+    	if(BrowserWindow.getAllWindows().length === 0) createWindow();
+  	});
+});
+
+app.on('window-all-closed', () => {
+  	if(process.platform !== 'darwin') app.quit();
+});
 
 /* This is the entrance point */
 informations.getConnectionInfos().then(connectionData => {
