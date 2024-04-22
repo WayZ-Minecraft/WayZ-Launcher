@@ -3,7 +3,7 @@ package com.launcher.ui.settings.boxes.launcher;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.FrameName;
 import com.launcher.ui.settings.GlobalSettings;
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
@@ -26,7 +26,7 @@ import javafx.util.Duration;
  * LanguageBox
  * The language box in the launcher settings
  */
-public class LanguageBox extends TextFieldElement {
+public class LanguageBox extends SettingBox {
 
     final static String title = TranslationManager.format("settings.launcher.language.title");
     final GridPane content = new GridPane();

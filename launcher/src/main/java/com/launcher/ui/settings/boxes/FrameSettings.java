@@ -16,7 +16,7 @@ public class FrameSettings {
     public final static int frameWidth = 600;
     final static int frameHeight = 400;
 
-    List<TextFieldElement> boxList = new ArrayList<>();
+    List<SettingBox> boxList = new ArrayList<>();
     final static int boxJump = 25;
 
     public FrameSettings() {
@@ -46,11 +46,11 @@ public class FrameSettings {
         });
     }
     
-    public void addBox(TextFieldElement box){this.boxList.add(box);}
+    public void addBox(SettingBox box){this.boxList.add(box);}
 
     public ScrollPane getFrame() {
         int boxHeight = 0;
-        for (TextFieldElement box : this.boxList) {
+        for (SettingBox box : this.boxList) {
             this.frame.getChildren().add(box.getBox());
             box.getBox().setLayoutY(boxHeight);
             boxHeight += box.getBox().getPrefHeight() + boxJump;

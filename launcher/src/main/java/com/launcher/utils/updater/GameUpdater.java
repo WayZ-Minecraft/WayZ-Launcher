@@ -253,10 +253,13 @@ public class GameUpdater {
 			String fileName = fileDest;
 			int index = fileName.lastIndexOf("\\");
 			String dirLocation = fileName.substring(index + 1);
-
+			
 			File libPath = new File(engine.getGameFolder().getGameDir() + File.separator + dirLocation);
+			if((libPath.getPath().contains("/content-pack/") || libPath.getPath().endsWith(".content-pack")) 
+				&& LauncherConfig.getConfig().hasActivationKey() && LauncherConfig.getConfig().preventContentPacksDownloading) {
+				continue;
+			}
 			String url = engine.getGameLinks().getCustomFilesUrl() + name;
-
 			final Downloader customDownloadTask = new Downloader(libPath, url, null, this);
 			GameVerifier.addToFileList(libPath.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
 			if (customDownloadTask.requireUpdate()) {
@@ -345,7 +348,7 @@ public class GameUpdater {
 		final String modFileName = "mod.jar";
 		final File modFile = new File(engine.getGameFolder().getPlayDir(), "mods/"+modFileName);
 		if(!modFile.exists()) modFile.getParentFile().mkdirs();
-        final Downloader downloadModTask = new Downloader(modFile, PhotonUpdaterManager.getURL(UpdateFileType.MOD, LauncherConfig.getConfig().versionChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.MOD, UpdateChannel.STABLE), this);
+        final Downloader downloadModTask = new Downloader(modFile, PhotonUpdaterManager.getURL(UpdateFileType.MOD, LauncherConfig.getConfig().modChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.MOD, UpdateChannel.STABLE), this);
         GameVerifier.addToFileList(modFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
         if (downloadModTask.requireUpdate()) {
             this.jarsExecutor.submit(downloadModTask);
@@ -355,7 +358,7 @@ public class GameUpdater {
 		/* Downloading photon api */
 		final File photonFile = new File(engine.getGameFolder().getLibsDir(), "com/photon/api.jar");
 		if(!photonFile.exists()) photonFile.getParentFile().mkdirs();
-        final Downloader downloadAPITask = new Downloader(photonFile, PhotonUpdaterManager.getURL(UpdateFileType.API, LauncherConfig.getConfig().versionChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.API, UpdateChannel.STABLE), this);
+        final Downloader downloadAPITask = new Downloader(photonFile, PhotonUpdaterManager.getURL(UpdateFileType.API, LauncherConfig.getConfig().apiChannel), PhotonUpdaterManager.getSHA1(UpdateFileType.API, UpdateChannel.STABLE), this);
         GameVerifier.addToFileList(photonFile.getAbsolutePath().replace(engine.getGameFolder().getGameDir().getAbsolutePath(), "").replace('/', File.separatorChar));
         if (downloadAPITask.requireUpdate()) {
             this.jarsExecutor.submit(downloadAPITask);

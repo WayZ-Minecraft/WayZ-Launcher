@@ -1,4 +1,3 @@
-// const ConsoleWindow = require("node-hide-console-window");
 const informations = require('./informations');
 const downloader = require('./downloader');
 const jvm_downloader = require('./jvm_downloader');
@@ -7,16 +6,16 @@ const os = require('./operating_system');
 const fs = require('fs');
 const { spawn } = require('child_process');
 const { app, BrowserWindow } = require('electron/main');
-const { title } = require('process');
 
+let win = null;
 const createWindow = () => {
-  	const win = new BrowserWindow({
+  	win = new BrowserWindow({
 		width: 500,
 		height: 500,
 		frame: false,
 		transparent: true,
 		title: "Bootstrap",
-		iconPath: "assets/launcher.png",
+		icon: './build/icon_256.ico',
   	});
   	win.loadFile('./app/index.html');
 }
@@ -44,6 +43,12 @@ function main(url, password, user, infos) {
 	const launcher = bootstrapWorkingDirectory+"/launcher.jar";
 	const jrePath = bootstrapWorkingDirectory+"/runtime/";
 	const iconPath = bootstrapWorkingDirectory+"/icon.icns";
+
+	/* Redirect console.log output to the log file */
+	const logStream = fs.createWriteStream(bootstrapWorkingDirectory+'/boostrap.log', { flags: 'a' });
+	console.log = function(message) {
+		logStream.write(message + '\n');
+	};
 
 	/* Main data */
 	const launcherWorkingDirectory = os.getWorkingDirectory(infos.project_name + "-Launcher");
@@ -107,8 +112,10 @@ async function start(launcher, jrePath, API, FX, iconPath, project_name, web_url
 		
 		ls.on('exit', function (code) {
 			console.log('Child process exited with code ' + code.toString());
+			process.exit(code);
 		});
-
+		win.hide();
+		
 	} catch (error) { //TODO : ~20s to start the launcher (3/4 for launcher itself)
 		console.error("Error starting the launcher", error);
 	}
@@ -139,7 +146,7 @@ async function download(url, password, user, launcher, jrePath, API, FX, iconPat
 	await jvm_downloader.update(jrePath + jvm_downloader.getJVMName());
 
 	/* Update the launcher */
-	//await downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
+	await downloader.update(url, downloader.UpdateFileType.LAUNCHER, downloader.UpdateChannel.STABLE, launcher, () => {}, password, user);
 }
 
 function checkExistOrCreate(workingDirectory) {

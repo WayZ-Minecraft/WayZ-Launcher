@@ -2,7 +2,7 @@ package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.GlobalSettings;
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
@@ -16,7 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
 import javafx.util.Pair;
 
-public class resolutionBox extends TextFieldElement{
+public class resolutionBox extends SettingBox{
 
     final static String title = TranslationManager.format("settings.game.resolution.title");
     final static int boxHeight = 105;

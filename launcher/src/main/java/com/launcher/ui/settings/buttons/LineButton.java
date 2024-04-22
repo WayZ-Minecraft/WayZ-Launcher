@@ -1,6 +1,6 @@
 package com.launcher.ui.settings.buttons;
 
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.photon.util.os.FileLocation;
 
 import javafx.animation.FillTransition;
@@ -23,8 +23,8 @@ public class LineButton extends NavigateButton {
      * @param pictureColor : color of the image
      */
     public LineButton(String text, String imagePath, String pictureColor) {
-        super(text, TextFieldElement.lineTextSize, imagePath, pictureColor, TextFieldElement.lineHeight,
-        marginSide, TextFieldElement.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
+        super(text, SettingBox.lineTextSize, imagePath, pictureColor, SettingBox.lineHeight,
+        marginSide, SettingBox.lineTextColor.toString().replace("0x", "#"), "regular", "#181a1c", false);
         // this.buttonWidth = (int) (text.length() * TextFieldElement.lineTextSize / 1.7 + 20 + 2 * marginSide); // 20 : size of the image
         this.buttonWidth = 125;
         this.buttonRadius = 15;

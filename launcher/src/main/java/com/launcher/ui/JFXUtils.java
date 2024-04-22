@@ -2,7 +2,7 @@ package com.launcher.ui;
 
 import java.io.InputStream;
 
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
@@ -63,7 +63,7 @@ public class JFXUtils {
 
         return Font.loadFont(fontStream, size);
     }
-    
+
     /**
      * Function to create a custom text
      * @param text : Text to display
@@ -128,13 +128,13 @@ public class JFXUtils {
         fillTransition.setCycleCount(1);
         textArea.setOnMouseEntered(e -> {
             fillTransition.setFromValue(backgroundColor);
-            fillTransition.setToValue(TextFieldElement.switchColorHover);
+            fillTransition.setToValue(SettingBox.switchColorHover);
             fillTransition.playFromStart();
             FileLocation.playSound("sounds/hover_btn", 0);
         });
     
         textArea.setOnMouseExited(e -> {
-            fillTransition.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition.setFromValue(SettingBox.switchColorHover);
             fillTransition.setToValue(backgroundColor);
             fillTransition.playFromStart();
         });
@@ -167,13 +167,13 @@ public class JFXUtils {
         fillTransition.setCycleCount(1);
         valueText.setOnMouseEntered(e -> {
             fillTransition.setFromValue(backgroundColor);
-            fillTransition.setToValue(TextFieldElement.switchColorHover);
+            fillTransition.setToValue(SettingBox.switchColorHover);
             fillTransition.playFromStart();
             FileLocation.playSound("sounds/hover_btn", 0);
         });
     
         valueText.setOnMouseExited(e -> {
-            fillTransition.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition.setFromValue(SettingBox.switchColorHover);
             fillTransition.setToValue(backgroundColor);
             fillTransition.playFromStart();
         });
@@ -297,13 +297,13 @@ public class JFXUtils {
         boxCheck.setOnMouseEntered(e -> {
             FileLocation.playSound("sounds/hover_btn", 0);
             fillTransition2.setFromValue(backgroundColor);
-            fillTransition2.setToValue(TextFieldElement.switchColorHover);
+            fillTransition2.setToValue(SettingBox.switchColorHover);
             fillTransition2.play();
             boxCheck.setCursor(Cursor.HAND);
         });
 
         boxCheck.setOnMouseExited(e -> {
-            fillTransition2.setFromValue(TextFieldElement.switchColorHover);
+            fillTransition2.setFromValue(SettingBox.switchColorHover);
             fillTransition2.setToValue(backgroundColor);
             fillTransition2.play();
         });

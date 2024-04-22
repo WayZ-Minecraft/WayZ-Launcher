@@ -14,7 +14,7 @@ import javafx.scene.text.Text;
 /**
  * Class to create a box of settings like the box of the launcher settings, the box of the ram settings, ...
  */
-public abstract class TextFieldElement {
+public abstract class SettingBox {
     
     protected final AnchorPane box = new AnchorPane();
     protected int boxWidth;
@@ -51,7 +51,7 @@ public abstract class TextFieldElement {
      * @param boxHeight : the height of the box
      * @return a Settings box with the title
      */
-    public TextFieldElement(String title, int boxWidth, int boxHeight) {
+    public SettingBox(String title, int boxWidth, int boxHeight) {
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.title = JFXUtils.loadText(title + " :", titleSize, titleColor, "light");
@@ -91,7 +91,7 @@ public abstract class TextFieldElement {
      * @param columnNumber : the number of column in the row to manage Bow width
      * @return AnchorPane : a line of settings box
      */
-    private AnchorPane getSettingsLine(String Setting, Pane settingBox, int columnNumber){
+    protected AnchorPane getSettingsLine(String Setting, Pane settingBox, int columnNumber){
 
         AnchorPane line = new AnchorPane();
         line.setPrefWidth((this.boxWidth - 2*sidePadding) / columnNumber);

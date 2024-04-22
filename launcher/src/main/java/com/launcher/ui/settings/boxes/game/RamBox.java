@@ -4,7 +4,7 @@ import java.lang.management.ManagementFactory;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.GlobalSettings;
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
  * RamBox
  * The ram box in the game settings
  */
-public class RamBox extends TextFieldElement{
+public class RamBox extends SettingBox{
     
     final static String title = TranslationManager.format("settings.game.ram.title");
     final GridPane content = new GridPane();

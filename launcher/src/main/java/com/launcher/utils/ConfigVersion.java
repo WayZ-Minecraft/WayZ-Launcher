@@ -18,7 +18,10 @@ public class ConfigVersion {
 	public boolean autoRAM = false;
 	public boolean systemLang = true;
 	public EnumLogAutoClearTimer autoClearLogTimer = EnumLogAutoClearTimer.ONE_WEEK;
-	public UpdateChannel versionChannel = UpdateChannel.STABLE;
+	public UpdateChannel modChannel = UpdateChannel.DEV;
+	public UpdateChannel apiChannel = UpdateChannel.DEV;
+	public boolean preventContentPacksDownloading = false;
+	public String activationKey = "";
 	
 	public ConfigVersion() {}
 	
@@ -35,6 +38,10 @@ public class ConfigVersion {
 		if(this.send_reports != o.send_reports) this.send_reports = o.send_reports;
 		if(this.autoRAM != o.autoRAM) this.autoRAM = o.autoRAM;
 		if(this.systemLang != o.systemLang) this.systemLang = o.systemLang;
+		if(this.modChannel != o.modChannel) this.modChannel = o.modChannel;
+		if(this.apiChannel != o.apiChannel) this.apiChannel = o.apiChannel;
+		if(this.preventContentPacksDownloading != o.preventContentPacksDownloading) this.preventContentPacksDownloading = o.preventContentPacksDownloading;
+		if(!this.activationKey.equals(o.activationKey)) this.activationKey = o.activationKey;
 	}
 
 	@Override
@@ -44,10 +51,15 @@ public class ConfigVersion {
 			&& this.vmarguments.equals(cfg.vmarguments) && this.useCustomSize == cfg.useCustomSize 
 			&& this.screenWidth.equals(cfg.screenWidth) && this.screenHeight.equals(cfg.screenHeight)
 			&& this.keep_open == cfg.keep_open && this.send_reports == cfg.send_reports && this.autoRAM == cfg.autoRAM && this.systemLang == cfg.systemLang
+			&& this.modChannel == cfg.modChannel && this.apiChannel == cfg.apiChannel && this.preventContentPacksDownloading == cfg.preventContentPacksDownloading && this.activationKey.equals(cfg.activationKey)
 			;
 			return isEqual;
 		}
 		return false;
+	}
+
+	public boolean hasActivationKey() {
+		return this.activationKey != null && !this.activationKey.isEmpty();
 	}
 
 	public static enum EnumLogAutoClearTimer {

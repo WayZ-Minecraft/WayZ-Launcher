@@ -2,7 +2,7 @@ package com.launcher.ui.settings.boxes.game;
 
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.GlobalSettings;
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.TranslationManager;
 import com.photon.util.os.FileLocation;
@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
-public class JvmBox extends TextFieldElement {
+public class JvmBox extends SettingBox {
     
     final static String title = TranslationManager.format("settings.game.jvm.title");
     final static int boxHeight = 160;

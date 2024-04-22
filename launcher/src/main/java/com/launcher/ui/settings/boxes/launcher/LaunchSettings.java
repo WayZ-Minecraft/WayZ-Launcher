@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.launcher.LauncherEngine;
 import com.launcher.ui.settings.GlobalSettings;
-import com.launcher.ui.settings.boxes.TextFieldElement;
+import com.launcher.ui.settings.boxes.SettingBox;
 import com.launcher.utils.LauncherConfig;
 import com.photon.util.ConsoleManager;
 import com.photon.util.ConsoleManager.EnumLogType;
@@ -17,7 +17,7 @@ import com.photon.util.os.OperatingSystem;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 
-public class LaunchSettings extends TextFieldElement {
+public class LaunchSettings extends SettingBox {
 
     final static String title = TranslationManager.format("settings.launcher.properties.title");
     final GridPane content = new GridPane();

@@ -3,6 +3,7 @@ package com.launcher.ui.settings;
 import com.launcher.MainStage;
 import com.launcher.ui.JFXUtils;
 import com.launcher.ui.settings.boxes.FrameSettings;
+import com.launcher.ui.settings.boxes.game.ChannelsBox;
 import com.launcher.ui.settings.boxes.game.JvmBox;
 import com.launcher.ui.settings.boxes.game.RamBox;
 import com.launcher.ui.settings.boxes.game.resolutionBox;
@@ -153,6 +154,7 @@ public class GlobalSettings {
         launcherFrame.addBox(new RamBox(frameWidth));
         launcherFrame.addBox(new resolutionBox(frameWidth));
         launcherFrame.addBox(new JvmBox(frameWidth));
+        launcherFrame.addBox(new ChannelsBox(frameWidth));
 
         return launcherFrame.getFrame();
     }
