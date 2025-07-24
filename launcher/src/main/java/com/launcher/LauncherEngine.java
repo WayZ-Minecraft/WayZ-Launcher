@@ -37,7 +37,8 @@ public class LauncherEngine {
 
 		/* Init launcher folders and infos */
 		//TODO : Use your own URL like us before with https://files.wayz.fr/launcher/
-		gameLinks = new GameLinks("http://pathToLauncherFolder/launcher/", "fabric-loader-0.14.21-1.16.5.json");
+		// E.g : http://pathToLauncherFolder/launcher/
+		gameLinks = new GameLinks("http://192.168.50.50/dev_wayz_launcher_files/", "fabric-loader-0.14.21-1.16.5.json");
 		gameFolder = new GameFolder("wayz-launcher");
 		gameEngine = new GameEngine(gameFolder, gameLinks, "WayZ");
 
@@ -54,7 +55,7 @@ public class LauncherEngine {
 		LauncherEngine.clearLogs();
 		
 		/* Display the interface */
-		ConsoleManager.debug("JavaFX will create the main stage...");
+		ConsoleManager.create("JavaFX will create the main stage...").withType(EnumLogType.LAUNCHER).end();
 		Application.launch(MainStage.class, args);
 	}
 

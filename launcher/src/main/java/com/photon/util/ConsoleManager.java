@@ -151,53 +151,6 @@ public class ConsoleManager
 		}
 		return "[Unknown] ";
 	}
-	
-	/**
-	 * Display a message in the console
-	 * @param b The boolean to display
-	 * 
-	 * N.B : This method is used to avoid abiguous method call with the other debug methods
-	 */
-	public static void debug(boolean b) { debug(false, new Object[] {b}); }
-
-	/**
-	 * Display a message in the console
-	 * @param objects The message to display
-	 */
-	public static void debug(Object... objects) { debug(false, objects); }
-	
-	public static void debug(boolean newLineOnEachObject, Object... objects) {
-		System.out.print(getLineCaller());
-		System.out.print(ANSI_CYAN+"[" + java.time.LocalTime.now().withNano(0) + "] "+ANSI_WHITE);
-		if(objects != null) {
-			for(Object o : objects) System.out.print(o + (newLineOnEachObject ? "\n" : " "));
-		} else System.out.print("null");
-		System.out.println();
-	}
-	
-	private static boolean elipsedTime = false;
-	private static long startTime = 0;
-	
-	/**
-	 * Start the time elapsed
-	 * @see #endTime(String)
-	 */
-	public static void startTime() {
-		elipsedTime = true;
-		startTime = System.currentTimeMillis();
-	}
-
-	/**
-	 * Display the time elapsed since the last startTime() call
-	 * @param message The message to display
-	 * @see #startTime()
-	 */
-	public static void endTime(String message) {
-		if(elipsedTime) {
-			elipsedTime = false;
-			ConsoleManager.create(message+" ("+(System.currentTimeMillis()-startTime)+"ms)").end();
-		}
-	}
 
 	public static class Log {
 		private EnumLogType type = EnumLogType.INFO;

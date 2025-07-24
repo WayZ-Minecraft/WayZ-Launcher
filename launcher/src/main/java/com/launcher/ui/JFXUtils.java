@@ -360,7 +360,6 @@ public class JFXUtils {
         fillTransition.setCycleCount(1);
 
         track.setOnMouseEntered(e -> {
-            ConsoleManager.debug("hey");
             fillTransition.setFromValue(BackgroundColorPreThumb);
             fillTransition.setToValue(Color.RED);
             fillTransition.playFromStart();
