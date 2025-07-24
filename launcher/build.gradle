@@ -1,0 +1,86 @@
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'com.guardsquare:proguard-gradle:7.3.2' }
+}
+
+plugins {
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+configurations {
+    allImplementation { extendsFrom implementation }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+	implementation fileTree(dir: '../libs', include: ['*.jar', '*.zip'])
+    implementation 'com.github.Dansoftowner:FXTaskbarProgressBar:v11.4' // See more here : https://github.com/Dansoftowner/FXTaskbarProgressBar
+
+	/* Apache */
+    api 'commons-codec:commons-codec:1.15'
+	api 'commons-io:commons-io:2.11.0'
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+compileJava.options.encoding = 'UTF-8'
+
+version = '1.0.0'
+archivesBaseName = 'launcher'
+
+/* Create basic JAR */
+jar {
+	duplicatesStrategy 'exclude'
+   	manifest {
+		attributes([ "Main-Class": "com.launcher.LauncherEngine" ])
+	}
+}
+
+
+/* Generate the obfuscation dictionary */
+task genDict {
+	delete 'build/tmp/builddict.txt'
+	outputs.file('build/tmp/builddict.txt')
+	doLast {
+		def r = new Random()
+		def begin = r.nextInt(1000) + 0x0100
+		def end = begin + 0x40000
+		def chars = (begin..end)
+			.findAll { Character.isValidCodePoint(it) && Character.isJavaIdentifierPart(it) }
+			.collect { String.valueOf(Character.toChars(it)) }
+		def start = chars.findAll { Character.isJavaIdentifierStart(it.charAt(0)) }
+		def f = outputs.files.getSingleFile()
+		f.createNewFile()
+		f.withWriter("UTF-8") {
+			it.write(start.join(System.lineSeparator()))
+			it.write(System.lineSeparator())
+		}
+	}
+}
+
+/* Add required dependencies */
+shadowJar {
+   	configurations = [project.configurations.shadow]
+	archiveClassifier.set('')
+}
+
+tasks.register('proguard', proguard.gradle.ProGuardTask) {
+	dependsOn jar
+    dependsOn shadowJar, genDict
+    configuration file('../obfuscate.pro')
+    injars(tasks.named("shadowJar").flatMap { it.archiveFile })
+    outjars(layout.buildDirectory.file("libs/${archivesBaseName}.jar"))
+    libraryjars(configurations.shadow.filter { it.exists() })
+    libraryjars(configurations.allImplementation.filter { it.exists() })
+}
+proguard.shouldRunAfter jar
+
+/* Main build task */
+tasks.build.dependsOn proguard

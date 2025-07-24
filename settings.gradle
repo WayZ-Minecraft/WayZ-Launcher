@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        maven { url "https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots" }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'WayZ-Launcher'
+include('launcher')
+// include('bootstrap')
+include('photon')
+project(':photon').projectDir = new File('../photon')
