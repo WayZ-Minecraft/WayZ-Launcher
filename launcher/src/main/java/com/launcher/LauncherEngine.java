@@ -38,7 +38,7 @@ public class LauncherEngine {
 		/* Init launcher folders and infos */
 		//TODO : Use your own URL like us before with https://files.wayz.fr/launcher/
 		// E.g : http://pathToLauncherFolder/launcher/
-		gameLinks = new GameLinks("http://192.168.50.50/dev_wayz_launcher_files/", "fabric-loader-0.14.21-1.16.5.json");
+		gameLinks = new GameLinks("", "fabric-loader-0.14.21-1.16.5.json");
 		gameFolder = new GameFolder("wayz-launcher");
 		gameEngine = new GameEngine(gameFolder, gameLinks, "WayZ");
 
