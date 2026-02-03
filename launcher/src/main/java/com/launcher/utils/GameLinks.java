@@ -1,45 +1,54 @@
 package com.launcher.utils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class GameLinks {
 
-	public String BASE_URL;
-	public String JSON_URL;
-	public String JSON_NAME;
-	public String IGNORE_LIST;
-	public String DELETE_LIST;
-	public String CUSTOM_FILES_URL;
+	public final String JSON_NAME;
 
-	public GameLinks(String baseUrl, String jsonName) {
-		if(baseUrl.endsWith("/")) this.BASE_URL = baseUrl;
-		else this.BASE_URL = baseUrl + "/";
-		this.JSON_URL = this.BASE_URL + jsonName;
+	public final URL JSON_URL;
+	public final URL IGNORE_LIST;
+	public final URL DELETE_LIST;
+	public final URL CUSTOM_FILES_URL;
+
+	public GameLinks(String baseUrl, String jsonName) throws MalformedURLException {
 		this.JSON_NAME = jsonName;
-		this.IGNORE_LIST = this.BASE_URL + "ignore.cfg";
-		this.DELETE_LIST = this.BASE_URL + "delete.cfg";
-		this.CUSTOM_FILES_URL = this.BASE_URL + "files_"+jsonName.replace(".json", "")+"/";
-	}
 
-	public String getBaseUrl() {
-		return this.BASE_URL;
+		if(baseUrl == null || baseUrl.isEmpty()) {
+			this.JSON_URL = ClassLoader.getSystemClassLoader().getResource("default_settings/" + jsonName);
+			this.IGNORE_LIST = ClassLoader.getSystemClassLoader().getResource("default_settings/ignore.cfg");
+			this.DELETE_LIST = ClassLoader.getSystemClassLoader().getResource("default_settings/delete.cfg");
+			this.CUSTOM_FILES_URL = ClassLoader.getSystemClassLoader().getResource("default_settings/files_" + jsonName.replace(".json", "") + "/");
+			return;
+		}
+
+		/* Ensure that the url is ending with '/' */
+		if(!baseUrl.endsWith("/")) baseUrl += "/";
+
+		this.JSON_URL = new URL(baseUrl + jsonName);
+		this.IGNORE_LIST = new URL(baseUrl + "ignore.cfg");
+		this.DELETE_LIST = new URL(baseUrl + "delete.cfg");
+		this.CUSTOM_FILES_URL = new URL(baseUrl + "files_"+jsonName.replace(".json", "")+"/");
 	}
 
 	public String getJsonName() {
 		return this.JSON_NAME;
 	}
 
-	public String getJsonUrl() {
+	public URL getJsonUrl() {
 		return this.JSON_URL;
 	}
 
-	public String getIgnoreListUrl() {
+	public URL getIgnoreListUrl() {
 		return this.IGNORE_LIST;
 	}
 
-	public String getDeleteListUrl() {
+	public URL getDeleteListUrl() {
 		return this.DELETE_LIST;
 	}
 
-	public String getCustomFilesUrl() {
+	public URL getCustomFilesUrl() {
 		return this.CUSTOM_FILES_URL;
 	}
 }

@@ -38,7 +38,7 @@ public class GameParser {
 	public static void getFilesToDownload(GameEngine engine, GameUpdater updater) {
 		downloadXMLFile(engine);
 		try {
-			final URLConnection resourceUrl = new URL(engine.getGameLinks().getCustomFilesUrl()).openConnection();
+			final URLConnection resourceUrl = engine.getGameLinks().getCustomFilesUrl().openConnection();
 			resourceUrl.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 			resourceUrl.connect();
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -112,7 +112,7 @@ public class GameParser {
 		final File theFile = new File(engine.getGameFolder().getCacheDir(), "downloads.xml");
 		GameVerifier.addToFileList(theFile.getAbsolutePath().replace(engine.getGameFolder().getCacheDir().getAbsolutePath(), "").replace('/', File.separatorChar));
 		try {
-			URL url = new URL(engine.getGameLinks().getCustomFilesUrl());
+			URL url = engine.getGameLinks().getCustomFilesUrl();
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 			connection.connect();

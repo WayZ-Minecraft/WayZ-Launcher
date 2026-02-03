@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,7 @@ public class GameVerifier {
 		URLConnection url = null;
 		BufferedReader read = null;
 		try {
-			url = new URL(this.engine.getGameLinks().getIgnoreListUrl()).openConnection();
+			url = this.engine.getGameLinks().getIgnoreListUrl().openConnection();
 			url.connect();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -86,12 +85,8 @@ public class GameVerifier {
 		try {
 			while ((i = read.readLine()) != null) {
 				String correctName = i.replace('/', File.separatorChar);
-				if (correctName.endsWith("\\") || correctName.endsWith("/")) {
-					this.ignoreListFolder.add(correctName);
-				}
-				else {
-					this.ignoreList.add("" + this.engine.getGameFolder().getGameDir() + File.separatorChar + correctName);
-				}
+				if (correctName.endsWith("\\") || correctName.endsWith("/")) this.ignoreListFolder.add(correctName);
+				else this.ignoreList.add("" + this.engine.getGameFolder().getGameDir() + File.separatorChar + correctName);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -107,7 +102,7 @@ public class GameVerifier {
 		URLConnection url = null;
 		BufferedReader read = null;
 		try {
-			url = new URL(this.engine.getGameLinks().getDeleteListUrl()).openConnection();
+			url = this.engine.getGameLinks().getDeleteListUrl().openConnection();
 			url.connect();
 		} catch (IOException e) {
 			e.printStackTrace();

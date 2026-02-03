@@ -7,10 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -245,7 +243,7 @@ public class GameUpdater {
 	 */
 	public void updateCustomFiles() {
 		for (String name : this.files) {
-			String fileDest = name.replace(engine.getGameLinks().getCustomFilesUrl(), "");
+			String fileDest = name.replace(engine.getGameLinks().getCustomFilesUrl().toString(), "");
 			String fileName = fileDest;
 			int index = fileName.lastIndexOf("\\");
 			String dirLocation = fileName.substring(index + 1);
@@ -315,7 +313,7 @@ public class GameUpdater {
 					if (lib.getDownloads().getClassifiers() != null) {
 						final Map<OperatingSystem, String> nativesClassifier = lib.getNatives();
 						if (nativesClassifier != null && nativesClassifier.containsKey(OperatingSystem.getCurrent())) {
-							String nativesName = nativesClassifier.get(OperatingSystem.getCurrent()).replace("${arch}", Arch.CURRENT.getBit());
+							String nativesName = nativesClassifier.get(OperatingSystem.getCurrent()).replace("", Arch.CURRENT.getBit());
 							final File nativePath = new File(workDir.getNativesCacheDir(), lib.getArtifactNatives(nativesName));
 							final Downloader downloadTask8 = new Downloader(nativePath, lib.getDownloads().getClassifiers().get(nativesName).getUrl().toString(), lib.getDownloads().getClassifiers().get(nativesName).getSha1(), this);
 							if (downloadTask8.requireUpdate()) {
@@ -415,18 +413,16 @@ public class GameUpdater {
 	 * @param engine The game engine instance
 	 * @return The downloaded file from web
 	 */
-	public static File downloadVersion(String urlVers, GameEngine engine) {
-		URI uri = null;
-		try { uri = new URI(urlVers); } catch (URISyntaxException e1) { e1.printStackTrace(); }
-		final String path = uri.getPath();
-		final String idStr = path.substring(path.lastIndexOf('/') + 1);
-		final File versionIdFolder = new File(engine.getGameFolder().getVersionsDir(), idStr.replace(".json", ""));
-		
-		versionIdFolder.mkdirs();
-		File theFile = new File(versionIdFolder, idStr);
+	public static File downloadVersion(URL urlVers, GameEngine engine) {
 		try {
-			URL url = new URL(urlVers);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			final String path = urlVers.getPath();
+			final String idStr = path.substring(path.lastIndexOf('/') + 1);
+			final File versionIdFolder = new File(engine.getGameFolder().getVersionsDir(), idStr.replace(".json", ""));
+			
+			versionIdFolder.mkdirs();
+			final File theFile = new File(versionIdFolder, idStr);
+
+			final URLConnection connection = urlVers.openConnection();
 			float totalDataRead = 0;
 			BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
 			FileOutputStream fos = new FileOutputStream(theFile);
@@ -439,11 +435,12 @@ public class GameUpdater {
 			}
 			bout.close();
 			in.close();
+			return theFile;
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
+			return null;
 		}
-		return theFile;
 	}
 
 	/**
